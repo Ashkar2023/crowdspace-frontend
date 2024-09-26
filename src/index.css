@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+/* Regular */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-Regular.ttf');
+    font-weight: 400; /* Regular weight */
+    font-style: normal;
+}
+
+/* Italic */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-Italic.ttf');
+    font-weight: 400; /* Italic weight */
+    font-style: italic;
+}
+
+/* Light */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-Light.ttf');
+    font-weight: 300; /* Light weight */
+    font-style: normal;
+}
+
+/* Light Italic */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-LightItalic.ttf');
+    font-weight: 300; /* Light weight */
+    font-style: italic;
+}
+
+/* SemiBold */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-SemiBold.ttf');
+    font-weight: 600; /* SemiBold weight */
+    font-style: normal;
+}
+
+/* SemiBold Italic */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-SemiBoldItalic.ttf');
+    font-weight: 600; /* SemiBold weight */
+    font-style: italic;
+}
+
+/* Bold */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-Bold.ttf');
+    font-weight: 700; /* Bold weight */
+    font-style: normal;
+}
+
+/* Bold Italic */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-BoldItalic.ttf');
+    font-weight: 700; /* Bold weight */
+    font-style: italic;
+}
+
+/* Black */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-Black.ttf');
+    font-weight: 900; /* Black weight */
+    font-style: normal;
+}
+
+/* ExtraLight  */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-ExtraLight.ttf');
+    font-weight: 200; /* extralight weight */
+    font-style: normal;
+}
+
+/* ExtraLight-italic  */
+@font-face {
+    font-family: 'Titillium';
+    src: url('./assets/titillium/TitilliumWeb-ExtraLightItalic.ttf');
+    font-weight: 200; /* extralight weight */
+    font-style: italic;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number']{
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
