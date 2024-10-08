@@ -102,3 +102,21 @@ input[type='number']{
     -moz-appearance: textfield;
     appearance: textfield;
 }
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+#notification-settings::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent; /* Optional: just to ensure transparency */
+}
+
+/* For Firefox */
+#notification-settings {
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
+}
+
+/* For older versions of Edge and IE */
+#notification-settings {
+    overflow: -moz-scrollbars-none;
+}

@@ -1,9 +1,10 @@
-import { Signup } from "../components/signup"
-import { Login } from "../components/login"
-import { CreateAccount } from "../components/createAccount"
+import { Signup } from "../components/auth/signup"
+import { Login } from "../components/auth/login"
+import { CreateAccount } from "../components/auth/createAccount"
 import { AuthLayout } from "../layouts/authLayout"
-import { OtpVerify } from "../components/otpVerify"
+import { OtpVerify } from "../components/auth/otpVerify"
 import { Navigate } from "react-router-dom"
+import { OpenRoute } from "../components/_openRoute"
 
 
 
@@ -11,14 +12,20 @@ import { Navigate } from "react-router-dom"
 export const authRouter = [
     {
         path: "/auth",
-        element: <AuthLayout />,
+        element: (
+            <OpenRoute>
+                <AuthLayout>
+                    
+                </AuthLayout>
+            </OpenRoute>
+        ),
         children: [
             {
-                index:true,
-                element:<Navigate to="signup" replace/>
+                index: true,
+                element: <Navigate to="signup" replace />
             },
             {
-                path:"signup",
+                path: "signup",
                 element: <Signup />,
             },
             {
@@ -30,8 +37,8 @@ export const authRouter = [
                 element: <CreateAccount />
             },
             {
-                path:"verify",
-                element: <OtpVerify/>
+                path: "verify",
+                element: <OtpVerify />
             }
         ]
     },

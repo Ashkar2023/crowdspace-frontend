@@ -1,11 +1,16 @@
 import { Button } from '@nextui-org/react';
-import React, { useEffect } from 'react';
-import googleIcon from "../assets/google.svg";
+import React, { useEffect, useState } from 'react';
+import googleIcon from "../../assets/google.svg";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useGoogleLogin } from '@react-oauth/google';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../services/store/user.slice';
+import { LuLoader } from 'react-icons/lu';
 
 export const Signup = () => {
-
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const navigateToLogin = () => {
         navigate("/auth/login");
@@ -14,16 +19,33 @@ export const Signup = () => {
         navigate("/auth/create");
     };
 
-    const invokeGoogleAuth = async (e) => {
-        const { data } = await axios.get("http://localhost:3000/auth/generate-url");
-
-        console.log(data.body.authorizeUrl);
-        window.open(
-            data.body.authorizeUrl,
-            "GoogleOAuth",
-            `width=900,height=550,left=${window.screen.width / 2 - 450},top=${window.screen.height / 2 - 275}`
-        );
-    }
+    const invokeGoogleAuth = useGoogleLogin({
+        onSuccess: async (token) => {
+            try{
+                setIsSubmitting(true)
+                const response = await axios.post("http://localhost:3000/auth/oauth-callback", {
+                    code:token.code
+                }, {
+                    withCredentials: true
+                })
+    
+                console.log(response);
+                
+                if(response.data.success){
+                    dispatch(setUser(response.data.body));
+                    setIsSubmitting(false);
+                    navigate("/");
+                }
+                
+            }catch(error){
+                console.log(error)
+            }
+        },
+        onError: (token) => {
+            console.log(token)
+        },
+        flow: "auth-code"
+    })
 
     useEffect(() => {
         console.log("signup mounted");
@@ -35,7 +57,7 @@ export const Signup = () => {
     }, [])
 
     return (
-        <div className='flex flex-col min-h-screen px-12 pb-20 pt-28 animate-appearance-in'>
+        <div className='flex flex-col min-h-screen px-20 pb-20 pt-28 animate-appearance-in'>
             <header className='mb-10'>
                 <h2 className='text-5xl font-bold '>Crowdspace.</h2>
                 <h4 className='text-3xl font-bold '>join Now.</h4>
@@ -49,7 +71,9 @@ export const Signup = () => {
                         invokeGoogleAuth(e)
                     }}
                 >
-                    Sign up with Google
+                    {isSubmitting ?
+                        <LuLoader className='animate-spin'></LuLoader> :
+                        "Sign up with Google"}
                 </Button>
 
                 <div className="relative my-2">
@@ -71,11 +95,11 @@ export const Signup = () => {
                 </Button>
             </main>
 
-            <footer>
-                <p className='font-semibold mb-2'>Already have an account?</p>
+            <footer className='text-center'>
+                <p className='text-sm font-medium mb-2'>Already have an account?</p>
                 <Button
-                    size='md'
-                    className='w-52 font-semibold' //change colors to theme based
+                    size='sm'
+                    className='w-44 font-semibold' //change colors to theme based
                     color='primary'
                     variant='bordered'
                     onPress={navigateToLogin}

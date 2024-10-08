@@ -1,17 +1,17 @@
-import { Button, Input } from '@nextui-org/react';
-import axios from 'axios';
+import { Button, Chip, Input } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 import { LuCheckCircle, LuLoader, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
-import { debounce } from '../utils/debounce';
+import { debounce } from '../../utils/debounce';
 import { useForm } from 'react-hook-form';
-import signupSchema from '../schema/signupSchema';
+import signupSchema from '../../schema/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDispatch } from 'react-redux';
+import { axiosPublic } from '../../services/api/axios-http';
 
 export const CreateAccount = () => {
     const [usernameOk, setUsernameOk] = useState(undefined);
     const [Cpassword, setCPassword] = useState("");
+    const [info, setInfo] = useState("");
     const navigate = useNavigate();
 
     const {
@@ -26,11 +26,12 @@ export const CreateAccount = () => {
         mode: 'onTouched'
     });
 
+    let timeout;
+
     useEffect(() => {
-        console.log("signup mounted");
 
         return () => {
-            console.log("signup unmounted");
+            clearTimeout(timeout);
         };
     }, []);
 
@@ -46,7 +47,7 @@ export const CreateAccount = () => {
 
         try {
             console.timeEnd("debounce")
-            const { data } = await axios.post("http://localhost:3000/check-username", { username: value });
+            const { data } = await axiosPublic.post("http://localhost:3000/auth/check-username", { username: value });
 
             if (data.success) {
                 setUsernameOk(true);
@@ -72,15 +73,20 @@ export const CreateAccount = () => {
         }
 
         try {
-            const { data } = await axios.post("http://localhost:3000/auth/register", values);
+            const { data } = await axiosPublic.post("http://localhost:3000/auth/register", values);
             console.log(data.success);
 
             if (data.success) {
-                navigate("/auth/verify", { email: data.body.email })
+                navigate("/auth/verify", { state: { email: data.body.email } })
             }
 
         } catch (error) {
             console.log(error.response.data);
+            setInfo(error.response.data.message)
+
+            timeout = setTimeout(() => {
+                setInfo("");
+            }, 4000)
         }
 
     }
@@ -96,6 +102,15 @@ export const CreateAccount = () => {
             <main className='flex flex-col flex-grow mb-6 items-center'
                 spellCheck={false}
             >
+                {info &&
+                    <Chip className='self-center my-2 animate-appearance-in'
+                        color='danger'
+                        radius="sm"
+                        size='sm'
+                        variant='flat'
+                    >
+                        {info}
+                    </Chip>}
                 <form className='w-full' onSubmit={handleSubmit(onSubmit)}>
                     <Input
                         {...register("email", {
@@ -119,8 +134,8 @@ export const CreateAccount = () => {
                     <Input
                         {...register("displayname", {
                             required: "display name is required",
-
                         })}
+
                         isInvalid={Boolean(errors.displayname)}
                         errorMessage={errors.displayname?.message}
 
@@ -149,6 +164,7 @@ export const CreateAccount = () => {
 
                         className={errors.username?.message ? "mb-0" : "mb-3"}
                         classNames={{
+                            input: ["lowercase"],
                             errorMessage: ["animate-slideDown"]
                         }}
 

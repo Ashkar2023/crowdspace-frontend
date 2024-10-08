@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom"
-import CrowdspaceIcon from "../assets/crowdspace-logo-light.svg"
+import CrowdspaceIcon from "../assets/crowdspace-logo-light-theme.svg"
 import { useEffect, useState } from "react"
 
 export const AuthLayout = () => {
