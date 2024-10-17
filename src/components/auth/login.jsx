@@ -1,18 +1,20 @@
 import { Button, Chip, Input } from '@nextui-org/react';
-import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useDispatch } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import { OtpVerifyModal } from '../modal/otpVerify.modal';
-import { LuLoader } from 'react-icons/lu';
-import { setUser } from '../../services/store/user.slice';
+import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
+import { setUser } from '../../services/state/user.slice';
+import { userApiPublic } from '../../services/api/axios-http';
 
 export const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const [isVisible, setIsVisible] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false)
     const buttonRef = useRef(null);
 
@@ -20,8 +22,8 @@ export const Login = () => {
     const [info, setInfo] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
+    
     let timeout;
-
     useEffect(() => {
 
         return () => {
@@ -43,9 +45,7 @@ export const Login = () => {
 
         try {
             setIsSubmitting(true)
-            const { data } = await axios.post("http://localhost:3000/auth/login", newData, {
-                withCredentials: true
-            });
+            const { data } = await userApiPublic.post("/auth/login", newData);
 
             if (data.success) {
                 dispatch(setUser(data.body));
@@ -70,10 +70,8 @@ export const Login = () => {
                         setInfo("");
                     }, 5000)
 
-                    const res = await axios.post("http://localhost:3000/auth/gen-otp", {
+                    const res = await userApiPublic.post("/auth/gen-otp", {
                         email: response.data.body.email
-                    }, {
-                        withCredentials: true
                     });
 
                     setEmail(response.data.body.email);
@@ -119,17 +117,42 @@ export const Login = () => {
                     {...register("password", {
                         required: true
                     })}
-                    className='mb-4'
+
+                    type={isVisible ? "text" : 'password'}
+
+                    className='mb-2'
+                    classNames={{
+                        description:["self-end"]
+                    }}
                     label="Password"
-                    type='password'
                     radius='md'
                     size='sm'
                     variant='bordered'
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            buttonRef.current.click();
+                            // e.preventDefault(); //try event.stopPropogation in the eventHandler
+                            // buttonRef.current.click();
+
+                            handleSubmit(onSubmit)();
                         }
                     }}
+                    endContent={isVisible ?
+                        (
+                            <LuEyeOff className='self-center animate-appearance-in cursor-pointer' color='silver' size={18}
+                                onClick={() => {
+                                    setIsVisible(false)
+                                }}
+                            />
+                        ) :
+                        (
+                            <LuEye className='self-center animate-appearance-in cursor-pointer' color='silver' size={18}
+                                onClick={() => {
+                                    setIsVisible(true)
+                                }}
+                            />
+                        )
+                    }
+                    description={<Link to="/forgot-pwd">forgot password?</Link>}
                 />
 
                 <Button
@@ -137,7 +160,7 @@ export const Login = () => {
                     color='primary'
                     radius='md'
                     size='md'
-                    onClick={handleSubmit(onSubmit)}
+                    onPress={handleSubmit(onSubmit)}
                     ref={buttonRef}
                 >
                     {isSubmitting ?

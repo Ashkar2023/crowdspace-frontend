@@ -4,14 +4,6 @@ import { useEffect, useState } from "react"
 
 export const AuthLayout = () => {
 
-    useEffect(() => {
-        console.log("Layout rendered");
-
-        return () => {
-            console.log("layout Unmounted")
-        }
-    }, [])
-
     return (
         <>
             <div className="grid grid-flow-col grid-cols-2 h-screen overflow-hidden">

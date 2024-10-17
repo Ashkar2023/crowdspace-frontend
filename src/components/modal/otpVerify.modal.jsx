@@ -7,8 +7,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { LuLoader } from 'react-icons/lu';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { userApiPublic } from '../../services/api/axios-http';
 
 export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
     const [isVerifying, setIsVerfying] = useState(false);
@@ -33,7 +33,7 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
-        
+
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         }
@@ -72,13 +72,10 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
 
         if (!otp.some((value) => value === "")) {
             try {
-                const { data } = await axios.post("http://localhost:3000/auth/verify-otp",
+                const { data } = await userApiPublic.post("/auth/verify-otp",
                     { email: email, otp: otp.join("") },
-                    {
-                        withCredentials: true
-                    });
+                );
 
-                console.log(data);
                 if (data.success) {
                     callback();
                     onOpenChange(false);
@@ -100,7 +97,7 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
         setIsSendingOtp(true);
 
         try {
-            const { data } = await axios.post("http://localhost:3000/auth/gen-otp", { email });
+            const { data } = await userApiPublic.post("/auth/gen-otp", { email });
             setInfo(data.message);
             timeout = setTimeout(() => {
                 setInfo("");

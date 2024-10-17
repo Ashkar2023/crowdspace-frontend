@@ -50,9 +50,12 @@ const userSlice = createSlice({
             state.gender = gender;
             state.links = links;
             state.bio = bio;
+        },
+        setStoreUsername: (state, action) => {
+            state.username = action.payload.username;
         }
     }
 })
 
-export const { setUser, clearUser, updateUserProfile } = userSlice.actions;
+export const { setUser, clearUser, updateUserProfile, setStoreUsername } = userSlice.actions;
 export default userSlice.reducer;

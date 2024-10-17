@@ -1,10 +1,10 @@
 import { Avatar, Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
-import { useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { axiosProtected } from "../../services/api/axios-http";
-import { LuLoader, LuPencilLine, LuXCircle } from "react-icons/lu";
+import { userApiProtected, userApiPublic } from "../../services/api/axios-http";
+import { LuBan, LuCheckCircle, LuLoader, LuPencilLine, LuSave, LuX, LuXCircle } from "react-icons/lu";
 import { debounce } from "../../utils/debounce";
-import { updateUserProfile } from "../../services/store/user.slice";
+import { setStoreUsername, updateUserProfile } from "../../services/state/user.slice";
 import toast from "react-hot-toast";
 
 export const Profile = () => {
@@ -13,14 +13,31 @@ export const Profile = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uDisabled, setUDisabled] = useState(true);
 
+    const [username, setUsername] = useState(userState.username);
+    const [usernameAvailable, setUsernameAvailable] = useState(undefined);
+
     const [selectedGender, setSelectedGender] = useState(null);
     const [linkInvalid, setLinkInvalid] = useState(false);
-    const [settingsState, SDispatch] = useReducer(settingsReducer, {
+    const [settingsState, settingDispatch] = useReducer(settingsReducer, {
         username: userState.username,
         bio: userState.bio || "",
         gender: selectedGender,
         links: []
     });
+
+    const showToast = (message, type) => {
+        toast[type](message, {
+            position: "top-center",
+            duration: 1700,
+            // style: {
+            //     marginRight: "20px"
+            // },
+            iconTheme: {
+                primary: "#fff",
+                secondary: type === "success" ? "#23BE78" : "#D12335",
+            }
+        })
+    }
 
     function settingsReducer(state, action) {
         switch (action.type) {
@@ -57,15 +74,65 @@ export const Profile = () => {
                     gender: action.value
                 }
             }
+            case "update-username": {
+                return {
+                    ...state,
+                    username: action.value
+                }
+            }
             default:
                 throw new Error("Unknown action");
         }
     }
 
+    const checkUsernameAvailable = async (value) => {
+        if (value === userState.username) {
+            setUsernameAvailable(false);
+            return;
+        } else if (value === "") return;
+
+        setUsernameAvailable("LOADING");
+
+        try {
+            const { data } = await userApiPublic.post("/auth/check-username", { username: value });
+            if (data.success) {
+                setUsernameAvailable(true);
+            }
+        } catch (error) {
+            console.log(error.message)
+            if (error.response.status === 409) {
+                setUsernameAvailable(false);
+            }
+        }
+    }
+
+    const deb_checkUsernameAvailable = useCallback( // For memoizing debounced function
+        debounce(checkUsernameAvailable, 400),
+        []
+    )
+
+    async function updateUsername() {
+        try {
+            const { data } = await userApiProtected.patch("/settings/username", {
+                username: username.toLowerCase()
+            })
+
+            dispatch(setStoreUsername({ username: data.body.username }))
+            settingDispatch({ type: "update-username", value: data.body.username })
+
+            showToast(data.message, "success")
+            setUDisabled(true)
+            setUsernameAvailable(undefined);
+
+        } catch (error) {
+            showToast(error.response.data.message, "error")
+        }
+    }
+
     const bioDispatch = (e) => {
-        SDispatch({ type: "update-bio", value: e.target.value })
+        settingDispatch({ type: "update-bio", value: e.target.value })
     };
-    const debouncedBioDispatch = debounce(bioDispatch, 500);
+    const deb_bioDispatch = debounce(bioDispatch, 500);
 
     useEffect(() => {// intial gender
         if (userState.gender) {
@@ -73,27 +140,18 @@ export const Profile = () => {
         }
 
         if (userState.links.length !== 0) {
-            SDispatch({ type: "hydrate-links", value: userState.links })
+            settingDispatch({ type: "hydrate-links", value: userState.links })
         }
     }, [])
+
 
     const handleSubmit = async (e) => {
 
         try {
             setIsSubmitting(true);
-            const { data } = await axiosProtected.patch("/settings/profile", settingsState);
+            const { data } = await userApiProtected.patch("/settings/profile", settingsState);
 
-            toast.success(data.message, {
-                position: "top-right",
-                duration: 1700,
-                style: {
-                    marginRight: "20px"
-                },
-                iconTheme: {
-                    primary: "#fff",
-                    secondary: "#000"
-                }
-            })
+            showToast(data.message, "success")
 
             if (data.success) {
                 dispatch(updateUserProfile(data.body));
@@ -131,32 +189,73 @@ export const Profile = () => {
                         <label htmlFor="username" className="font-semibold">Username</label>
                         <div className="flex">
                             <Input
-                                defaultValue={userState.username}
+                                value={username}
+                                onChange={e => {
+                                    setUsername(e.target.value)
+                                    deb_checkUsernameAvailable(e.target.value)
+                                }}
+
                                 isDisabled={uDisabled}
                                 variant="flat"
                                 classNames={{
                                     inputWrapper: ["rounded-r-none"],
+                                    input: ["lowercase"]
                                 }}
-                                onBlur={e=> setUDisabled(true)}
-                                id="username">
+                                id="username"
+
+                                endContent={
+                                    usernameAvailable === undefined ? undefined :
+                                        usernameAvailable === "LOADING" ? <LuLoader className='self-center animate-spin' size={20} color='grey' /> :
+                                            usernameAvailable === false ?
+                                                <LuX className='self-center animate-appearance-in' size={20} color='red' /> :
+                                                <LuCheckCircle className='self-center animate-appearance-in' size={20} color='limeGreen' />
+                                }
+                            >
                             </Input>
+
+                            {/* // cancel button */}
+                            {
+                                uDisabled ?
+                                    null :
+                                    <div className="px-2 bg-red-200 cursor-pointer animate-appearance-in"
+                                        onClick={e => {
+                                            setUsername(userState.username)
+                                            setUDisabled(true);
+                                            setUsernameAvailable(undefined);
+                                        }}
+                                    >
+                                        <LuBan size={20} color="red" className="self-center h-full" />
+                                    </div>
+                            }
+
+                            {/* save/Edit button */}
                             <Button
                                 radius="none"
                                 color="primary"
                                 variant="flat"
-                                className="rounded-r-xl"
+                                className="rounded-r-xl animate-appearance-in"
                                 onClick={e => {
                                     if (uDisabled) {
                                         setUDisabled(false)
                                     } else {
-
+                                        updateUsername();
                                     }
                                 }}
                             >
                                 {
                                     uDisabled ?
-                                        [<LuPencilLine />, "Edit"] :
-                                        "Update"
+                                        (
+                                            <>
+                                                <LuPencilLine />
+                                                Edit
+                                            </>
+                                        ) :
+                                        (
+                                            <>
+                                                <LuSave />
+                                                Save
+                                            </>
+                                        )
                                 }
                             </Button>
                         </div>
@@ -171,7 +270,7 @@ export const Profile = () => {
                             selectedKeys={[selectedGender]}
                             onChange={(e) => {
                                 setSelectedGender(e.target.value);
-                                SDispatch({ type: "update-gender", value: e.target.value })
+                                settingDispatch({ type: "update-gender", value: e.target.value })
                             }}
                             aria-label="select gender"
                         >
@@ -181,7 +280,7 @@ export const Profile = () => {
                     </div>
                 </div>
 
-                <div className="border rounded-xl rounded-t-2xl bg-gray-400">
+                <div className="border rounded-xl bg-gray-200">
                     <Input
                         id="links"
                         placeholder="Add links"
@@ -208,18 +307,18 @@ export const Profile = () => {
                                     setLinkInvalid(true)
                                     return
                                 }
-                                SDispatch({ type: "add-link", value: e.target.value })
+                                settingDispatch({ type: "add-link", value: e.target.value })
                             }
                         }}
                     />
                     <div className={`${settingsState.links.length ? "p-2 pt-0" : ""} 
-                        max-h-24 overflow-y-auto text-white text-sm`}>
+                        max-h-24 overflow-y-auto text-gray-500 text-sm flex flex-wrap`}>
                         {settingsState.links.map((value, index) => (
-                            <p className="flex" key={value}>
+                            <p className="flex mr-2" key={value}>
                                 {value}
                                 <LuXCircle className="self-center ms-1 cursor-pointer"
                                     onClick={e => {
-                                        SDispatch({ type: "remove-link", index })
+                                        settingDispatch({ type: "remove-link", index })
                                     }}
                                 />
                             </p>
@@ -234,7 +333,7 @@ export const Profile = () => {
                     variant="faded"
                     className=""
                     onChange={e => {
-                        debouncedBioDispatch(e)
+                        deb_bioDispatch(e)
                     }}
                     defaultValue={userState.bio}
                 />

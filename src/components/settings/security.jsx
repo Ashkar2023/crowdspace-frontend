@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { LuKeySquare, LuLoader } from "react-icons/lu"
 import { passwordSchema } from "../../schema/passwordSchema";
 import { useEffect, useState } from "react";
-import { axiosProtected } from "../../services/api/axios-http";
+import { userApiProtected } from "../../services/api/axios-http";
 import toast from "react-hot-toast";
 
 export const Security = () => {
@@ -34,7 +34,7 @@ export const Security = () => {
     const onSubmit = async (values) => {
 
         try {
-            const { data } = await axiosProtected.patch("/settings/password", {
+            const { data } = await userApiProtected.patch("/settings/password", {
                 newPassword: values.newPassword,
                 oldPassword: values.oldPassword
             })

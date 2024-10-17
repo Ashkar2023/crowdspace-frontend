@@ -3,12 +3,13 @@ import { useEffect, useRef, useState } from "react"
 import { LuLoader } from "react-icons/lu"
 import { useDispatch } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
-import { setUser } from "../../services/store/user.slice"
-import { axiosPublic } from "../../services/api/axios-http"
+import { setUser } from "../../services/state/user.slice"
+import { userApiPublic } from "../../services/api/axios-http"
 
 export const OtpVerify = () => {
     const location = useLocation();
-    const [email] = useState(location.state.email || "");
+    const [email] = useState(location?.state?.email);
+
     const [isVerifying, setIsVerfying] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
 
@@ -20,12 +21,13 @@ export const OtpVerify = () => {
     const [otp, setOtp] = useState(["", "", "", ""]);
     const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null),];
 
-    if (!email) navigate("/auth/login")
 
     let timeout;
 
     useEffect(() => {
         inputRefs[0].current.focus();
+
+        if (!email) navigate("/auth/login", { replace: true });
 
         const handleBeforeUnload = (event) => {
             event.preventDefault();
@@ -74,7 +76,7 @@ export const OtpVerify = () => {
 
         if (!otp.some((value) => value === "")) {
             try {
-                const { data } = await axiosPublic.post("/auth/verify-otp",
+                const { data } = await userApiPublic.post("/auth/verify-otp",
                     {
                         email: email,
                         otp: otp.join("")
@@ -101,7 +103,7 @@ export const OtpVerify = () => {
         setIsSendingOtp(true);
 
         try {
-            const { data } = await axios.post("http://localhost:3000/auth/gen-otp", { email });
+            const { data } = await userApiPublic.post("/auth/gen-otp", { email });
             setInfo(data.message);
             timeout = setTimeout(() => {
                 setInfo("");
@@ -159,7 +161,6 @@ export const OtpVerify = () => {
                             maxLength={1}
                             onKeyDown={(e) => { handleBackspace(index, e) }}
                             onChange={(e) => { handleInput(index, e.target.value) }}
-
                         />
                     ))}
                 </div>

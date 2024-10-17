@@ -16,7 +16,7 @@ export function SettingsNav() {
     console.log(location);
 
     return (
-        <div className="h-full w-full ">
+        <div className="h-full w-full">
             <h2 className="text-xl font-semibold mb-4">Settings</h2>
             <nav className="space-y-2 text-sm">
                 {settingsNavItems.map((item) => (

@@ -1,11 +1,11 @@
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, useNavbar, User } from '@nextui-org/react';
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Switch, User } from '@nextui-org/react';
 import React, { useState } from 'react';
-import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuUsers, LuUserSquare2 } from 'react-icons/lu';
+import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuSun, LuUsers, LuUserSquare2 } from 'react-icons/lu';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { clearUser } from '../services/store/user.slice';
-import { axiosProtected } from '../services/api/axios-http';
-import { FaUser } from 'react-icons/fa';
+import { clearUser } from '../services/state/user.slice';
+import { userApiProtected } from '../services/api/axios-http';
+import { RiMoonFill } from 'react-icons/ri';
 
 const navItems = [
     { href: '/', label: "Home", icon: LuHome },
@@ -23,11 +23,12 @@ export const Sidebar = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch();
     const [isMoreOpen, setMoreOpen] = useState(false);
+    const [isSelected, setIsSelected] = useState(true);
     const userState = useSelector(state => state.user);
 
     const handleLogout = async (e) => {
         try {
-            await axiosProtected.get("/auth/logout");
+            await userApiProtected.get("/auth/logout");
             dispatch(clearUser());
         } catch (error) {
             console.log(error.message)
@@ -64,14 +65,16 @@ export const Sidebar = () => {
                             backdrop='transparent'
                             radius='sm'
                             type='menu'
-                            shadow='md'
+                            shadow='lg'
                             onOpenChange={(isOpen) => setMoreOpen(isOpen)}
                         >
                             <DropdownTrigger>
                                 <User
                                     className='cursor-pointer flex flex-grow justify-start'
                                     classNames={{
-                                        base: ["bg-slate-200", "p-2", "px-3", "rounded-2xl"]
+                                        base: ["bg-slate-200", "p-2", "px-3",
+                                            "rounded-2xl", "overflow-hidden", "min-w-44"],
+                                        name: ["max-w-24", "truncate"]
                                     }}
 
                                     name={"@" + userState.username}
@@ -84,6 +87,29 @@ export const Sidebar = () => {
                             </DropdownTrigger>
 
                             <DropdownMenu>
+                                <DropdownSection showDivider>
+                                    <DropdownItem
+                                        className='cursor-default'
+                                        closeOnSelect={false}
+                                        endContent={
+                                            <Switch
+                                                size='md'
+                                                isSelected={isSelected}
+                                                onValueChange={(bool) => {
+                                                    setIsSelected(bool);
+                                                }}
+                                                classNames={{
+                                                    wrapper: ["group-data-[selected=true]:bg-slate-700"]
+                                                }}
+                                                thumbIcon={isSelected ? <RiMoonFill /> : <LuSun />}
+                                            />
+                                        }
+                                        textValue='DarkMode'
+                                    >
+                                        Dark mode
+                                    </DropdownItem>
+                                </DropdownSection>
+                                
                                 <DropdownSection showDivider>
                                     <DropdownItem
                                         onClick={e => navigate("/settings")}
@@ -100,7 +126,7 @@ export const Sidebar = () => {
                                         Profile
                                     </DropdownItem>
                                 </DropdownSection>
-
+                                
                                 <DropdownSection>
                                     <DropdownItem
                                         key="logout"
@@ -122,7 +148,6 @@ export const Sidebar = () => {
                             variant='shadow'
                         >
                             Post
-                            {/* <LuPlus size={20} /> */}
                             <LuPen />
                         </Button>
                         <Button color="primary"

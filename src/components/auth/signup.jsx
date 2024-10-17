@@ -2,11 +2,11 @@ import { Button } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 import googleIcon from "../../assets/google.svg";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../../services/store/user.slice';
+import { setUser } from '../../services/state/user.slice';
 import { LuLoader } from 'react-icons/lu';
+import { userApiPublic } from '../../services/api/axios-http';
 
 export const Signup = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,23 +21,21 @@ export const Signup = () => {
 
     const invokeGoogleAuth = useGoogleLogin({
         onSuccess: async (token) => {
-            try{
+            try {
                 setIsSubmitting(true)
-                const response = await axios.post("http://localhost:3000/auth/oauth-callback", {
-                    code:token.code
-                }, {
-                    withCredentials: true
+                const response = await userApiPublic.post("/auth/oauth-callback", {
+                    code: token.code
                 })
-    
+
                 console.log(response);
-                
-                if(response.data.success){
+
+                if (response.data.success) {
                     dispatch(setUser(response.data.body));
                     setIsSubmitting(false);
                     navigate("/");
                 }
-                
-            }catch(error){
+
+            } catch (error) {
                 console.log(error)
             }
         },

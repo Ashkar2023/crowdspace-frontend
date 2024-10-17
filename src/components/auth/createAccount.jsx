@@ -1,16 +1,17 @@
 import { Button, Chip, Input } from '@nextui-org/react';
-import React, { useEffect, useState } from 'react';
-import { LuCheckCircle, LuLoader, LuX } from 'react-icons/lu';
+import React, { useCallback, useEffect, useState } from 'react';
+import { LuCheckCircle, LuEye, LuEyeOff, LuLoader, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
 import { debounce } from '../../utils/debounce';
 import { useForm } from 'react-hook-form';
 import signupSchema from '../../schema/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { axiosPublic } from '../../services/api/axios-http';
+import { userApiPublic } from '../../services/api/axios-http';
 
 export const CreateAccount = () => {
     const [usernameOk, setUsernameOk] = useState(undefined);
     const [Cpassword, setCPassword] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
     const [info, setInfo] = useState("");
     const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ export const CreateAccount = () => {
     }, []);
 
 
-    const deb_CheckUsername = debounce(async (event) => {
+    const deb_CheckUsername = useCallback(debounce(async (event) => {
         const value = event.target.value;
         setUsernameOk("LOADING");
 
@@ -47,7 +48,7 @@ export const CreateAccount = () => {
 
         try {
             console.timeEnd("debounce")
-            const { data } = await axiosPublic.post("http://localhost:3000/auth/check-username", { username: value });
+            const { data } = await userApiPublic.post("/auth/check-username", { username: value });
 
             if (data.success) {
                 setUsernameOk(true);
@@ -58,7 +59,7 @@ export const CreateAccount = () => {
                 setUsernameOk(false);
             }
         }
-    }, 400);
+    }, 400), []);// dependency array
 
 
     const onSubmit = async (values) => {
@@ -73,10 +74,15 @@ export const CreateAccount = () => {
         }
 
         try {
-            const { data } = await axiosPublic.post("http://localhost:3000/auth/register", values);
+            const { data } = await userApiPublic.post("/auth/register", values);
             console.log(data.success);
 
             if (data.success) {
+                const res = await userApiPublic.post("/auth/gen-otp", {
+                    email: data.body.email
+                }, {
+                    withCredentials: true
+                });
                 navigate("/auth/verify", { state: { email: data.body.email } })
             }
 
@@ -111,7 +117,7 @@ export const CreateAccount = () => {
                     >
                         {info}
                     </Chip>}
-                <form className='w-full' onSubmit={handleSubmit(onSubmit)}>
+                <form className='w-full' onSubmit={handleSubmit(onSubmit)} >
                     <Input
                         {...register("email", {
                             required: "email is required",
@@ -159,6 +165,7 @@ export const CreateAccount = () => {
                                 trigger("username");
                             }
                         })}
+
                         isInvalid={Boolean(errors.username)}
                         errorMessage={errors.username?.message}
 
@@ -195,12 +202,30 @@ export const CreateAccount = () => {
                             errorMessage: ["animate-slideDown"]
                         }}
 
+                        type={isVisible ? "text" : "password"}
+
                         name='password'
                         label="Password"
-                        type='password'
                         size='sm'
                         variant='bordered'
                         radius='md'
+
+                        endContent={isVisible ?
+                            (
+                                <LuEyeOff className='self-center animate-appearance-in cursor-pointer' color='silver' size={18}
+                                    onClick={() => {
+                                        setIsVisible(false)
+                                    }}
+                                />
+                            ) :
+                            (
+                                <LuEye className='self-center animate-appearance-in cursor-pointer' color='silver' size={18}
+                                    onClick={() => {
+                                        setIsVisible(true)
+                                    }}
+                                />
+                            )
+                        }
                     />
                     <Input
                         isInvalid={Boolean(errors.root?.cpassword)}

@@ -5,6 +5,7 @@ import { AuthLayout } from "../layouts/authLayout"
 import { OtpVerify } from "../components/auth/otpVerify"
 import { Navigate } from "react-router-dom"
 import { OpenRoute } from "../components/_openRoute"
+// import { ForgotPassword } from "../components/auth/forgotPassword"
 
 
 
@@ -43,11 +44,7 @@ export const authRouter = [
         ]
     },
     // {
-    //     path: "/login",
-    //     element: <AuthLayout><Login /></AuthLayout>
-    // },
-    // {
-    //     path: "/signup",
-    //     element: <AuthLayout><Signup /></AuthLayout>
+    //     path: "/flow/reset-pwd",
+    //     element: <ForgotPassword/>
     // },
 ]
