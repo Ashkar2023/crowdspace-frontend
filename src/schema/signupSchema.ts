@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const signupSchema = z.object({
-    email: z.string().email().max(253, "email length shouldn't exceed 253").trim(),
+    email: z.string().toLowerCase().email().max(253, "email length shouldn't exceed 253").trim(),
     displayname: z.string().min(3).max(50, "max 50 characters").trim(),
     username: z.string()
         .toLowerCase()

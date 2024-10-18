@@ -9,8 +9,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { userApiProtected } from './services/api/axios-http';
-import { clearUser } from './services/state/user.slice';
-
+import { clearUser } from '~services/state/user.slice';
+import { AxiosError } from 'axios';
 
 export const App = () => {
 
@@ -31,21 +31,24 @@ export const App = () => {
 
 function AppWrapper() {
     const dispatch = useDispatch();
-    const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+    const isLoggedIn = useSelector((state ) => state.user.isLoggedIn);
 
     useEffect(() => {
         if (isLoggedIn) {
             (async function () {
                 try {
                     const response = await userApiProtected.get("/auth/token-refresh");
+                    //Logic should check is token is valid
                 } catch (error) {
-                    console.log("From App.jsx", error.message)
-                    if (error.response.data.error === "invalid_refresh") {
-                        dispatch(clearUser());
+                    if (error instanceof AxiosError) {
+                        console.log("From App.jsx", error.message)
+                        if (error.response.data.error === "invalid_refresh") {
+                            dispatch(clearUser());
+                        }
                     }
                 }
             })()
-            
+
         }
 
     }, [])

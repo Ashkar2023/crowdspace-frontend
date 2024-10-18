@@ -2,11 +2,11 @@ import { Button, Chip, Input } from '@nextui-org/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { LuCheckCircle, LuEye, LuEyeOff, LuLoader, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
-import { debounce } from '../../utils/debounce';
 import { useForm } from 'react-hook-form';
 import signupSchema from '../../schema/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userApiPublic } from '../../services/api/axios-http';
+import { debounce } from '~utils/debounce';
 
 export const CreateAccount = () => {
     const [usernameOk, setUsernameOk] = useState(undefined);

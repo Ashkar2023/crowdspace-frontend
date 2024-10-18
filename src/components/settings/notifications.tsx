@@ -11,6 +11,7 @@ const Notifications = () => {
                 <LuBellRing className='self-center mr-1.5' />
                 Push Notifications
             </h2>
+            
             <div className="space-y-2">
                 {["likes", "comments", "follows", "messages", "stories", "posts", "liveStream"].map((item) => (
                     <div key={item} className="flex items-center justify-between bg-gradient-to-r from-gray-200 from-65% to-slate-100 p-2 px-4 rounded-xl">

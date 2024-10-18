@@ -7,7 +7,7 @@ import { Privacy } from "../components/settings/privacy";
 import Notifications from "../components/settings/notifications";
 import { Security } from "../components/settings/security";
 
-/** @type {import("react-router-dom").RouteObject[]} */
+
 export const privateRouter = [
     {
         path: "/",
