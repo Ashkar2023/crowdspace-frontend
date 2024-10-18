@@ -14,7 +14,6 @@ const serverState = {
     links: [],
     cover: null,
     avatar: null,
-    gender: null
 };
 
 const userSlice = createSlice({
@@ -40,7 +39,7 @@ const userSlice = createSlice({
             state.isVerified = false
             state.configuration = null;
             state.bio = null;
-            state.links = null;
+            state.links = [];
             state.cover = null;
             state.avatar = null;
         },
