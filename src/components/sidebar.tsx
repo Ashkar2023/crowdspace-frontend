@@ -1,13 +1,22 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Switch, User } from '@nextui-org/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuSun, LuUsers, LuUserSquare2 } from 'react-icons/lu';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { clearUser } from '../services/state/user.slice';
 import { userApiProtected } from '../services/api/axios-http';
 import { RiMoonFill } from 'react-icons/ri';
+import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
+import { AxiosError } from 'axios';
+import { IconType } from 'react-icons';
+import { PressEvent } from '@react-types/shared';
 
-const navItems = [
+type NavItem = {
+    href: string,
+    label: string,
+    icon: IconType
+}
+
+const navItems : NavItem[] = [
     { href: '/', label: "Home", icon: LuHome },
     { href: '/search', label: "Search", icon: LuSearch },
     { href: '/explore', label: "Explore", icon: LuCompass },
@@ -20,18 +29,19 @@ const navItems = [
 
 
 export const Sidebar = () => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch();
-    const [isMoreOpen, setMoreOpen] = useState(false);
-    const [isSelected, setIsSelected] = useState(true);
-    const userState = useSelector(state => state.user);
+    const dispatch = useAppDispatch();
+    const [isMoreOpen, setMoreOpen] = useState<boolean>(false);
+    const [isSelected, setIsSelected] = useState<boolean>(true);
+    const userState = useAppSelector(state => state.user);
 
-    const handleLogout = async (e) => {
+    const handleLogout = async (e:PressEvent) => {
         try {
             await userApiProtected.get("/auth/logout");
             dispatch(clearUser());
         } catch (error) {
-            console.log(error.message)
+            if (error instanceof AxiosError) {
+                console.log(error.message);
+            }
         }
     }
 
@@ -48,9 +58,7 @@ export const Sidebar = () => {
                                 to={item.href}
                                 key={item.href}
                                 className={`flex items-center gap-3 rounded-lg px-3 py-2
-                                transition-all hover:bg-gray-200 `
-                                    // + `${location.pathname===item.href? "text-gray-900 bg-gray-200":""}`
-                                }
+                                transition-all hover:bg-gray-200 `}
                             >
                                 <item.icon className='h-5 w-5 ' />
                                 {item.label}
@@ -80,7 +88,7 @@ export const Sidebar = () => {
                                     name={"@" + userState.username}
                                     description={userState.displayname}
                                     avatarProps={{
-                                        src: userState.avatar,
+                                        src: userState.avatar ?? undefined,
                                     }}
                                 >
                                 </User>
@@ -109,24 +117,24 @@ export const Sidebar = () => {
                                         Dark mode
                                     </DropdownItem>
                                 </DropdownSection>
-                                
+
                                 <DropdownSection showDivider>
                                     <DropdownItem
-                                        onClick={e => navigate("/settings")}
+                                        href='/settings'
                                         startContent={<LuSettings2 size={18} />}
                                         textValue='Settings'
                                     >
                                         Settings
                                     </DropdownItem>
                                     <DropdownItem
-                                        onClick={e => navigate("/profile")}
+                                        href="/profile"
                                         startContent={<LuUserSquare2 size={18} />}
                                         textValue='Profile'
                                     >
                                         Profile
                                     </DropdownItem>
                                 </DropdownSection>
-                                
+
                                 <DropdownSection>
                                     <DropdownItem
                                         key="logout"

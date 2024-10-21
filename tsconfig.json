@@ -26,6 +26,7 @@
           "~router/*":["src/router/*"],
           "~assets/*":["src/assets/*"],
           "~schema/*":["src/schema/*"],
+          "~types/*":["src/types/*"],
           "~utils/*":["src/utils/*"],
           "~/*":["src/*"],
       }

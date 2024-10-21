@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./user.slice"
+import userReducer from "./user.slice";
 import { persistReducer, persistStore } from "redux-persist";
-import storage from "redux-persist/lib/storage"
+import storage from "redux-persist/lib/storage";
 import hardSet from "redux-persist/lib/stateReconciler/hardSet";
 
 const _UserReducer = persistReducer({
@@ -22,6 +22,9 @@ const store = configureStore({
             }
         })
 });
+
+export type RootState = ReturnType<typeof store.getState>;
+export type storeDispatch = typeof store.dispatch;
 
 export const persistor = persistStore(store);
 export default store;

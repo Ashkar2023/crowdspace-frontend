@@ -2,7 +2,7 @@ import './index.css';
 import { RouterProvider } from 'react-router-dom';
 import AppRouter from "./router";
 import { NextUIProvider } from '@nextui-org/react';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import store, { persistor } from './services/state/store';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -11,8 +11,9 @@ import { Toaster } from 'react-hot-toast';
 import { userApiProtected } from './services/api/axios-http';
 import { clearUser } from '~services/state/user.slice';
 import { AxiosError } from 'axios';
+import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
 
-export const App = () => {
+export const App = (): JSX.Element => {
 
     return (
         <NextUIProvider>
@@ -29,9 +30,9 @@ export const App = () => {
 }
 
 
-function AppWrapper() {
-    const dispatch = useDispatch();
-    const isLoggedIn = useSelector((state ) => state.user.isLoggedIn);
+function AppWrapper(): JSX.Element {
+    const dispatch = useAppDispatch();
+    const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -42,7 +43,7 @@ function AppWrapper() {
                 } catch (error) {
                     if (error instanceof AxiosError) {
                         console.log("From App.jsx", error.message)
-                        if (error.response.data.error === "invalid_refresh") {
+                        if (error.response?.data.error === "invalid_refresh") {
                             dispatch(clearUser());
                         }
                     }

@@ -1,18 +1,19 @@
 import { Button, Chip, Input } from '@nextui-org/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { LuCheckCircle, LuEye, LuEyeOff, LuLoader, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import signupSchema from '../../schema/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userApiPublic } from '../../services/api/axios-http';
 import { debounce } from '~utils/debounce';
+import { AxiosError } from 'axios';
 
 export const CreateAccount = () => {
-    const [usernameOk, setUsernameOk] = useState(undefined);
-    const [Cpassword, setCPassword] = useState("");
-    const [isVisible, setIsVisible] = useState(false);
-    const [info, setInfo] = useState("");
+    const [usernameOk, setUsernameOk] = useState<undefined | "LOADING" | boolean>(undefined);
+    const [Cpassword, setCPassword] = useState<string>("");
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [info, setInfo] = useState<string>("");
     const navigate = useNavigate();
 
     const {
@@ -27,7 +28,7 @@ export const CreateAccount = () => {
         mode: 'onTouched'
     });
 
-    let timeout;
+    let timeout: ReturnType<typeof setTimeout>;
 
     useEffect(() => {
 
@@ -37,7 +38,7 @@ export const CreateAccount = () => {
     }, []);
 
 
-    const deb_CheckUsername = useCallback(debounce(async (event) => {
+    const deb_CheckUsername = useCallback(debounce(async (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setUsernameOk("LOADING");
 
@@ -47,22 +48,23 @@ export const CreateAccount = () => {
         }
 
         try {
-            console.timeEnd("debounce")
             const { data } = await userApiPublic.post("/auth/check-username", { username: value });
 
             if (data.success) {
                 setUsernameOk(true);
             }
-        } catch ({ response: { data } }) {
-            console.log(data)
-            if (!data.success) {
-                setUsernameOk(false);
+        } catch (error) {
+            // { response: { data } } will show error due to type checking
+            if(error instanceof AxiosError){
+                if (!error.response?.data.success) {
+                    setUsernameOk(false);
+                }
             }
         }
     }, 400), []);// dependency array
 
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values: FieldValues) => {
         if (!usernameOk) {
             setError("username", { type: "usernameExistsError", message: "Username already exists" });
             return
@@ -87,12 +89,15 @@ export const CreateAccount = () => {
             }
 
         } catch (error) {
-            console.log(error.response.data);
-            setInfo(error.response.data.message)
+            if (error instanceof AxiosError) {
+                setInfo(error.response?.data.message)
 
-            timeout = setTimeout(() => {
-                setInfo("");
-            }, 4000)
+                timeout = setTimeout(() => {
+                    setInfo("");
+                }, 4000)
+            }
+
+            console.warn("Error from onSumbit. Error is not instanceof AxiosError. line 97")
         }
 
     }
@@ -124,7 +129,7 @@ export const CreateAccount = () => {
 
                         })}
                         isInvalid={Boolean(errors.email)}
-                        errorMessage={errors.email?.message}
+                        errorMessage={errors.email?.message as string}
 
                         className={errors.email?.message ? "mb-0 " : "mb-3 " + ""}
                         classNames={{
@@ -143,7 +148,7 @@ export const CreateAccount = () => {
                         })}
 
                         isInvalid={Boolean(errors.displayname)}
-                        errorMessage={errors.displayname?.message}
+                        errorMessage={errors.displayname?.message as string}
 
                         className={errors.displayname?.message ? "mb-0" : "mb-3"}
                         classNames={{
@@ -160,14 +165,14 @@ export const CreateAccount = () => {
                     <Input
                         {...register("username", {
                             required: "username is required",
-                            onChange: (e) => {
+                            onChange: (e: ChangeEvent<HTMLInputElement>) => {
                                 deb_CheckUsername(e);
                                 trigger("username");
                             }
                         })}
 
                         isInvalid={Boolean(errors.username)}
-                        errorMessage={errors.username?.message}
+                        errorMessage={errors.username?.message as string}
 
                         className={errors.username?.message ? "mb-0" : "mb-3"}
                         classNames={{
@@ -195,7 +200,7 @@ export const CreateAccount = () => {
 
                         })}
                         isInvalid={Boolean(errors.password)}
-                        errorMessage={errors.password?.message}
+                        errorMessage={errors.password?.message as string}
 
                         className={errors.password?.message ? "mb-0" : "mb-3"}
                         classNames={{
