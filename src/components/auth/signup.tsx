@@ -1,6 +1,8 @@
+import googleIcon from "../../assets/google.svg";
+import CrowdspaceIcon from "../../assets/crowdspace-logo-light-theme.svg"
+
 import { Button } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
-import googleIcon from "../../assets/google.svg";
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
@@ -50,18 +52,23 @@ export const Signup = () => {
 
         return () => {
             console.log("signup unmounted");
-
         }
     }, [])
 
     return (
-        <div className='flex flex-col min-h-screen px-20 pb-20 pt-28 animate-appearance-in'>
-            <header className='mb-10'>
-                <h2 className='text-5xl font-bold '>Crowdspace.</h2>
-                <h4 className='text-3xl font-bold '>join Now.</h4>
+        <div className='flex flex-col items-center min-h-screen px-20 pb-20 pt-28 animate-appearance-in'>
+            <header className='mb-10 flex md:self-start'>
+                <img
+                    className="h-[70px] pr-3 self-center md:hidden"
+                    src={CrowdspaceIcon} alt="Crowdspace logo"
+                />
+                <div>
+                    <h2 className='text-5xl font-bold '>Crowdspace.</h2>
+                    <h4 className='text-3xl font-bold '>join Now.</h4>
+                </div>
             </header>
 
-            <main className='w-fit flex flex-col flex-grow mb-6'>
+            <main className='w-max flex flex-col flex-grow mb-6'>
                 <Button startContent={<img src={googleIcon} className='h-8' />}
                     size='md'
                     className='w-80 font-semibold'

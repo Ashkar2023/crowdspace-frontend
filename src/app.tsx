@@ -13,7 +13,7 @@ import { clearUser } from '~services/state/user.slice';
 import { AxiosError } from 'axios';
 import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
 
-export const App = (): JSX.Element => {
+export const App = ()=> {
 
     return (
         <NextUIProvider>
@@ -30,7 +30,7 @@ export const App = (): JSX.Element => {
 }
 
 
-function AppWrapper(): JSX.Element {
+function AppWrapper() {
     const dispatch = useAppDispatch();
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
 

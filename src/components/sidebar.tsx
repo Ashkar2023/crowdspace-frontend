@@ -1,7 +1,7 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Switch, User } from '@nextui-org/react';
 import { useState } from 'react';
 import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuSun, LuUsers, LuUserSquare2 } from 'react-icons/lu';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { clearUser } from '../services/state/user.slice';
 import { userApiProtected } from '../services/api/axios-http';
 import { RiMoonFill } from 'react-icons/ri';
@@ -123,7 +123,7 @@ export const Sidebar = () => {
                                         href='/settings'
                                         startContent={<LuSettings2 size={18} />}
                                         textValue='Settings'
-                                    >
+                                        >
                                         Settings
                                     </DropdownItem>
                                     <DropdownItem

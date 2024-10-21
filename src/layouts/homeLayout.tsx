@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux"
 import { Outlet } from "react-router-dom"
 import { Sidebar } from "../components/sidebar"
 
@@ -13,7 +12,6 @@ export const HomeLayout = () => {
             <div className="flex flex-col items-center mx-32 bg-fuchsia-700">
                 <Outlet />
             </div>
-            
         </div>
     )
 }
