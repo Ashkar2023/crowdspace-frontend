@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import { ProtectedRoute } from "../components/_protectedRoute";
 import { Profile } from "../components/settings/profile";
 import { HomeLayout } from "../layouts/homeLayout";
@@ -8,7 +8,7 @@ import Notifications from "../components/settings/notifications";
 import { Security } from "../components/settings/security";
 
 
-export const privateRouter = [
+export const privateRouter : RouteObject[] = [
     {
         path: "/",
         element: (

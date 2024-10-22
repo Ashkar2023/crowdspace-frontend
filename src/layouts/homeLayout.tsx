@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom"
 import { Sidebar } from "../components/sidebar"
+import { FC } from "react"
 
 
 
-export const HomeLayout = () => {
+export const HomeLayout : FC= () => {
 
 
     return (

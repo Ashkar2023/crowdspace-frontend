@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Chip, Input } from "@nextui-org/react"
-import { useForm } from "react-hook-form"
-import { LuKeySquare, LuLoader } from "react-icons/lu"
+import { Button, Chip, Input } from "@nextui-org/react";
+import { FieldValues, useForm } from "react-hook-form";
+import { LuKeySquare, LuLoader } from "react-icons/lu";
 import { passwordSchema } from "../../schema/passwordSchema";
 import { useEffect, useState } from "react";
 import { userApiProtected } from "../../services/api/axios-http";
 import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 export const Security = () => {
     const [errorInfo, setErrorInfo] = useState("");
@@ -23,7 +24,8 @@ export const Security = () => {
         }
     });
 
-    let timeout;
+    let timeout: number;
+    
     useEffect(() => {
 
         () => {
@@ -31,7 +33,7 @@ export const Security = () => {
         }
     }, [])
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values : FieldValues) => {
 
         try {
             const { data } = await userApiProtected.patch("/settings/password", {
@@ -51,12 +53,13 @@ export const Security = () => {
                 }
             })
         } catch (error) {
-            console.log("Error", error)
-            setErrorInfo(error.response.data.message);
+            if(error instanceof AxiosError){
+                setErrorInfo(error.response?.data.message ?? "Unknown error from reset password onsubmit");
 
-            timeout = setTimeout(() => {
-                setErrorInfo("")
-            }, 4000);
+                timeout = setTimeout(() => {
+                    setErrorInfo("")
+                }, 4000);
+            }
         }
     }
 

@@ -8,10 +8,10 @@ export interface IServerState{
     isVerified: boolean,
     gender: "M" | "F" | undefined,
     configuration: null,
-    bio: string | null,
+    bio: string | undefined,
     links: string[],
-    cover: string | null,
-    avatar: string | null,
+    cover: string | undefined,
+    avatar: string | undefined,
 }
 
 export type TUserState = IClientState & IServerState;

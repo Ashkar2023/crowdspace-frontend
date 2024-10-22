@@ -1,6 +1,6 @@
-import { createBrowserRouter } from "react-router-dom";
-import { authRouter } from "./auth.routes"
-import { privateRouter } from "./private.routes"
+import { createBrowserRouter, Router } from "react-router-dom";
+import { authRouter } from "./auth.routes";
+import { privateRouter } from "./private.routes";
 import { LuAlertTriangle } from "react-icons/lu";
 
 export default createBrowserRouter([

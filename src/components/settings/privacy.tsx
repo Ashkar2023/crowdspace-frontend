@@ -1,8 +1,7 @@
 import { Switch } from "@nextui-org/react";
-import { useSelector } from "react-redux";
+import { FC } from "react";
 
-export const Privacy = () => {
-    const userState = useSelector((state) => state.user);
+export const Privacy : FC = () => {
 
     return (
         <div className="w-full px-20 max-h-screen pt-10 space-y-2">

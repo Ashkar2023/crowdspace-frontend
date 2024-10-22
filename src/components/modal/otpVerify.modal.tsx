@@ -4,30 +4,44 @@ import {
     Input,
     Modal, ModalBody, ModalContent, ModalFooter, ModalHeader
 } from '@nextui-org/react';
-import { useEffect, useRef, useState } from 'react';
+import { AxiosError } from 'axios';
+import { FC, KeyboardEvent, RefObject, useEffect, useRef, useState } from 'react';
 import { LuLoader } from 'react-icons/lu';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { userApiPublic } from '../../services/api/axios-http';
+import { userApiPublic } from '~services/api/axios-http';
 
-export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
+import type { OtpArrayTuple } from '~types/components/otp';
+import type { PressEvent } from '@react-types/shared';
+
+type Props = {
+    email: string | null,
+    callback: Function,
+    isOpen: boolean,
+}
+
+
+export const OtpVerifyModal: FC<Props> = ({ isOpen, email, callback }) => {
+
     const [isVerifying, setIsVerfying] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [error, setError] = useState("");
     const [info, setInfo] = useState("");
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
-    const [otp, setOtp] = useState(["", "", "", ""]);
-    const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null),];
+    const [otp, setOtp] = useState<OtpArrayTuple>(["", "", "", ""]);
+    const inputRefs: RefObject<HTMLInputElement>[] = [
+        useRef(null),
+        useRef(null),
+        useRef(null),
+        useRef(null),
+    ];
 
+    let timeout: number;
 
     useEffect(() => {
         if (isOpen) {
-            inputRefs[0].current.focus();
+            inputRefs[0].current?.focus();
         }
 
-        const handleBeforeUnload = (event) => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
             event.preventDefault();
             event.returnValue = "You haven't completed account verification. Are you sure you want to leave?";
         };
@@ -36,38 +50,41 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
 
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
+            clearTimeout(timeout)
         }
     }, [isOpen])
 
-    const handleInput = (index, value) => {
+    const handleInput = (index: number, value: string) => {
         const regex = new RegExp(/^[0-9]+$/);
 
         if (!regex.test(value)) return;
 
-        const newOTP = Array.from(otp);
+        const newOTP: OtpArrayTuple = [...otp];
         newOTP[index] = value;
 
         setOtp(newOTP);
 
         if (index < 3 && value !== "") {
-            inputRefs[index + 1].current.focus();
+            inputRefs[index + 1].current?.focus();
         }
     }
 
-    const handleBackspace = (index, e) => {
+    const handleBackspace = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Backspace' && otp[index] !== "") {
             e.preventDefault();
-            const newOTP = [...otp];
+
+            const newOTP: OtpArrayTuple = [...otp];
             newOTP[index] = "";
+
             setOtp(newOTP);
 
             if (index > 0) {
-                inputRefs[index - 1].current.focus();
+                inputRefs[index - 1].current?.focus();
             }
         }
     }
 
-    const handleVerify = async (e) => {
+    const handleVerify = async (e:PressEvent) => {
         setIsVerfying(true);
 
         if (!otp.some((value) => value === "")) {
@@ -78,14 +95,14 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
 
                 if (data.success) {
                     callback();
-                    onOpenChange(false);
                 }
             } catch (error) {
-                console.log("error", error.response)  //DELETE
-                setError(error.response.data.message);
-                timeout = setTimeout(() => {
-                    setError("");
-                }, 4000)
+                if (error instanceof AxiosError) {
+                    setError(error.response?.data.message);
+                    timeout = setTimeout(() => {
+                        setError("");
+                    }, 4000)
+                }
 
             } finally {
                 setIsVerfying(false);
@@ -93,7 +110,7 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
         }
     }
 
-    const resendOtp = async (e) => {
+    const resendOtp = async (e:PressEvent) => {
         setIsSendingOtp(true);
 
         try {
@@ -104,11 +121,13 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
             }, 4000)
 
         } catch (error) {
-            console.log("error", error.response);
-            setInfo(error.response.data.message);
-            timeout = setTimeout(() => {
-                setInfo("");
-            }, 4000)
+            if (error instanceof AxiosError) {
+                console.log("error", error.response);
+                setInfo(error.response?.data.message);
+                timeout = setTimeout(() => {
+                    setInfo("");
+                }, 4000)
+            }
 
         } finally {
             setIsSendingOtp(false);
@@ -118,7 +137,6 @@ export const OtpVerifyModal = ({ isOpen, onOpenChange, email, callback }) => {
     return (
         <Modal
             isOpen={isOpen}
-            onOpenChange={onOpenChange}
             backdrop="blur"
             size="xs"
             isDismissable={false}

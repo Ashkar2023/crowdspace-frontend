@@ -1,10 +1,10 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import store from "../state/store";
 import { errorConstants } from "../../constants/error.constants";
 import { clearUser } from "../state/user.slice";
 
 
-const BASE_URL = "http://localhost:9000";
+const BASE_URL: string = "http://localhost:9000";
 
 /* 'withCredentials' essential for setting cookies */
 export const userApiPublic = axios.create({
@@ -32,7 +32,10 @@ userApiProtected.interceptors.response.use(
                     return userApiProtected(error.config);
                 }
             } catch (error) {
-                if (error.response.data.error === errorConstants.ERR_INVALID_REFRESH) {
+                if (
+                    error instanceof AxiosError &&
+                    error.response?.data.error === errorConstants.ERR_INVALID_REFRESH
+                ) {
                     store.dispatch(clearUser());
                     return Promise.reject(error);
                 }

@@ -1,10 +1,14 @@
 import { Button, Chip, Input } from "@nextui-org/react"
-import { useEffect, useRef, useState } from "react"
+import { KeyboardEvent, RefObject, useEffect, useRef, useState } from "react"
 import { LuLoader } from "react-icons/lu"
-import { useDispatch } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
 import { setUser } from "../../services/state/user.slice"
 import { userApiPublic } from "../../services/api/axios-http"
+import { AxiosError } from "axios"
+
+import type { OtpArrayTuple } from "~types/components/otp"
+import type { PressEvent } from "@react-types/shared"
+import { useAppDispatch } from "~hooks/useReduxHooks"
 
 export const OtpVerify = () => {
     const location = useLocation();
@@ -13,23 +17,23 @@ export const OtpVerify = () => {
     const [isVerifying, setIsVerfying] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [info, setInfo] = useState("")
 
-    const [otp, setOtp] = useState(["", "", "", ""]);
-    const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null),];
+    const [otp, setOtp] = useState<OtpArrayTuple>(["", "", "", ""]);
+    const inputRefs: RefObject<HTMLInputElement>[] = [useRef(null), useRef(null), useRef(null), useRef(null),];
 
 
-    let timeout;
+    let timeout: number;
 
     useEffect(() => {
-        inputRefs[0].current.focus();
+        inputRefs[0].current?.focus();
 
         if (!email) navigate("/auth/login", { replace: true });
 
-        const handleBeforeUnload = (event) => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
             event.preventDefault();
             event.returnValue = "You haven't completed account verification. Are you sure you want to leave?";
         };
@@ -42,36 +46,38 @@ export const OtpVerify = () => {
         }
     }, [])
 
-    const handleInput = (index, value) => {
-        const regex = new RegExp(/^[0-9]+$/);
+    const handleInput = (index: number, value: string) => {
+        const numberRegex = new RegExp(/^[0-9]+$/);
 
-        if (!regex.test(value)) return;
+        if (!numberRegex.test(value)) return;
 
-        const newOTP = Array.from(otp);
+        const newOTP: OtpArrayTuple = [...otp];
         newOTP[index] = value;
 
         setOtp(newOTP);
 
         if (index < 3 && value !== "") {
-            inputRefs[index + 1].current.focus();
+            inputRefs[index + 1].current?.focus();
         }
     }
 
-    const handleBackspace = (index, e) => {
+    const handleBackspace = (index: number, e:KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Backspace' && otp[index] !== "") {
             e.preventDefault();
-            const newOTP = [...otp];
+
+            const newOTP: OtpArrayTuple = [...otp];
             newOTP[index] = "";
+
             setOtp(newOTP);
 
             if (index > 0) {
-                inputRefs[index - 1].current.focus();
+                inputRefs[index - 1].current?.focus();
             }
 
         }
     }
 
-    const handleVerify = async (e) => {
+    const handleVerify = async (e :PressEvent) => {
         setIsVerfying(true);
 
         if (!otp.some((value) => value === "")) {
@@ -87,11 +93,13 @@ export const OtpVerify = () => {
                     navigate("/");
                 }
             } catch (error) {
-                console.log("error", error.response)  //DELETE
-                setError(error.response.data.message);
-                timeout = setTimeout(() => {
-                    setError("");
-                }, 4000)
+                if(error instanceof AxiosError){
+                    setError(error.response?.data.message);
+
+                    timeout = setTimeout(() => {
+                        setError("");
+                    }, 4000)
+                }
 
             } finally {
                 setIsVerfying(false);
@@ -99,7 +107,7 @@ export const OtpVerify = () => {
         }
     }
 
-    const resendOtp = async (e) => {
+    const resendOtp = async (e:PressEvent) => {
         setIsSendingOtp(true);
 
         try {
@@ -110,11 +118,13 @@ export const OtpVerify = () => {
             }, 4000)
 
         } catch (error) {
-            console.log("error", error.response);
-            setInfo(error.response.data.message);
-            timeout = setTimeout(() => {
-                setInfo("");
-            }, 4000)
+            if(error instanceof AxiosError){
+                setInfo(error.response?.data.message);
+
+                timeout = setTimeout(() => {
+                    setInfo("");
+                }, 4000)
+            }
 
         } finally {
             setIsSendingOtp(false);
@@ -169,7 +179,7 @@ export const OtpVerify = () => {
                     className='w-full'
                     color='primary'
                     radius='md'
-                    onClick={handleVerify}
+                    onPress={handleVerify}
                 >
                     {isVerifying ?
                         <LuLoader className='animate-spin' size={18} color='white' />

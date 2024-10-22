@@ -11,10 +11,10 @@ const serverState: IServerState = {
     isVerified: false,
     gender: undefined,
     configuration: null,
-    bio: null,
+    bio: undefined,
     links: [],
-    cover: null,
-    avatar: null,
+    cover: undefined,
+    avatar: undefined,
 };
 
 const userSlice = createSlice({
@@ -39,10 +39,10 @@ const userSlice = createSlice({
             state.displayname = null;
             state.isVerified = false
             state.configuration = null;
-            state.bio = null;
+            state.bio = undefined;
             state.links = [];
-            state.cover = null;
-            state.avatar = null;
+            state.cover = undefined;
+            state.avatar = undefined;
             state.gender = undefined;
         },
         updateUserProfile: (state, action) => {

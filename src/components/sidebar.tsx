@@ -1,20 +1,16 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Switch, User } from '@nextui-org/react';
 import { useState } from 'react';
 import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuSun, LuUsers, LuUserSquare2 } from 'react-icons/lu';
-import { Link} from 'react-router-dom';
-import { clearUser } from '../services/state/user.slice';
-import { userApiProtected } from '../services/api/axios-http';
+import { Link } from 'react-router-dom';
+import { clearUser } from '~services/state/user.slice';
+import { userApiProtected } from '~services/api/axios-http'; 
 import { RiMoonFill } from 'react-icons/ri';
 import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
 import { AxiosError } from 'axios';
-import { IconType } from 'react-icons';
-import { PressEvent } from '@react-types/shared';
 
-type NavItem = {
-    href: string,
-    label: string,
-    icon: IconType
-}
+import type { NavItem } from '~types/components/nav';
+import type { PressEvent } from '@react-types/shared';
+
 
 const navItems : NavItem[] = [
     { href: '/', label: "Home", icon: LuHome },
@@ -88,7 +84,7 @@ export const Sidebar = () => {
                                     name={"@" + userState.username}
                                     description={userState.displayname}
                                     avatarProps={{
-                                        src: userState.avatar ?? undefined,
+                                        src: userState.avatar,
                                     }}
                                 >
                                 </User>

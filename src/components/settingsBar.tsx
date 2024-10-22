@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { LuActivity, LuBan, LuBell, LuLock, LuShield, LuUser } from "react-icons/lu"
-import { useEffect } from "react";
+import { LuActivity, LuBan, LuBell, LuLock, LuShield, LuUser } from "react-icons/lu";
+import type { NavItem } from "~types/components/nav";
 
-const settingsNavItems = [
+const settingsNavItems : NavItem[] = [
     { label: "Profile", href: "/settings/profile", icon: LuUser },
     { label: "Privacy", href: "/settings/privacy", icon: LuShield },
     { label: "Notifications", href: "/settings/notifications", icon: LuBell },
@@ -13,7 +13,6 @@ const settingsNavItems = [
 
 export function SettingsNav() {
     const location = useLocation();
-    console.log(location);
 
     return (
         <div className="h-full w-full">

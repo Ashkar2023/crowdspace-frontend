@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom"
 import CrowdspaceIcon from "../assets/crowdspace-logo-light-theme.svg"
+import { FC } from "react"
 
-export const AuthLayout = () => {
+export const AuthLayout : FC = () => {
 
     return (
         <>

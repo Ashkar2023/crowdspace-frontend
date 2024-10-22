@@ -8,9 +8,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { userApiPublic } from '../../services/api/axios-http';
 import { debounce } from '~utils/debounce';
 import { AxiosError } from 'axios';
+import { CheckStatus } from '~constants/api-call.constants';
 
 export const CreateAccount = () => {
-    const [usernameOk, setUsernameOk] = useState<undefined | "LOADING" | boolean>(undefined);
+    const [usernameAvailable, setUsernameAvailable] = useState<CheckStatus>(CheckStatus.IDLE);
     const [Cpassword, setCPassword] = useState<string>("");
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [info, setInfo] = useState<string>("");
@@ -40,10 +41,10 @@ export const CreateAccount = () => {
 
     const deb_CheckUsername = useCallback(debounce(async (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        setUsernameOk("LOADING");
+        setUsernameAvailable(CheckStatus.LOADING);
 
         if (value === "") {
-            setUsernameOk(undefined);
+            setUsernameAvailable(CheckStatus.IDLE);
             return;
         }
 
@@ -51,13 +52,14 @@ export const CreateAccount = () => {
             const { data } = await userApiPublic.post("/auth/check-username", { username: value });
 
             if (data.success) {
-                setUsernameOk(true);
+                setUsernameAvailable(CheckStatus.NOT_FOUND); // means the username is available to use
             }
         } catch (error) {
             // { response: { data } } will show error due to type checking
+
             if(error instanceof AxiosError){
                 if (!error.response?.data.success) {
-                    setUsernameOk(false);
+                    setUsernameAvailable(CheckStatus.FOUND); // the opposite of the above
                 }
             }
         }
@@ -65,7 +67,7 @@ export const CreateAccount = () => {
 
 
     const onSubmit = async (values: FieldValues) => {
-        if (!usernameOk) {
+        if (!usernameAvailable) {
             setError("username", { type: "usernameExistsError", message: "Username already exists" });
             return
         }
@@ -187,11 +189,11 @@ export const CreateAccount = () => {
                         variant='bordered'
                         radius='md'
                         endContent={
-                            usernameOk === undefined ? undefined :
-                                usernameOk === "LOADING" ? <LuLoader className='self-center animate-spin' size={20} color='grey' /> :
-                                    usernameOk === false ?
-                                        <LuX className='self-center animate-appearance-in' size={20} color='red' /> :
-                                        <LuCheckCircle className='self-center animate-appearance-in' size={20} color='limeGreen' />
+                            usernameAvailable === CheckStatus.IDLE ? undefined :
+                                usernameAvailable === CheckStatus.LOADING ? <LuLoader className='self-center animate-spin' size={20} color='grey' /> :
+                                    usernameAvailable === CheckStatus.NOT_FOUND ?
+                                    <LuCheckCircle className='self-center animate-appearance-in' size={20} color='limeGreen' /> :
+                                    <LuX className='self-center animate-appearance-in' size={20} color='red' /> 
                         }
                     />
                     <Input

@@ -1,29 +1,31 @@
 import { Button, Chip, Input } from '@nextui-org/react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { useDispatch } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import { OtpVerifyModal } from '../modal/otpVerify.modal';
 import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
 import { setUser } from '../../services/state/user.slice';
 import { userApiPublic } from '../../services/api/axios-http';
+import { useAppDispatch } from '~hooks/useReduxHooks';
+import { AxiosError } from 'axios';
 
 export const Login = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const [isVisible, setIsVisible] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const buttonRef = useRef(null);
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
-    const [email, setEmail] = useState(null);
+    const [email, setEmail] = useState<string | null>(null);
     const [info, setInfo] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
-    
-    let timeout;
+
+    let timeout: ReturnType<typeof setTimeout>;
+
     useEffect(() => {
 
         return () => {
@@ -32,10 +34,11 @@ export const Login = () => {
     })
 
     const callback = () => {
-        buttonRef.current.click();
+        setIsOpen(false)
+        buttonRef.current?.click();
     }
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: FieldValues) => {
         const isEmail = z.string().email().safeParse(data.credential).success;
 
         const newData = {
@@ -53,29 +56,31 @@ export const Login = () => {
             }
 
         } catch (error) {
-            const response = error?.response;
+            if (error instanceof AxiosError) {
+                const response = error.response;
 
-            if (response.status === 404 || response.status === 400) {
-                setInfo(response.data.message);
+                if (response?.status === 404 || response?.status === 400) {
+                    setInfo(response?.data.message);
 
-                timeout = setTimeout(() => {
-                    setInfo("");
-                }, 5000)
-
-            } else {
-                if (!response.data.body.isVerified) {
-
-                    setInfo("Account not yet verified. An OTP has been sent to your email.");
                     timeout = setTimeout(() => {
                         setInfo("");
                     }, 5000)
 
-                    const res = await userApiPublic.post("/auth/gen-otp", {
-                        email: response.data.body.email
-                    });
+                } else {
+                    if (!response?.data.body.isVerified) {
 
-                    setEmail(response.data.body.email);
-                    setIsOpen(true);
+                        setInfo("Account not yet verified. An OTP has been sent to your email.");
+                        timeout = setTimeout(() => {
+                            setInfo("");
+                        }, 5000)
+
+                        const res = await userApiPublic.post("/auth/gen-otp", {
+                            email: response?.data.body.email
+                        });
+
+                        setEmail(response?.data.body.email);
+                        setIsOpen(true);
+                    }
                 }
             }
 
@@ -122,7 +127,7 @@ export const Login = () => {
 
                     className='mb-2'
                     classNames={{
-                        description:["self-end"]
+                        description: ["self-end"]
                     }}
                     label="Password"
                     radius='md'
@@ -160,7 +165,9 @@ export const Login = () => {
                     color='primary'
                     radius='md'
                     size='md'
-                    onPress={handleSubmit(onSubmit)}
+                    onPress={(e)=>{
+                        handleSubmit(onSubmit)();
+                    }}
                     ref={buttonRef}
                 >
                     {isSubmitting ?

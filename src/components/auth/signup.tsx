@@ -1,18 +1,18 @@
 import googleIcon from "../../assets/google.svg";
-import CrowdspaceIcon from "../../assets/crowdspace-logo-light-theme.svg"
+import CrowdspaceIcon from "../../assets/crowdspace-logo-light-theme.svg";
 
 import { Button } from '@nextui-org/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
-import { useDispatch } from 'react-redux';
 import { setUser } from '../../services/state/user.slice';
 import { LuLoader } from 'react-icons/lu';
 import { userApiPublic } from '../../services/api/axios-http';
+import { useAppDispatch } from "~hooks/useReduxHooks";
 
 export const Signup = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const navigateToLogin = () => {
         navigate("/auth/login");
@@ -73,7 +73,7 @@ export const Signup = () => {
                     size='md'
                     className='w-80 font-semibold'
                     onPress={(e) => {
-                        invokeGoogleAuth(e)
+                        invokeGoogleAuth();
                     }}
                 >
                     {isSubmitting ?

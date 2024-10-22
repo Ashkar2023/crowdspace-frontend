@@ -1,8 +1,9 @@
 import { Outlet } from "react-router-dom"
 import { Sidebar } from "../components/sidebar"
 import { SettingsNav } from "../components/settingsBar"
+import { FC } from "react"
 
-export const SettingsLayout = () => {
+export const SettingsLayout: FC = () => {
     return (
         <div className="grid grid-cols-[3fr_9fr] min-h-screen">
             <Sidebar />

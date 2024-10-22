@@ -1,31 +1,93 @@
 import { Avatar, Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
-import { useCallback, useEffect, useReducer, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { KeyboardEvent, useCallback, useEffect, useReducer, useState } from "react";
 import { userApiProtected, userApiPublic } from "../../services/api/axios-http";
 import { LuBan, LuCheckCircle, LuLoader, LuPencilLine, LuSave, LuX, LuXCircle } from "react-icons/lu";
 import { debounce } from "../../utils/debounce";
 import { setStoreUsername, updateUserProfile } from "../../services/state/user.slice";
 import toast from "react-hot-toast";
+import { useAppDispatch, useAppSelector } from "~hooks/useReduxHooks";
+import { Gender, ProfileReducerAction, ProfileReducerState } from "~types/components/profile.reducer";
+import { CheckStatus } from "~constants/api-call.constants";
+import { AxiosError } from "axios";
+
+function settingsReducer(state : ProfileReducerState, action : ProfileReducerAction) : ProfileReducerState  {
+    switch (action.type) {
+        case "hydrate-links": {
+            const newLinks = action.value;
+            return {
+                ...state,
+                links: [...newLinks]
+            }
+        }
+        case "add-link": {
+            const newLinks = state.links;
+            newLinks.push(action.value);
+            return {
+                ...state,
+                links: [...newLinks]
+            }
+        }
+        case "remove-link": {
+            return {
+                ...state,
+                links: state.links.filter((v: string, index: number) => index !== action.index)
+            }
+        }
+        case "update-bio": {
+            return {
+                ...state,
+                bio: action.value
+            }
+        }
+        case "update-gender": {
+            return {
+                ...state,
+                gender: action.value
+            }
+        }
+        case "update-username": {
+            return {
+                ...state,
+                username: action.value
+            }
+        }
+        default:
+            throw new Error("Unknown action");
+    }
+}
+
 
 export const Profile = () => {
-    const dispatch = useDispatch();
-    const userState = useSelector((state) => state.user);
+    const dispatch = useAppDispatch();
+    const userState = useAppSelector((state) => state.user);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [uDisabled, setUDisabled] = useState(true);
+    const [usernameDisabled, setUsernameDisabled] = useState(true);
 
-    const [username, setUsername] = useState(userState.username);
-    const [usernameAvailable, setUsernameAvailable] = useState(undefined);
+    const [usernameAvailable, setUsernameAvailable] = useState<CheckStatus>(CheckStatus.IDLE);
+    const [username, setUsername] = useState<string>(userState.username as string);
 
-    const [selectedGender, setSelectedGender] = useState(null);
+    const [selectedGender, setSelectedGender] = useState<Gender>(undefined);
     const [linkInvalid, setLinkInvalid] = useState(false);
+
+    // Reducer
     const [settingsState, settingDispatch] = useReducer(settingsReducer, {
-        username: userState.username,
+        username: userState.username as string,
         bio: userState.bio || "",
         gender: selectedGender,
         links: []
     });
 
-    const showToast = (message, type) => {
+    useEffect(() => {// intial gender
+        if (userState.gender) {
+            setSelectedGender(userState.gender);
+        }
+
+        if (userState.links.length !== 0) {
+            settingDispatch({ type: "hydrate-links", value: userState.links })
+        }
+    }, [])
+
+    const showToast = (message: string, type: 'success' | "error") => {
         toast[type](message, {
             position: "top-center",
             duration: 1700,
@@ -39,69 +101,25 @@ export const Profile = () => {
         })
     }
 
-    function settingsReducer(state, action) {
-        switch (action.type) {
-            case "hydrate-links": {
-                const newLinks = action.value;
-                return {
-                    ...state,
-                    links: [...newLinks]
-                }
-            }
-            case "add-link": {
-                const newLinks = state.links;
-                newLinks.push(action.value);
-                return {
-                    ...state,
-                    links: [...newLinks]
-                }
-            }
-            case "remove-link": {
-                return {
-                    ...state,
-                    links: state.links.filter((v, index) => index !== action.index)
-                }
-            }
-            case "update-bio": {
-                return {
-                    ...state,
-                    bio: action.value
-                }
-            }
-            case "update-gender": {
-                return {
-                    ...state,
-                    gender: action.value
-                }
-            }
-            case "update-username": {
-                return {
-                    ...state,
-                    username: action.value
-                }
-            }
-            default:
-                throw new Error("Unknown action");
-        }
-    }
 
-    const checkUsernameAvailable = async (value) => {
+    const checkUsernameAvailable = async (value : string) => {
         if (value === userState.username) {
-            setUsernameAvailable(false);
+            setUsernameAvailable(CheckStatus.FOUND);
             return;
         } else if (value === "") return;
 
-        setUsernameAvailable("LOADING");
+        setUsernameAvailable(CheckStatus.LOADING);
 
         try {
             const { data } = await userApiPublic.post("/auth/check-username", { username: value });
             if (data.success) {
-                setUsernameAvailable(true);
+                setUsernameAvailable(CheckStatus.NOT_FOUND);
             }
         } catch (error) {
-            console.log(error.message)
-            if (error.response.status === 409) {
-                setUsernameAvailable(false);
+            if(error instanceof AxiosError){ //type guarding
+                if (error.response?.status === 409) {
+                    setUsernameAvailable(CheckStatus.FOUND);
+                }
             }
         }
     }
@@ -121,43 +139,39 @@ export const Profile = () => {
             settingDispatch({ type: "update-username", value: data.body.username })
 
             showToast(data.message, "success")
-            setUDisabled(true)
-            setUsernameAvailable(undefined);
+            setUsernameDisabled(true)
+            setUsernameAvailable(CheckStatus.IDLE);
 
         } catch (error) {
-            showToast(error.response.data.message, "error")
+            if(error instanceof AxiosError){
+                showToast(error.response?.data.message, "error")
+            }
         }
     }
 
-    const bioDispatch = (e) => {
-        settingDispatch({ type: "update-bio", value: e.target.value })
+    const bioDispatch = (bioValue : string) => {
+        settingDispatch({ type: "update-bio", value: bioValue })
     };
     const deb_bioDispatch = debounce(bioDispatch, 500);
 
-    useEffect(() => {// intial gender
-        if (userState.gender) {
-            setSelectedGender(userState.gender);
-        }
 
-        if (userState.links.length !== 0) {
-            settingDispatch({ type: "hydrate-links", value: userState.links })
-        }
-    }, [])
-
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = async () => {
 
         try {
             setIsSubmitting(true);
             const { data } = await userApiProtected.patch("/settings/profile", settingsState);
 
-            showToast(data.message, "success")
-
+            showToast(data.message, "success");
+            
             if (data.success) {
                 dispatch(updateUserProfile(data.body));
             }
         } catch (error) {
-            console.log(error)
+            if(error instanceof AxiosError){
+                showToast(error.response?.data.message, "success");
+            }
+
+            console.error(error);
         } finally {
             setIsSubmitting(false);
         }
@@ -195,7 +209,7 @@ export const Profile = () => {
                                     deb_checkUsernameAvailable(e.target.value)
                                 }}
 
-                                isDisabled={uDisabled}
+                                isDisabled={usernameDisabled}
                                 variant="flat"
                                 classNames={{
                                     inputWrapper: ["rounded-r-none"],
@@ -204,9 +218,9 @@ export const Profile = () => {
                                 id="username"
 
                                 endContent={
-                                    usernameAvailable === undefined ? undefined :
-                                        usernameAvailable === "LOADING" ? <LuLoader className='self-center animate-spin' size={20} color='grey' /> :
-                                            usernameAvailable === false ?
+                                    usernameAvailable === CheckStatus.IDLE ? undefined :
+                                        usernameAvailable === CheckStatus.LOADING ? <LuLoader className='self-center animate-spin' size={20} color='grey' /> :
+                                            usernameAvailable === CheckStatus.FOUND ?
                                                 <LuX className='self-center animate-appearance-in' size={20} color='red' /> :
                                                 <LuCheckCircle className='self-center animate-appearance-in' size={20} color='limeGreen' />
                                 }
@@ -215,13 +229,13 @@ export const Profile = () => {
 
                             {/* // cancel button */}
                             {
-                                uDisabled ?
+                                usernameDisabled ?
                                     null :
                                     <div className="px-2 bg-red-200 cursor-pointer animate-appearance-in"
                                         onClick={e => {
-                                            setUsername(userState.username)
-                                            setUDisabled(true);
-                                            setUsernameAvailable(undefined);
+                                            setUsername(userState.username as string)
+                                            setUsernameDisabled(true);
+                                            setUsernameAvailable(CheckStatus.IDLE);
                                         }}
                                     >
                                         <LuBan size={20} color="red" className="self-center h-full" />
@@ -235,15 +249,15 @@ export const Profile = () => {
                                 variant="flat"
                                 className="rounded-r-xl animate-appearance-in"
                                 onClick={e => {
-                                    if (uDisabled) {
-                                        setUDisabled(false)
+                                    if (usernameDisabled) {
+                                        setUsernameDisabled(false)
                                     } else {
                                         updateUsername();
                                     }
                                 }}
                             >
                                 {
-                                    uDisabled ?
+                                    usernameDisabled ?
                                         (
                                             <>
                                                 <LuPencilLine />
@@ -267,10 +281,12 @@ export const Profile = () => {
                             isRequired={true}
                             placeholder="Select Gender"
                             selectionMode="single"
-                            selectedKeys={[selectedGender]}
+                            selectedKeys={ selectedGender===undefined ? undefined : [selectedGender]}
                             onChange={(e) => {
-                                setSelectedGender(e.target.value);
-                                settingDispatch({ type: "update-gender", value: e.target.value })
+                                
+                                /* CHANGE selection to correct key prop types from NextUI */
+                                setSelectedGender(e.target.value as Gender); 
+                                settingDispatch({ type: "update-gender", value: e.target.value as Gender })
                             }}
                             aria-label="select gender"
                         >
@@ -294,20 +310,21 @@ export const Profile = () => {
                         }}
                         onChange={e => setLinkInvalid(false)}
                         isInvalid={linkInvalid}
-                        onKeyUp={e => {
+                        onKeyUp={(e)  => {
+                            const INPUT = e.target as HTMLInputElement; // type cast for TS to understand
                             const regex = new RegExp(/^(https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+)(\/[^\s]*)?(\?[^\s]*)?(#[^\s]*)?$/, "gm");
 
-                            if (e.key === "Enter" && e.target.value !== "") {
-                                if (settingsState.links.some((v, i) => e.target.value === v)) {
+                            if (e.key === "Enter" && INPUT.value !== "") {
+                                if (settingsState.links.some((v, i) => INPUT.value === v)) {
                                     setLinkInvalid(true)
                                     return
                                 }
 
-                                if (!regex.test(e.target.value)) {
+                                if (!regex.test(INPUT.value)) {
                                     setLinkInvalid(true)
                                     return
                                 }
-                                settingDispatch({ type: "add-link", value: e.target.value })
+                                settingDispatch({ type: "add-link", value: INPUT.value })
                             }
                         }}
                     />
@@ -333,7 +350,7 @@ export const Profile = () => {
                     variant="faded"
                     className=""
                     onChange={e => {
-                        deb_bioDispatch(e)
+                        deb_bioDispatch(e.target.value)
                     }}
                     defaultValue={userState.bio}
                 />
@@ -345,7 +362,7 @@ export const Profile = () => {
                     color="primary"
                     variant="ghost"
                     className="w-1/4 mt-6"
-                    onClick={e => handleSubmit(e)}
+                    onPress={e => handleSubmit()}
                 >
                     {isSubmitting ?
                         <LuLoader className='animate-spin' size={18} />
