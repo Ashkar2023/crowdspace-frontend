@@ -21,6 +21,9 @@ export default {
         },
         animation:{
             slideDown:'slideDown 0.2s ease-in',
+        },
+        screens:{
+            "mobile":"480px"
         }
     },
   },

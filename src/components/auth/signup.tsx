@@ -57,14 +57,14 @@ export const Signup = () => {
 
     return (
         <div className='flex flex-col items-center min-h-screen px-20 pb-20 pt-28 animate-appearance-in'>
-            <header className='mb-10 flex md:self-start'>
+            <header className='flex md:self-start md:mt-0 md:mb-10 mt-20 mb-20'>
                 <img
-                    className="h-[70px] pr-3 self-center md:hidden"
+                    className="md:h-[70px] h-full pr-3 self-center md:hidden"
                     src={CrowdspaceIcon} alt="Crowdspace logo"
                 />
                 <div>
-                    <h2 className='text-5xl font-bold '>Crowdspace.</h2>
-                    <h4 className='text-3xl font-bold '>join Now.</h4>
+                    <h2 className='md:text-6xl text-4xl font-bold antialiased'>Crowdspace.</h2>
+                    <h4 className='md:text-3xl text-2xl font-bold indent-0 md:indent-2'>join Now.</h4>
                 </div>
             </header>
 

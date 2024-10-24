@@ -66,21 +66,20 @@ export const Login = () => {
                         setInfo("");
                     }, 5000)
 
-                } else {
-                    if (!response?.data.body.isVerified) {
+                } else if (response?.data.body.isVerified === false) {
 
-                        setInfo("Account not yet verified. An OTP has been sent to your email.");
-                        timeout = setTimeout(() => {
-                            setInfo("");
-                        }, 5000)
+                    setInfo("Account not yet verified. An OTP has been sent to your email.");
 
-                        const res = await userApiPublic.post("/auth/gen-otp", {
-                            email: response?.data.body.email
-                        });
+                    timeout = setTimeout(() => {
+                        setInfo("");
+                    }, 5000)
 
-                        setEmail(response?.data.body.email);
-                        setIsOpen(true);
-                    }
+                    const res = await userApiPublic.post("/auth/gen-otp", {
+                        email: response?.data.body.email
+                    });
+
+                    setEmail(response?.data.body.email);
+                    setIsOpen(true);
                 }
             }
 
@@ -165,7 +164,7 @@ export const Login = () => {
                     color='primary'
                     radius='md'
                     size='md'
-                    onPress={(e)=>{
+                    onPress={(e) => {
                         handleSubmit(onSubmit)();
                     }}
                     ref={buttonRef}

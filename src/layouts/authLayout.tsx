@@ -6,7 +6,7 @@ export const AuthLayout : FC = () => {
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 h-screen overflow-hidden">
+            <div className="grid grid-cols-1 md:h-screen md:grid-cols-2 h-dvh overflow-hidden">
                 <div className="md:flex flex-col hidden h-full w-full justify-center items-center my-auto">
                     <img src={CrowdspaceIcon} alt="" className="h-52" />
                 </div>
