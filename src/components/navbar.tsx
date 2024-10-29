@@ -1,5 +1,5 @@
 import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Switch, User } from '@nextui-org/react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuSun, LuUsers, LuUserSquare2 } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { clearUser } from '~services/state/user.slice';
@@ -10,6 +10,7 @@ import { AxiosError } from 'axios';
 
 import type { NavItem } from '~types/components/nav';
 import type { PressEvent } from '@react-types/shared';
+import { ThemeContext } from '~/context/themeContext';
 
 
 const navItems: NavItem[] = [
@@ -24,12 +25,15 @@ const navItems: NavItem[] = [
 ]
 
 
-
+// Component start
 const Navbar = () => {
-    const dispatch = useAppDispatch();
-    const [isMoreOpen, setMoreOpen] = useState<boolean>(false);
-    const [isSelected, setIsSelected] = useState<boolean>(true);
+    const themeContext = useContext(ThemeContext);
+
+    const selectedTheme = useAppSelector(state => state.app.theme);
     const userState = useAppSelector(state => state.user);
+    const dispatch = useAppDispatch();
+    
+    const [isMoreOpen, setMoreOpen] = useState<boolean>(false);
 
     const handleLogout = async (e: PressEvent) => {
         try {
@@ -43,23 +47,22 @@ const Navbar = () => {
     }
 
     return (
-        <div className="block md:flex md:flex-col h-full w-full px-auto ">
+        <div className="block md:flex md:flex-col h-full w-full px-auto">
             <div className='hidden md:flex justify-center my-6'>
-                <img src='/crowdspace-logo-light-theme.svg' className='h-12 w-12' />
+                <img src={`/crowdspace-logo-${themeContext?.theme}-theme.svg`} className='h-12 w-12' />
             </div>
-
-            <nav className="flex flex-row fixed w-full justify-evenly mobile:justify-normal border-t-1.5 border-gray-300 mobile:border-none 
-                            mobile:static bottom-0 md:flex-col flex-grow overflow-none md:mx-6 font-semibold 
-                            mobile:space-y-2
-                            bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] mobile:bg-none"
+            <nav className="flex flex-row fixed w-full justify-evenly mobile:justify-normal border-t-1.5 border-gray-300 mobile:border-none
+                                mobile:static bottom-0 md:flex-col flex-grow overflow-none md:mx-6 font-semibold
+                                mobile:space-y-2
+                                bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] mobile:bg-none"
             >
                 {navItems.map(item => (
                     <Link
                         to={item.href}
                         key={item.href}
                         className={`items-center gap-3 rounded-lg px-3 py-2
-                                transition-all mobile:hover:bg-gray-200
-                                ${item.mobileNav ? " flex " : " mobile:flex hidden "}`}
+                                    transition-all mobile:hover:bg-app-tertiary
+                                    ${item.mobileNav ? " flex " : " mobile:flex hidden "}`}
                     >
                         <item.icon className='size-6' />
                         <span className='hidden md:inline'>{item.label}</span>
@@ -68,15 +71,13 @@ const Navbar = () => {
                 <Link
                     to="/profile"
                     className={`items-center gap-3 rounded-lg px-3 py-3 mobile:py-2
-                        transition-all
-                        flex mobile:hidden `}
+                            transition-all
+                            flex mobile:hidden `}
                 >
                     <Avatar src={userState.avatar} showFallback size='sm' />
                 </Link>
             </nav>
-
             <div className='mx-8 hidden md:flex mb-4 justify-between gap-2'>
-
                 <Dropdown
                     placement='top'
                     backdrop='transparent'
@@ -93,7 +94,6 @@ const Navbar = () => {
                                     "rounded-2xl", "overflow-hidden", "min-w-44"],
                                 name: ["max-w-24", "truncate"]
                             }}
-
                             name={"@" + userState.username}
                             description={userState.displayname}
                             avatarProps={{
@@ -102,7 +102,6 @@ const Navbar = () => {
                         >
                         </User>
                     </DropdownTrigger>
-
                     <DropdownMenu>
                         <DropdownSection showDivider>
                             <DropdownItem
@@ -111,22 +110,21 @@ const Navbar = () => {
                                 endContent={
                                     <Switch
                                         size='md'
-                                        isSelected={isSelected}
+                                        isSelected={selectedTheme === "dark"}
                                         onValueChange={(bool) => {
-                                            setIsSelected(bool);
+                                            themeContext?.toggleTheme(bool === true ? "dark" : "light");
                                         }}
                                         classNames={{
                                             wrapper: ["group-data-[selected=true]:bg-slate-700"]
                                         }}
-                                        thumbIcon={isSelected ? <RiMoonFill /> : <LuSun />}
+                                        thumbIcon={selectedTheme === "dark" ? <RiMoonFill /> : <LuSun />}
                                     />
                                 }
-                                textValue='DarkMode'
+                                textValue='theme'
                             >
-                                Dark mode
+                                Theme
                             </DropdownItem>
                         </DropdownSection>
-
                         <DropdownSection showDivider>
                             <DropdownItem
                                 href='/settings'
@@ -143,7 +141,6 @@ const Navbar = () => {
                                 Profile
                             </DropdownItem>
                         </DropdownSection>
-
                         <DropdownSection>
                             <DropdownItem
                                 key="logout"
@@ -154,10 +151,8 @@ const Navbar = () => {
                             >Logout
                             </DropdownItem>
                         </DropdownSection>
-
                     </DropdownMenu>
                 </Dropdown>
-
                 {/* POST Button */}
                 <Button
                     color="primary"

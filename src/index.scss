@@ -1,0 +1,21 @@
+@use "tailwindcss/base";
+@use "tailwindcss/components";
+@use "tailwindcss/utilities";
+@use "tailwindcss/variants";
+
+@import 'assets/styles/font';
+@import 'assets/styles/theme';
+
+
+input[type='number']{
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button{
+        -webkit-appearance: none;
+        margin: 0;
+        
+    }
+}

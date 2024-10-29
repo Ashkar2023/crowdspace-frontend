@@ -11,8 +11,16 @@ export default {
   theme: {
     extend: {
         fontFamily:{
-            "sans":["Titillium",'sans-serif']
+            sans:["Titillium",'sans-serif']
         },
+        colors:{
+            "app-primary":"var(--app-primary)",
+            "app-secondary":"var(--app-secondary)",
+            "app-tertiary":"var(--app-tertiary)",
+            "app-t-primary":"var(--app-text-primary)",
+            "app-t-secondary":"var(--app-text-secondary)",
+        }
+        ,
         keyframes:{
             slideDown:{
                 "0%":{opacity:'0',transform:'translateY(-10px)'},

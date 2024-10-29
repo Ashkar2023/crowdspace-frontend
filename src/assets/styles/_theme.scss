@@ -1,0 +1,31 @@
+:root{
+    --dt-primary: rgb(21, 22, 23);
+    --dt-secondary: rgb(29, 31, 32);
+    --dt-tertiary: rgb(39, 41, 43);
+    --dt-text-primary: rgb(255, 255, 255);
+    --dt-text-secondary: rgb(136, 153, 166);
+    
+    --ct-accent: rgb(0, 132, 255);
+
+    --lt-primary: rgb(255, 255, 255);
+    --lt-secondary: rgb(204, 216, 224);
+    --lt-tertiary: rgb(225, 232, 237);
+    --lt-text-primary: rgb(13, 14, 17);
+    --lt-text-secondary: rgb(101, 119, 134);
+}
+
+.dark_mode{
+    --app-primary: var(--dt-primary);
+    --app-secondary: var(--dt-secondary);
+    --app-tertiary: var(--dt-tertiary);
+    --app-text-primary: var(--dt-text-primary);
+    --app-text-secondary: var(--dt-text-secondary);
+}
+
+.light_mode{
+    --app-primary: var(--lt-primary);
+    --app-secondary: var(--lt-secondary);
+    --app-tertiary: var(--lt-tertiary);
+    --app-text-primary: var(--lt-text-primary);
+    --app-text-secondary: var(--lt-text-secondary);
+}
