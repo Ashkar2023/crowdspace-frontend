@@ -3,8 +3,8 @@
 @use "tailwindcss/utilities";
 @use "tailwindcss/variants";
 
-@import 'assets/styles/font';
-@import 'assets/styles/theme';
+@use 'assets/styles/font';
+@use 'assets/styles/theme';
 
 
 input[type='number']{
