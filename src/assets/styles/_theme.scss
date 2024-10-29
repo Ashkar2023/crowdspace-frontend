@@ -20,6 +20,7 @@
     --app-tertiary: var(--dt-tertiary);
     --app-text-primary: var(--dt-text-primary);
     --app-text-secondary: var(--dt-text-secondary);
+    --app-accent : var(var(--ct-accent))
 }
 
 .light_mode{
@@ -28,4 +29,5 @@
     --app-tertiary: var(--lt-tertiary);
     --app-text-primary: var(--lt-text-primary);
     --app-text-secondary: var(--lt-text-secondary);
+    --app-accent : var(var(--ct-accent))
 }

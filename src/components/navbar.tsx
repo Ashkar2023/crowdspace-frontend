@@ -115,7 +115,7 @@ const Navbar = () => {
                                             themeContext?.toggleTheme(bool === true ? "dark" : "light");
                                         }}
                                         classNames={{
-                                            wrapper: ["group-data-[selected=true]:bg-slate-700"]
+                                            wrapper: ["group-data-[selected=true]:bg-slate-800"]
                                         }}
                                         thumbIcon={selectedTheme === "dark" ? <RiMoonFill /> : <LuSun />}
                                     />

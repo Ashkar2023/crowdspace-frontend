@@ -11,7 +11,7 @@ import { userApiProtected } from './services/api/axios-http';
 import { clearUser } from '~services/state/user.slice';
 import { AxiosError } from 'axios';
 import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
-import { ThemeProvider } from './context/themeContext';
+import { ThemeProvider } from './context/themeProvider';
 
 export const App = () => {
 
