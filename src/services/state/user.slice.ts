@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IClientState, TUserState, IServerState } from "~types/state/userState";
+import { IClientState, TUserState, IServerState } from "~types/state/userState.types";
 
 const clientState: IClientState = {
     isLoggedIn: false
@@ -48,7 +48,7 @@ const userSlice = createSlice({
         updateUserProfile: (state, action) => {
             const { gender, bio, links } = action.payload;
 
-            state.gender = gender;
+            state.gender = gender || state.gender;
             state.links = links;
             state.bio = bio;
         },

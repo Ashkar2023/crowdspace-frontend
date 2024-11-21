@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IAppState } from "~types/state/appState";
+import { IAppState } from "~types/state/appState.types";
 
 
 /* SET the init state TYPE */

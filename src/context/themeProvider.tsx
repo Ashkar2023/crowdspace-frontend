@@ -1,35 +1,49 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "~hooks/useReduxHooks";
 import { setAppTheme } from "~services/state/app.slice";
-import type { ThemContext, Themes } from "~types/context/themeContext";
+import type { ThemContext, Themes } from "~types/context/themeContext.types";
 import { ThemeContext } from "./themeContext";
 
-const rootNode = document.getElementById("root");
+const bodyNode = document.body;
 
 // Theme Provider Component
 export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const selectedTheme = useAppSelector(state => state.app.theme);
     const dispatch = useAppDispatch();
-    
+
     const toggleTheme: ThemContext["toggleTheme"] = (theme: Themes) => {
         dispatch(setAppTheme(theme));
     }
-    
+
     useEffect(() => {
-        rootNode?.classList.remove("light_mode", "dark_mode");
-        
+        bodyNode?.classList.remove("light_mode", "dark_mode");
+
         if (selectedTheme === "dark") {
-            rootNode?.classList.add("dark_mode");
+            bodyNode?.classList.add("dark_mode");
         } else {
-            rootNode?.classList.add("light_mode");
+            bodyNode?.classList.add("light_mode");
         }
 
     }, [selectedTheme]);
 
+    const [ screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+
+    const handleResize = useCallback((event: UIEvent) => {
+        setScreenWidth(window.innerWidth);
+    },[])
+
+    useEffect(() => {
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        }
+
+    },[]);
 
     return (
-        <ThemeContext.Provider value={{ theme: selectedTheme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme: selectedTheme, toggleTheme, screenWidth }}>
             {children}
         </ThemeContext.Provider>
     )

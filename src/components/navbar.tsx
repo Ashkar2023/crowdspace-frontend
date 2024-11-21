@@ -1,16 +1,17 @@
 import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Switch, User } from '@nextui-org/react';
-import { useContext, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { LuBell, LuCompass, LuFilm, LuHome, LuLogOut, LuMessageCircle, LuPen, LuRadio, LuSearch, LuSettings2, LuSun, LuUsers, LuUserSquare2 } from 'react-icons/lu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { clearUser } from '~services/state/user.slice';
-import { userApiProtected } from '~services/api/axios-http';
+import { userApiProtected } from '~services/api/user.api';
 import { RiMoonFill } from 'react-icons/ri';
 import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
 import { AxiosError } from 'axios';
 
-import type { NavItem } from '~types/components/nav';
+import type { NavItem } from '~types/components/navitem.types';
 import type { PressEvent } from '@react-types/shared';
 import { ThemeContext } from '~/context/themeContext';
+import Breakpoints from '~constants/breakpoints.constants';
 
 
 const navItems: NavItem[] = [
@@ -24,15 +25,20 @@ const navItems: NavItem[] = [
     { href: '/openmic', label: "Open mic", icon: LuRadio, mobileNav: false },
 ]
 
+type Props = {
+    togglePostModal: () => void,
+    postDisabled: boolean
+}
 
 // Component start
-const Navbar = () => {
+const Navbar: FC<Props> = ({ togglePostModal, postDisabled }) => {
     const themeContext = useContext(ThemeContext);
+    const navigate = useNavigate();
 
     const selectedTheme = useAppSelector(state => state.app.theme);
     const userState = useAppSelector(state => state.user);
     const dispatch = useAppDispatch();
-    
+
     const [isMoreOpen, setMoreOpen] = useState<boolean>(false);
 
     const handleLogout = async (e: PressEvent) => {
@@ -49,7 +55,7 @@ const Navbar = () => {
     return (
         <div className="block md:flex md:flex-col h-full w-full px-auto">
             <div className='hidden md:flex justify-center my-6'>
-                <img src={`/crowdspace-logo-${themeContext?.theme}-theme.svg`} className='h-12 w-12' />
+                <img src={`/crowdspace-logo-${themeContext?.theme}-theme.svg`} className='h-12 w-12' draggable="false" />
             </div>
             <nav className="flex flex-row fixed w-full justify-evenly mobile:justify-normal border-t-1.5 border-gray-300 mobile:border-none
                                 mobile:static bottom-0 md:flex-col flex-grow overflow-none md:mx-6 font-semibold
@@ -61,7 +67,7 @@ const Navbar = () => {
                         to={item.href}
                         key={item.href}
                         className={`items-center gap-3 rounded-lg px-3 py-2
-                                    transition-all mobile:hover:bg-app-tertiary
+                                    transition-all duration-150 mobile:hover:bg-app-tertiary
                                     ${item.mobileNav ? " flex " : " mobile:flex hidden "}`}
                     >
                         <item.icon className='size-6' />
@@ -80,19 +86,21 @@ const Navbar = () => {
             <div className='mx-8 hidden md:flex mb-4 justify-between gap-2'>
                 <Dropdown
                     placement='top'
-                    backdrop='transparent'
+                    backdrop='opaque'
                     radius='sm'
                     type='menu'
                     shadow='lg'
+                    className='bg-app-tertiary text-app-t-primary'
                     onOpenChange={(isOpen) => setMoreOpen(isOpen)}
                 >
                     <DropdownTrigger>
                         <User
                             className='cursor-pointer flex flex-grow justify-start'
                             classNames={{
-                                base: ["bg-slate-200", "p-2", "px-3",
+                                base: ["bg-app-secondary", "p-2", "px-3",
                                     "rounded-2xl", "overflow-hidden", "min-w-44"],
-                                name: ["max-w-24", "truncate"]
+                                name: ["max-w-24", "truncate", "text-app-t-primary"],
+                                description: ["max-w-24", "truncate", "text-app-t-secondary"]
                             }}
                             name={"@" + userState.username}
                             description={userState.displayname}
@@ -105,7 +113,7 @@ const Navbar = () => {
                     <DropdownMenu>
                         <DropdownSection showDivider>
                             <DropdownItem
-                                className='cursor-default'
+                                className='cursor-default data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'
                                 closeOnSelect={false}
                                 endContent={
                                     <Switch
@@ -115,7 +123,7 @@ const Navbar = () => {
                                             themeContext?.toggleTheme(bool === true ? "dark" : "light");
                                         }}
                                         classNames={{
-                                            wrapper: ["group-data-[selected=true]:bg-slate-800"]
+                                            wrapper: ["group-data-[selected=true]:bg-black", "bg-app-secondary"],
                                         }}
                                         thumbIcon={selectedTheme === "dark" ? <RiMoonFill /> : <LuSun />}
                                     />
@@ -127,16 +135,19 @@ const Navbar = () => {
                         </DropdownSection>
                         <DropdownSection showDivider>
                             <DropdownItem
-                                href='/settings'
+                                //SHOULDN'T DO href on this. It will refresh the application
+                                onClick={()=>{navigate("/settings")}}
                                 startContent={<LuSettings2 size={18} />}
                                 textValue='Settings'
-                            >
+                                className='data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'
+                                >
                                 Settings
                             </DropdownItem>
                             <DropdownItem
-                                href="/profile"
+                                onClick={()=>{navigate("/profile")}}
                                 startContent={<LuUserSquare2 size={18} />}
                                 textValue='Profile'
+                                className='data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'
                             >
                                 Profile
                             </DropdownItem>
@@ -144,7 +155,6 @@ const Navbar = () => {
                         <DropdownSection>
                             <DropdownItem
                                 key="logout"
-                                className='text-red-500'
                                 color='danger'
                                 startContent={<LuLogOut />}
                                 onPress={handleLogout}
@@ -153,24 +163,20 @@ const Navbar = () => {
                         </DropdownSection>
                     </DropdownMenu>
                 </Dropdown>
+
                 {/* POST Button */}
-                <Button
-                    color="primary"
-                    className="text-base self-center hidden lg:flex"
-                    radius="lg"
-                    variant='shadow'
+                {!postDisabled && <Button
+                    className='text-base self-center hidden md:flex data-[disabled=true]:bg-blue-700'
+
+                    color='primary'
+                    radius='md'
+                    // isDisabled={postDisabled}
+                    onPress={togglePostModal}
+                    isIconOnly={themeContext?.screenWidth! < Breakpoints.LG ? true : false}
                 >
-                    Post
-                    <LuPen />
-                </Button>
-                <Button color="primary"
-                    className="text-base self-center align-middle lg:hidden sm:flex"
-                    radius="md"
-                    isIconOnly
-                    variant='shadow'
-                >
-                    <LuPen size={20} />
-                </Button>
+                    <span className='hidden lg:flex'>Post</span>
+                    <LuPen size={18} />
+                </Button>}
             </div>
         </div>
     )
