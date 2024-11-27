@@ -74,8 +74,10 @@ const Navbar: FC<Props> = ({ togglePostModal, postDisabled }) => {
                         <span className='hidden md:inline'>{item.label}</span>
                     </Link>
                 ))}
-                <Link
-                    to="/profile"
+
+                {/* For mobile view */}
+                <Link 
+                    to={`/profile/@${userState.username}`}
                     className={`items-center gap-3 rounded-lg px-3 py-3 mobile:py-2
                             transition-all
                             flex mobile:hidden `}
@@ -135,7 +137,7 @@ const Navbar: FC<Props> = ({ togglePostModal, postDisabled }) => {
                         </DropdownSection>
                         <DropdownSection showDivider>
                             <DropdownItem
-                                //SHOULDN'T DO href on this. It will refresh the application
+                                // SHOULDN'T DO href on this. It will refresh the application
                                 onClick={()=>{navigate("/settings")}}
                                 startContent={<LuSettings2 size={18} />}
                                 textValue='Settings'
@@ -144,7 +146,7 @@ const Navbar: FC<Props> = ({ togglePostModal, postDisabled }) => {
                                 Settings
                             </DropdownItem>
                             <DropdownItem
-                                onClick={()=>{navigate("/profile")}}
+                                onClick={()=>{navigate(`/profile/@${userState.username}`)}}
                                 startContent={<LuUserSquare2 size={18} />}
                                 textValue='Profile'
                                 className='data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'

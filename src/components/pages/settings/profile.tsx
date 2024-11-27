@@ -1,16 +1,17 @@
+
 import { Avatar, Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
-import { KeyboardEvent, useCallback, useEffect, useReducer, useState } from "react";
-import { userApiProtected, userApiPublic } from "../../services/api/axios-http";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { LuBan, LuCheckCircle, LuLoader, LuPencilLine, LuSave, LuX, LuXCircle } from "react-icons/lu";
-import { debounce } from "../../utils/debounce";
-import { setStoreUsername, updateUserProfile } from "../../services/state/user.slice";
 import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "~hooks/useReduxHooks";
-import { Gender, ProfileReducerAction, ProfileReducerState } from "~types/components/profile.reducer";
-import { CheckStatus } from "~constants/api-call.constants";
+import { Gender, ProfileReducerAction, ProfileReducerState } from "~types/components/profile-reducer.types";
+import { CheckStatus } from "~constants/api.constants";
 import { AxiosError } from "axios";
+import { userApiProtected, userApiPublic } from "~services/api/user.api";
+import { setStoreUsername, updateUserProfile } from "~services/state/user.slice";
+import { debounce } from "~utils/debounce";
 
-function settingsReducer(state : ProfileReducerState, action : ProfileReducerAction) : ProfileReducerState  {
+function settingsReducer(state: ProfileReducerState, action: ProfileReducerAction): ProfileReducerState {
     switch (action.type) {
         case "hydrate-links": {
             const newLinks = action.value;
@@ -102,7 +103,7 @@ export const Profile = () => {
     }
 
 
-    const checkUsernameAvailable = async (value : string) => {
+    const checkUsernameAvailable = async (value: string) => {
         if (value === userState.username) {
             setUsernameAvailable(CheckStatus.FOUND);
             return;
@@ -116,9 +117,12 @@ export const Profile = () => {
                 setUsernameAvailable(CheckStatus.NOT_FOUND);
             }
         } catch (error) {
-            if(error instanceof AxiosError){ //type guarding
+            if (error instanceof AxiosError) { //type guarding
                 if (error.response?.status === 409) {
                     setUsernameAvailable(CheckStatus.FOUND);
+                } else if (error.response?.status === 400) {
+                    setUsernameAvailable(CheckStatus.IDLE);
+                    toast.error("Username format error",{duration:1000})
                 }
             }
         }
@@ -132,7 +136,7 @@ export const Profile = () => {
     async function updateUsername() {
         try {
             const { data } = await userApiProtected.patch("/settings/username", {
-                username: username.toLowerCase()
+                username: username.toLowerCase().trim()
             })
 
             dispatch(setStoreUsername({ username: data.body.username }))
@@ -143,13 +147,13 @@ export const Profile = () => {
             setUsernameAvailable(CheckStatus.IDLE);
 
         } catch (error) {
-            if(error instanceof AxiosError){
+            if (error instanceof AxiosError) {
                 showToast(error.response?.data.message, "error")
             }
         }
     }
 
-    const bioDispatch = (bioValue : string) => {
+    const bioDispatch = (bioValue: string) => {
         settingDispatch({ type: "update-bio", value: bioValue })
     };
     const deb_bioDispatch = debounce(bioDispatch, 500);
@@ -162,12 +166,12 @@ export const Profile = () => {
             const { data } = await userApiProtected.patch("/settings/profile", settingsState);
 
             showToast(data.message, "success");
-            
+
             if (data.success) {
                 dispatch(updateUserProfile(data.body));
             }
         } catch (error) {
-            if(error instanceof AxiosError){
+            if (error instanceof AxiosError) {
                 showToast(error.response?.data.message, "success");
             }
 
@@ -281,11 +285,11 @@ export const Profile = () => {
                             isRequired={true}
                             placeholder="Select Gender"
                             selectionMode="single"
-                            selectedKeys={ selectedGender===undefined ? undefined : [selectedGender]}
+                            selectedKeys={selectedGender === undefined ? undefined : [selectedGender]}
                             onChange={(e) => {
-                                
+
                                 /* CHANGE selection to correct key prop types from NextUI */
-                                setSelectedGender(e.target.value as Gender); 
+                                setSelectedGender(e.target.value as Gender);
                                 settingDispatch({ type: "update-gender", value: e.target.value as Gender })
                             }}
                             aria-label="select gender"
@@ -299,18 +303,17 @@ export const Profile = () => {
                 <div className="border rounded-xl bg-gray-200">
                     <Input
                         id="links"
-                        placeholder="Add links"
+                        type="url"
                         variant="faded"
-                        className=""
                         isClearable={true}
                         description="click Enter to add link"
                         classNames={{
                             description: ["text-gray-700", "self-end", "pe-2"],
-                            helperWrapper: ["pb-0.5"]
+                            helperWrapper: ["pb-0.5"],
                         }}
                         onChange={e => setLinkInvalid(false)}
                         isInvalid={linkInvalid}
-                        onKeyUp={(e)  => {
+                        onKeyUp={(e) => {
                             const INPUT = e.target as HTMLInputElement; // type cast for TS to understand
                             const regex = new RegExp(/^(https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+)(\/[^\s]*)?(\?[^\s]*)?(#[^\s]*)?$/, "gm");
 
@@ -327,6 +330,11 @@ export const Profile = () => {
                                 settingDispatch({ type: "add-link", value: INPUT.value })
                             }
                         }}
+                        startContent={
+                            <div className="pointer-events-none flex items-center">
+                                <span className="text-default-400 text-base font-light">https://</span>
+                            </div>
+                        }
                     />
                     <div className={`${settingsState.links.length ? "p-2 pt-0" : ""} 
                         max-h-24 overflow-y-auto text-gray-500 text-sm flex flex-wrap`}>

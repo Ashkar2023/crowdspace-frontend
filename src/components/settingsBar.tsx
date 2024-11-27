@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { LuActivity, LuBan, LuBell, LuLock, LuShield, LuUser } from "react-icons/lu";
-import type { NavItem } from "~types/components/nav";
+import type { NavItem } from "~types/components/navitem.types";
 
 const settingsNavItems : NavItem[] = [
     { label: "Profile", href: "/settings/profile", icon: LuUser },

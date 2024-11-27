@@ -1,15 +1,16 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import type { ForwardRefRenderFunction } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { LuUpload } from "react-icons/lu";
-import FileUploadSelector from "~/atomic-components/post-modal/fileUploadSelector";
-import PostSubmitForm from "~/atomic-components/post-modal/postSubmitForm";
-import PostTypeSelector from "~/atomic-components/post-modal/postTypeSelector";
 import { PostDataStateUpdateHandler, PostWizardStages, PostMetadata, PostType, PostVisibility } from "~types/components/post-modal.types";
 import type { PressEvent } from "@react-types/shared";
 import { mediaApi } from "~services/api/media.api";
 import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import PostTypeSelector from "./partials/postTypeSelector";
+import FileUploadSelector from "./partials/fileUploadSelector";
+import PostSubmitForm from "./partials/postSubmitForm";
 
 type CustomProps = {
     isOpen: boolean,
@@ -26,7 +27,7 @@ const initialPostDataState: PostMetadata = {
     mentions: [],
     postType: PostType.TEXT,
     tags: [],
-    visibility: PostVisibility.EVERYONE,
+    visibility: PostVisibility.EVERYONE, /* CREATE the select option for visibility */
     location: undefined,
     thumbnail: undefined,
     files: null
@@ -36,9 +37,9 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
     const [postWizardState, setPostWizardState] = useState<PostWizardStages>(PostWizardStages.SELECT_TYPE);
     const [postDataState, setPostDataState] = useState<PostMetadata>({ ...initialPostDataState });
 
-    useImperativeHandle(ref,()=>{
+    useImperativeHandle(ref, () => {
         return {
-            reset(){
+            reset() {
                 setPostDataState(initialPostDataState);
                 setPostWizardState(PostWizardStages.SELECT_TYPE);
             }
@@ -54,7 +55,11 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
                         updatedArray.splice(index!, 1);
                         break;
                     case "push":
-                        updatedArray.push(value[0] as string);
+                        const cleanedValue = value[0].trim().replaceAll(" ", "");
+
+                        if(postDataState.tags.includes(cleanedValue)) break;
+                        
+                        updatedArray.push(cleanedValue);
                         break;
                 }
                 return { ...prev, [key]: updatedArray }
@@ -126,20 +131,25 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
                     value.forEach((v, index) => {
                         postData.append(key, v);
                     })
-                } else {
+                } else if (value !== undefined) {
                     postData.append(key, String(value));
                 }
             })
 
-            const response = await mediaApi.post("/posts", postData, {
+            const response = mediaApi.post("/posts", postData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
-                }
+                },
             });
 
+            // Change the toast behaviour
+            toast.promise(response, { loading: "uploading media", success: "success", error: "media upload failed" });
+
+            onClose();
+
         } catch (error) {
-            if (error instanceof Error) {
-                console.log(error);
+            if (error instanceof AxiosError) {
+                console.log(error.response);
             }
         }
     }

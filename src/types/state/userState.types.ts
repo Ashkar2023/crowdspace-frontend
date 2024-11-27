@@ -12,6 +12,7 @@ export interface IServerState{
     links: string[],
     cover: string | undefined,
     avatar: string | undefined,
+    userUUID: string | undefined //change to uuid later
 }
 
 export type TUserState = IClientState & IServerState;

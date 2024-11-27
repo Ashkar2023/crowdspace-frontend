@@ -7,9 +7,9 @@ import {
 import { AxiosError } from 'axios';
 import { FC, KeyboardEvent, RefObject, useEffect, useRef, useState } from 'react';
 import { LuLoader } from 'react-icons/lu';
-import { userApiPublic } from '~services/api/axios-http';
+import { userApiPublic } from '~services/api/user.api';
 
-import type { OtpArrayTuple } from '~types/components/otp';
+import type { OtpArrayTuple } from '~types/components/otp.types';
 import type { PressEvent } from '@react-types/shared';
 
 type Props = {

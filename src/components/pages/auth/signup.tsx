@@ -1,13 +1,13 @@
-import googleIcon from "../../assets/google.svg";
-import CrowdspaceIcon from "../../assets/crowdspace-logo-light-theme.svg";
+import googleIcon from "~assets/google.svg";
+import CrowdspaceIcon from "~assets/crowdspace-logo-light-theme.svg";
 
 import { Button } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
-import { setUser } from '../../services/state/user.slice';
+import { setUser } from '~services/state/user.slice';
 import { LuLoader } from 'react-icons/lu';
-import { userApiPublic } from '../../services/api/axios-http';
+import { userApiPublic } from '~services/api/user.api';
 import { useAppDispatch } from "~hooks/useReduxHooks";
 
 export const Signup = () => {

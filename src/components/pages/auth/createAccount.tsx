@@ -3,12 +3,12 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { LuCheckCircle, LuEye, LuEyeOff, LuLoader, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
 import { FieldValues, useForm } from 'react-hook-form';
-import signupSchema from '../../schema/signupSchema';
+import signupSchema from '~schema/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { userApiPublic } from '../../services/api/axios-http';
+import { userApiPublic } from '~services/api/user.api';
 import { debounce } from '~utils/debounce';
 import { AxiosError } from 'axios';
-import { CheckStatus } from '~constants/api-call.constants';
+import { CheckStatus } from '~constants/api.constants';
 
 export const CreateAccount = () => {
     const [usernameAvailable, setUsernameAvailable] = useState<CheckStatus>(CheckStatus.IDLE);

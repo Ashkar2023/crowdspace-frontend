@@ -3,12 +3,12 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useEffect, useRef, useState } from 'react';
-import { OtpVerifyModal } from '../modal/otpVerify.modal';
 import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
-import { setUser } from '../../services/state/user.slice';
-import { userApiPublic } from '../../services/api/axios-http';
 import { useAppDispatch } from '~hooks/useReduxHooks';
 import { AxiosError } from 'axios';
+import { OtpVerifyModal } from '~components/modals/otp-verify-modal/otpVerify.modal';
+import { userApiPublic } from '~services/api/user.api';
+import { setUser } from '~services/state/user.slice';
 
 export const Login = () => {
     const dispatch = useAppDispatch();
@@ -111,22 +111,26 @@ export const Login = () => {
                         required: true
                     })}
                     className='mb-4'
+                    classNames={{
+                        label:"text-app-t-primary"                  
+                    }}
                     label="Email / Username"
                     type='text'
                     size='sm'
                     radius='md'
                     variant='bordered'
-                />
+                    />
                 <Input
                     {...register("password", {
                         required: true
                     })}
-
+                    
                     type={isVisible ? "text" : 'password'}
 
                     className='mb-2'
                     classNames={{
-                        description: ["self-end"]
+                        description: ["self-end"],
+                        label:["text-app-t-primary"]
                     }}
                     label="Password"
                     radius='md'

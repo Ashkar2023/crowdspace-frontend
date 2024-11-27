@@ -2,11 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Chip, Input } from "@nextui-org/react";
 import { FieldValues, useForm } from "react-hook-form";
 import { LuKeySquare, LuLoader } from "react-icons/lu";
-import { passwordSchema } from "../../schema/passwordSchema";
 import { useEffect, useState } from "react";
-import { userApiProtected } from "../../services/api/axios-http";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { passwordSchema } from "~schema/passwordSchema";
+import { userApiProtected } from "~services/api/user.api";
 
 export const Security = () => {
     const [errorInfo, setErrorInfo] = useState("");
