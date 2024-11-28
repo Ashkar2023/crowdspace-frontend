@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user.slice";
 import appReducer from "./app.slice";
-import postReducer from "./post.slice"
+// import postReducer from "./post.slice"
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import hardSet from "redux-persist/lib/stateReconciler/hardSet";
@@ -18,18 +18,18 @@ const _AppReducer = persistReducer({
     stateReconciler: hardSet,
 }, appReducer)
 
-const _PostReducer = persistReducer({
-    key: "post",
-    storage,
-    stateReconciler: hardSet,
-}, postReducer)
+// const _PostReducer = persistReducer({
+//     key: "post",
+//     storage,
+//     stateReconciler: hardSet,
+// }, postReducer)
 
 // STORE
 const store = configureStore({
     reducer: {
         user: _UserReducer,
         app: _AppReducer,
-        post: _PostReducer
+        // post: _PostReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
