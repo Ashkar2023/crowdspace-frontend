@@ -18,26 +18,25 @@ export const PostViewModal: FC<Props> = ({ disclosure, activePost }) => {
             isOpen={disclosure.isOpen}
             onOpenChange={disclosure.onOpenChange}
 
-            size="4xl"
+            size="3xl"
             hideCloseButton={true}
             isDismissable={true}
             backdrop="blur"
             className="bg-app-secondary text-app-t-primary"
             classNames={{
-                wrapper: ["overflow-x-visible"],
+                wrapper: ["overflow-x-visible",],
             }}
-
         >
             <ModalContent className="h-[650px]">
                 {(onClose) => (
-                    <ModalBody
-                        className="grid grid-cols-[3fr_2fr] h-full gap-0 p-0"
+                    <div
+                        className="grid grid-cols-[3fr_2fr] h-full gap-0 p-0 overflow-y-auto"
                     >
                         <PostMediaViewPartial activePost={activePost} />
 
-                        <PostCommentsViewPartial />
+                        <PostCommentsViewPartial activePost={activePost} />
 
-                    </ModalBody>
+                    </div>
 
                 )}
             </ModalContent>

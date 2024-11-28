@@ -1,11 +1,10 @@
-import { Signup } from "../components/auth/signup"
-import { Login } from "../components/auth/login"
-import { CreateAccount } from "../components/auth/createAccount"
-import { AuthLayout } from "../layouts/authLayout"
-import { OtpVerify } from "../components/auth/otpVerify"
-import { Navigate, RouteObject } from "react-router-dom"
-import { OpenRoute } from "../components/_openRoute"
-// import { ForgotPassword } from "../components/auth/forgotPassword"
+import { RouteObject, Navigate } from "react-router-dom";
+import { AuthLayout } from "~components/layouts/authLayout";
+import { CreateAccount } from "~components/pages/auth/createAccount";
+import { Login } from "~components/pages/auth/login";
+import { OtpVerify } from "~components/pages/auth/otpVerify";
+import { Signup } from "~components/pages/auth/signup";
+import { OpenRoute } from "./guards/openRoute";
 
 
 

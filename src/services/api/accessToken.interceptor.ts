@@ -3,6 +3,7 @@ import { errorConstants } from "~constants/error.constants";
 import { userApiProtected } from "./user.api";
 import store from "~services/state/store";
 import { clearUser } from "~services/state/user.slice";
+import { authApi } from "./auth.api";
 
 declare module "axios" {
     export interface AxiosRequestConfig {
@@ -16,7 +17,7 @@ export const accessTokenCheck = async (error: AxiosError<{ error: string }>) => 
     if (response?.status === 401 && !error.config?._sent && response.data.error === errorConstants.ERR_INVALID_ACCESS) {
         try {
             error.config!._sent = true;
-            const res = await userApiProtected.get("/auth/token-refresh");
+            const res = await authApi.get("/token-refresh");
 
             if (res.data.success) {
                 return userApiProtected(error.config!);

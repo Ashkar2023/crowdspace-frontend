@@ -6,6 +6,9 @@
 @use 'assets/styles/font';
 @use 'assets/styles/theme';
 
+html{
+    scroll-behavior: smooth;
+}
 
 input[type='number']{
     -webkit-appearance: textfield;

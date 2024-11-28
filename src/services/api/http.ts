@@ -3,13 +3,15 @@ import { accessTokenCheck } from "./accessToken.interceptor";
 import { BASE_URL } from "~constants/api.constants";
 
 
-export const mediaApi = axios.create({
-    baseURL: BASE_URL + "/media",
+export const protectedApi = axios.create({
+    baseURL: BASE_URL,
     withCredentials: true,
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: {
+        "Content-Type": 'application/json'
+    }
 });
 
-mediaApi.interceptors.response.use(
+protectedApi.interceptors.response.use(
     request => request,
     accessTokenCheck
 )

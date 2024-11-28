@@ -9,7 +9,7 @@ import { LuLoader } from "react-icons/lu";
 
 const ProfilePage = () => {
     const { username } = useParams();
-    const userUUID = useAppSelector(state => state.user.userUUID);
+    const user_id = useAppSelector(state => state.user._id);
     const [profileDetails, setProfileDetails] = useState<any>(null);
     const [posts, setPosts] = useState<T_Post[]>([]);
 
@@ -18,7 +18,7 @@ const ProfilePage = () => {
             try {
                 const { data: { body } } = await protectedApi.get(`/profile/${username}`, {
                     headers: {
-                        "X-user-id": userUUID
+                        "X-user-id": user_id
                     }
                 });
 

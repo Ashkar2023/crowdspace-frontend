@@ -4,3 +4,6 @@ export enum CheckStatus {
     FOUND = "FOUND",
     NOT_FOUND = "NOT_FOUND",
 }
+
+/* CHANGE TO .ENV */
+export const BASE_URL = "http://localhost:9000"

@@ -13,30 +13,35 @@ export const PostMediaViewPartial: FC<Props> = ({ activePost }) => {
     })
 
     return (
-        <div className='flex relative align-middle bg-black'>
+        <div className='flex relative group align-middle bg-black max-h-[650px]'>
             {
                 postsURLs?.length! > 1 &&
-                <div className="absolute flex justify-between w-full max-h-full h-20 top-1/2 -translate-y-1/2">
-                    <button onClick={() => setIndex(prev => {
-                        if (index !== 0) {
-                            return prev - 1;
-                        }
-                        return prev
-                    })}
+                <div className="absolute hidden group-hover:flex justify-between w-full h-20 top-1/2 -translate-y-1/2 px-4">
+                    <button
+                        className="rounded-md hover:bg-gray-500/40 p-4 self-center"
+                        onClick={() => setIndex(prev => {
+                            if (index !== 0) {
+                                return prev - 1;
+                            }
+                            return prev
+                        })}
                     >
                         <LuMoveLeft />
                     </button>
 
-                    <button onClick={() => setIndex(prev => {
-                        if (index !== (postsURLs?.length! - 1)) {
-                            return prev + 1;
-                        }
-                        return prev
-                    })}>
-                        <LuMoveRight />
+                    <button
+                        className="rounded-md hover:bg-gray-500/40 p-4 self-center"
+                        onClick={() => setIndex(prev => {
+                            if (index !== (postsURLs?.length! - 1)) {
+                                return prev + 1;
+                            }
+                            return prev
+                        })}>
+                        <LuMoveRight className="group" />
                     </button>
                 </div>
             }
+
             <img src={postsURLs![index].href} alt="activePost" className="object-contain" />
         </div>
     )

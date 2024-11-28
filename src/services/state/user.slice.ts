@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IClientState, TUserState, IServerState } from "~types/state/userState.types";
+import { ILoginState, IUserState, IUser } from "~types/dto/user.dto";
 
-const clientState: IClientState = {
+const clientStateObj: ILoginState = {
     isLoggedIn: false
 }
 
-const serverState: IServerState = {
+const serverStateObj: IUser = {
     username: null,
     displayname: null,
     isVerified: false,
@@ -15,12 +15,12 @@ const serverState: IServerState = {
     links: [],
     cover: undefined,
     avatar: undefined,
-    userUUID: undefined
+    _id: undefined
 };
 
 const userSlice = createSlice({
     name: "user",
-    initialState: { ...clientState, ...serverState } as TUserState,
+    initialState: { ...clientStateObj, ...serverStateObj } as IUserState,
     reducers: {
         setUser: (state, action) => {
             const { username, configuration, displayname, avatar, gender, links, bio, _id } = action.payload;
@@ -33,7 +33,7 @@ const userSlice = createSlice({
             state.gender = gender;
             state.links = links
             state.bio = bio;
-            state.userUUID = _id;
+            state._id = _id;
         },
         clearUser: (state) => {
             state.isLoggedIn = false;
@@ -46,7 +46,7 @@ const userSlice = createSlice({
             state.cover = undefined;
             state.avatar = undefined;
             state.gender = undefined;
-            state.userUUID = undefined;
+            state._id = undefined;
         },
         updateUserProfile: (state, action) => {
             const { gender, bio, links } = action.payload;
@@ -65,7 +65,7 @@ export const {
     setUser,
     clearUser,
     updateUserProfile,
-    setStoreUsername 
+    setStoreUsername
 } = userSlice.actions;
 
 export default userSlice.reducer;

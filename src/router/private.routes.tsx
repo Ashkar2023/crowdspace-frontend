@@ -1,14 +1,16 @@
 import { Navigate, RouteObject } from "react-router-dom";
-import { ProtectedRoute } from "../components/_protectedRoute";
-import { Profile } from "../components/settings/profile";
-import { HomeLayout } from "../layouts/homeLayout";
-import { SettingsLayout } from "../layouts/settingsLayout";
-import { Privacy } from "../components/settings/privacy";
-import Notifications from "../components/settings/notifications";
-import { Security } from "../components/settings/security";
+import { ProtectedRoute } from "./guards/protectedRoute";
+
+import { HomeLayout } from "~components/layouts/homeLayout";
+import { SettingsLayout } from "~components/layouts/settingsLayout";
+import Notifications from "~components/pages/settings/notifications";
+import { Privacy } from "~components/pages/settings/privacy";
+import { Profile } from "~components/pages/settings/profile";
+import { Security } from "~components/pages/settings/security";
+import ProfilePage from "~components/pages/home/profile-page/profile.page";
 
 
-export const privateRouter : RouteObject[] = [
+export const privateRouter: RouteObject[] = [
     {
         path: "/",
         element: (
@@ -22,10 +24,10 @@ export const privateRouter : RouteObject[] = [
             //     index: true,
             //     element: <></>,
             // },
-            // {
-            //     path: "profile",
-            //     element: <Profile />,
-            // },
+            {
+                path: "profile/:username",
+                element: <ProfilePage />,
+            },
         ]
     },
     {

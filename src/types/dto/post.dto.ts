@@ -50,6 +50,7 @@ export type PostCreateFields = {
 /* PARENT POST TYPE */
 
 export type T_Post = {
+    _id: string,
     archived: boolean,
     likesCount: number,
     commentsCount: number,
@@ -57,5 +58,5 @@ export type T_Post = {
     location?: GeoPoint,
     status: PostStatus,
     viewsCount: number
-    
+
 } & PostCreateFields;

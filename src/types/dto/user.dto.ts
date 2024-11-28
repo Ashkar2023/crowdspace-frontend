@@ -1,8 +1,8 @@
-export interface IClientState {
+export interface ILoginState {
     isLoggedIn:boolean
 }
 
-export interface IServerState{
+export interface IUser{
     username: string | null,
     displayname: string | null,
     isVerified: boolean,
@@ -12,7 +12,7 @@ export interface IServerState{
     links: string[],
     cover: string | undefined,
     avatar: string | undefined,
-    userUUID: string | undefined //change to uuid later
+    _id: string | undefined //change to uuid later
 }
 
-export type TUserState = IClientState & IServerState;
+export type IUserState = ILoginState & IUser;

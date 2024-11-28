@@ -1,7 +1,7 @@
 import axios from "axios";
-import { accessTokenCheck } from "./base.api";
+import { accessTokenCheck } from "./accessToken.interceptor";
+import { BASE_URL } from "~constants/api.constants";
 
-const BASE_URL: string = "http://localhost:9000";
 
 /* 'withCredentials' essential for setting cookies */
 export const userApiPublic = axios.create({
