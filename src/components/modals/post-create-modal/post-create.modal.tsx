@@ -57,8 +57,8 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
                     case "push":
                         const cleanedValue = value[0].trim().replaceAll(" ", "");
 
-                        if(postDataState.tags.includes(cleanedValue)) break;
-                        
+                        if (postDataState.tags.includes(cleanedValue)) break;
+
                         updatedArray.push(cleanedValue);
                         break;
                 }
@@ -178,7 +178,7 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
             onClose={onClose}
             onOpenChange={onOpenChange}
             isDismissable={false}
-        // hideCloseButton={true}
+            isKeyboardDismissDisabled={false}
         >
             <ModalContent className="shadow-none">
                 {(onClose) => (
