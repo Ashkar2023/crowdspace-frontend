@@ -1,14 +1,17 @@
 export interface ILoginState {
-    isLoggedIn:boolean
+    isLoggedIn: boolean
 }
 
-export interface IUser{
+export interface IUser {
     username: string | null,
     displayname: string | null,
     isVerified: boolean,
     gender: "M" | "F" | undefined,
     configuration: null,
     bio: string | undefined,
+    followersCount: number,
+    followingsCount: number,
+    postsCount:number,
     links: string[],
     cover: string | undefined,
     avatar: string | undefined,

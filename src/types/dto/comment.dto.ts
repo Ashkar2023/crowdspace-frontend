@@ -6,4 +6,6 @@ export interface IComment {
     author: IUserState;
     commentBody: string;
     replyFor?: string;
+    createdAt:string
+    updatedAt:string
 }

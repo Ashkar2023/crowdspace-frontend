@@ -7,7 +7,9 @@ import Notifications from "~components/pages/settings/notifications";
 import { Privacy } from "~components/pages/settings/privacy";
 import { Profile } from "~components/pages/settings/profile";
 import { Security } from "~components/pages/settings/security";
-import ProfilePage from "~components/pages/home/profile-page/profile.page";
+import ProfilePage from "~components/pages/profile/profile.page";
+import { MessagesPage } from "~components/pages/chat/messages.page";
+import { SocketEventsMounter } from "~components/socketEventsMounter";
 
 
 export const privateRouter: RouteObject[] = [
@@ -15,18 +17,22 @@ export const privateRouter: RouteObject[] = [
         path: "/",
         element: (
             <ProtectedRoute>
-                <HomeLayout>
-                </HomeLayout>
+                <SocketEventsMounter />
+                <HomeLayout />
             </ProtectedRoute>
         ),
         children: [
             // {
             //     index: true,
-            //     element: <></>,
+            //     element: <Feed/>,
             // },
             {
                 path: "profile/:username",
                 element: <ProfilePage />,
+            },
+            {
+                path: "messages/:chat_id?",
+                element: <MessagesPage />
             },
         ]
     },
