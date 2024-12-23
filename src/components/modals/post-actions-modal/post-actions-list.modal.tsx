@@ -1,26 +1,32 @@
 import { Modal, ModalContent, ModalBody, Button } from '@nextui-org/react'
 import { UseDisclosureReturn } from '@nextui-org/use-disclosure'
 import { PressEvent } from '@react-types/shared'
-import { FC } from 'react'
+import { Dispatch, FC, SetStateAction } from 'react'
 import toast from 'react-hot-toast'
-import { LuFlag, LuTrash } from 'react-icons/lu'
+import { LuFlag, LuPenSquare, LuTrash } from 'react-icons/lu'
 import { useParams } from 'react-router-dom'
 import { useAppSelector } from '~hooks/useReduxHooks'
 import { protectedApi } from '~services/api/http'
+import { T_Post } from '~types/dto/post.dto'
 import { IReportRequiredFields, ReportReasons, ReportTargets } from '~types/dto/report.dto'
 
 type Props<T extends ReportTargets = ReportTargets> = {
     disclosure: UseDisclosureReturn,
     activeTargetId: string | null,
-    reportTargetType: T | null
+    reportTargetType: T | null,
+    setPosts: Dispatch<SetStateAction<T_Post[]>>,
+    openEditPost: () => void
 }
 
-export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_id, reportTargetType }) => {
+export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_id, reportTargetType, setPosts,openEditPost }) => {
     const { username: usernameState, _id: userId } = useAppSelector(state => state.user);
     const { username } = useParams();
 
+    const isLoggedInUser = username?.replace("@", "") === usernameState; // CHANGE to userId would be much better
+
     const reportSubmitHandler = async (e: PressEvent) => { //for now only
         try {
+            /* --------FAKING IT------- */
             const body: IReportRequiredFields = { // just faking do a modal for taking in the data
                 reason: ReportReasons.COPYRIGHT_VIOLATION,
                 reported_by: userId!,
@@ -28,6 +34,7 @@ export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_i
                 target_type: reportTargetType!,
                 description: "heeelpdssdfd"
             }
+            /* --------FAKING IT-------- */
 
             const { data } = await protectedApi.post("/reports", body, {});
 
@@ -42,11 +49,14 @@ export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_i
     const deleteSubmitHandler = async (e: PressEvent) => {
         try {
 
-            if(!confirm("are you sure to delete this post?")){
+            if (!confirm("are you sure to delete this post?")) {
                 return
             }
-            
             const { data } = await protectedApi.delete(`/posts/${post_id}`);
+
+            setPosts(prev => prev.filter(p => p._id !== post_id));
+
+            disclosure.onClose();
 
             data.success && toast.success(data.message, {
                 duration: 1400,
@@ -87,7 +97,7 @@ export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_i
                             className='p-3 gap-1'
                         >
                             {
-                                username?.replace("@", "") !== usernameState &&
+                                isLoggedInUser === false &&
                                 <Button
                                     startContent={<LuFlag size={18} />}
                                     className="w-full justify-center text-danger"
@@ -100,7 +110,7 @@ export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_i
                                 </Button>
                             }
                             {
-                                username?.replace("@", "") === usernameState &&
+                                isLoggedInUser === true &&
                                 <>
                                     {/* <hr className='border-t border-app-tertiary' /> */}
                                     <Button
@@ -129,6 +139,21 @@ export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_i
                                     </Button>
                                 </>
                             } */}
+                            {
+                                isLoggedInUser === true &&
+                                <>
+                                    {/* <hr className='border-t border-app-tertiary' /> */}
+                                    <Button
+                                        startContent={<LuPenSquare size={18} />}
+                                        className="w-full justify-center text-app-t-secondary hover:!bg-app-tertiary"
+                                        color="default"
+                                        variant="light"
+                                        onPress={openEditPost}
+                                    >
+                                        Edit
+                                    </Button>
+                                </>
+                            }
                         </ModalBody>
                     </>
                 )}

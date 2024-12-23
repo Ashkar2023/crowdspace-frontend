@@ -1,16 +1,18 @@
 import { useDisclosure } from "@nextui-org/react"
-import { FC, useCallback, useEffect, useRef, useState } from "react"
+import { Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { PostActionsModal } from "~components/modals/post-actions-modal/post-actions-list.modal"
+import PostEditModal from "~components/modals/post-edit-modal/post-edit.modal"
 import { PostViewModal } from "~components/modals/post-view-modal/post-view.modal"
 import { T_Post } from "~types/dto/post.dto"
 import { ReportTargets } from "~types/dto/report.dto"
 
 type Props = {
     posts: T_Post[], // Give valid type
+    setPosts: Dispatch<SetStateAction<T_Post[]>>
 }
 
-const ProfilePosts: FC<Props> = ({ posts }) => {
+const ProfilePosts: FC<Props> = ({ posts, setPosts }) => {
     const [activePost, setActivePost] = useState<T_Post | null>(null);
     const postsWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -19,6 +21,10 @@ const ProfilePosts: FC<Props> = ({ posts }) => {
         onClose() {
             setActivePost(null);
         }
+    })
+
+    const PostEditModalDisclosure = useDisclosure({
+        defaultOpen: false
     })
 
     const postActionsModalDisclosure = useDisclosure({
@@ -43,7 +49,7 @@ const ProfilePosts: FC<Props> = ({ posts }) => {
             setActivePost(posts[postIndex]);
             postViewModalDisclosure.onOpen();
         }
-    }, [posts])
+    }, [])
 
     useEffect(() => {
 
@@ -58,7 +64,18 @@ const ProfilePosts: FC<Props> = ({ posts }) => {
         <>
             <PostViewModal disclosure={postViewModalDisclosure} activePost={activePost} /> {/* Set active post to context */}
 
+            {
+                < PostEditModal
+                    isOpen={PostEditModalDisclosure.isOpen}
+                    onClose={PostEditModalDisclosure.onClose}
+                    post={activePost!}
+                    setPosts={setPosts}
+                />
+            }
+
             <PostActionsModal
+                openEditPost={PostEditModalDisclosure.onOpenChange}
+                setPosts={setPosts}
                 disclosure={postActionsModalDisclosure}
                 activeTargetId={activePost?._id as T_Post["_id"]}
                 reportTargetType={ReportTargets.POST}

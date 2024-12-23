@@ -35,14 +35,22 @@ const ProfilePage = () => {
     useEffect(() => {
         (async () => {
             try {
-                const { data: { body } } = await protectedApi.get(`/profile/${username}`, {
+                const { data: { body } } = await protectedApi.get(`/profile/${username}`, { //contains both posts and user details
                     headers: {
-                        "X-logged-in-username": loggedInUsername
+                        "X-logged-in-username": loggedInUsername //do i need this here
                     }
                 });
 
                 setPosts(body.posts);
+                console.log(body)
 
+                /**
+                 * CHANGE
+                 * the backend only returns posts,(excluding follows) for current user
+                 * 
+                */
+
+                // comeup with ideas to cache or fetch follows
                 const { data } = await protectedApi.get(`/user/${body.profile._id}/follows`);
 
                 setFollows(data.body);
@@ -60,18 +68,22 @@ const ProfilePage = () => {
                 console.log("From ProfilePage", error)
             }
         })();
+
+        () => {
+            setPosts(prev => []);
+        }
     }, [username]);
 
     return (
         <div className="mobile:mx-12">
             {/* <Suspense fallback={<LuLoader className="animate-spin" />}> */}
-                <ProfileData
-                    profileDetails={profileDetails}
-                    setProfileDetails={setProfileDetails}
-                    follows={follows}
-                />
+            <ProfileData
+                profileDetails={profileDetails}
+                setProfileDetails={setProfileDetails}
+                follows={follows}
+            />
             {/* </Suspense> */}
-            <ProfilePosts posts={posts} />
+            <ProfilePosts posts={posts} setPosts={setPosts} />
         </div>
     )
 }
