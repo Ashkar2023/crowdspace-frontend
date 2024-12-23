@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react"
+
 export enum PostWizardStages {
     SELECT_TYPE,
     SELECT_FILES,
@@ -33,8 +35,8 @@ export type PostMetadata = {
 
 // export type PostDataStateUpdateHandler = <K extends keyof PostMetadata>(key: K, value: PostMetadata[K], type?: "remove" | "push", index?: number) => void
 export interface PostDataStateUpdateHandler {
-    <K extends keyof PostMetadata>(key: K, value: PostMetadata[K]): void
-    <K extends keyof PostMetadata>(key: K, value: PostMetadata[K], type: "remove" | "push", index: number): void
+    <K extends keyof PostMetadata>(key: K, value: PostMetadata[K]): void,
+    <K extends keyof PostMetadata>(key: K, value: PostMetadata[K], type: "remove" | "push", index: number): void,
 } 
 
 export type PostDataStateProps = {

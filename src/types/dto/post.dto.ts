@@ -1,13 +1,9 @@
+import { PostType, PostVisibility } from "~types/components/post-modal.types";
+
 export enum MediaEnum {
     IMAGE = "image",
     VIDEO = "video",
     // GIF = "gif"
-}
-
-export enum PostEnum {
-    MEDIA = "media",
-    TEXT = "text"
-    // POLL = "poll",
 }
 
 export enum PostStatus {
@@ -15,11 +11,6 @@ export enum PostStatus {
     REMOVED_BY_ADMIN = "removed_by_admin",
     DELETED = "deleted",
     ACTIVE = "active"
-}
-
-export enum PostVisibilty {
-    EVERYONE = "everyone",
-    FOLLOWERS_ONLY = "followers_only"
 }
 
 export type Media = {
@@ -37,12 +28,11 @@ export type GeoPoint = {
 
 /* REQUIRED POST FIELDs */
 export type PostCreateFields = {
-    // author: string, // NOT needed
-    postType: PostEnum,
+    postType: PostType, //type reused from PostMetadata
     caption: string,
     tags: string[],
     media: Media[],
-    visibility: PostVisibilty,
+    visibility: PostVisibility, //type reused from PostMetadata
     thumbnail?: string
     mentions: string[],
 }

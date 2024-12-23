@@ -15,7 +15,10 @@ const serverStateObj: IUser = {
     links: [],
     cover: undefined,
     avatar: undefined,
-    _id: undefined
+    _id: undefined,
+    followersCount:0,
+    followingsCount:0,
+    postsCount:0
 };
 
 const userSlice = createSlice({
@@ -23,9 +26,10 @@ const userSlice = createSlice({
     initialState: { ...clientStateObj, ...serverStateObj } as IUserState,
     reducers: {
         setUser: (state, action) => {
-            const { username, configuration, displayname, avatar, gender, links, bio, _id } = action.payload;
+            const { username, configuration, displayname, avatar, gender, links, bio, _id, followersCount, followingsCount, postsCount, isVerified } = action.payload;
 
             state.isLoggedIn = true;
+            state.isVerified = isVerified
             state.username = username;
             state.configuration = configuration;
             state.displayname = displayname;
@@ -34,6 +38,9 @@ const userSlice = createSlice({
             state.links = links
             state.bio = bio;
             state._id = _id;
+            state.followersCount = followersCount;
+            state.followingsCount = followingsCount;
+            state.postsCount = postsCount;
         },
         clearUser: (state) => {
             state.isLoggedIn = false;
@@ -47,6 +54,10 @@ const userSlice = createSlice({
             state.avatar = undefined;
             state.gender = undefined;
             state._id = undefined;
+            state.followersCount = 0;
+            state.followingsCount = 0;
+            state.postsCount = 0;
+            
         },
         updateUserProfile: (state, action) => {
             const { gender, bio, links } = action.payload;

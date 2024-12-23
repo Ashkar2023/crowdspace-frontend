@@ -113,7 +113,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                                 <div className="flex-1 max-w-44">
                                     <h4>{comment.author?.displayname || "username"}</h4>
                                     <p className="mt-1 text-sm text-neutral-300">{comment.commentBody}</p>
-                                    <section className="font-light flex justify-between">
+                                    <section className="font-light flex gap-2">
                                         <p className="text-xs text-app-t-secondary inline">{formatDistance(new Date(comment.createdAt), Date.now(), { addSuffix: true })}</p>
                                         <button
                                             className="text-xs text-app-t-secondary"

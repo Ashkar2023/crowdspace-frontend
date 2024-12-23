@@ -8,7 +8,7 @@ import { ICommentWithAuthor } from "./post-comments.view";
 import { useMutation } from "@tanstack/react-query";
 import { patchComment } from "~services/query/comment.queries";
 import toast from "react-hot-toast";
-import { toastTheme as customToastTheme } from "~/config/toast.config";
+// import { toastTheme} from "../../../../config/toast.theme";
 
 type Props = {
     post_id: string,
@@ -30,7 +30,7 @@ export const PostCommentInputPartial: FC<Props> = ({ post_id, setComments, reply
             const message = data?.message ?? error?.message;
 
             toast[data ? "success" : "error"](message, {
-                style: customToastTheme,
+                // style: toastTheme,
                 icon: <LuCheck />,
                 position: 'bottom-right'
             });
