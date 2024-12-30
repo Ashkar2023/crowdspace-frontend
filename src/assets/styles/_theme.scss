@@ -1,33 +1,33 @@
-:root{
-    --dt-primary: rgb(21, 22, 23);
-    --dt-secondary: rgb(29, 31, 32);
-    --dt-tertiary: rgb(39, 41, 43);
-    --dt-text-primary: rgb(255, 255, 255);
-    --dt-text-secondary: rgb(136, 153, 166);
-    
-    --ct-accent: rgb(0, 132, 255);
+:root {
+    --dt-primary: 21 22 23;
+    --dt-secondary: 29 31 32; // #1d1f20
+    --dt-tertiary: 39 41 43; // #27292b
+    --dt-text-primary: 255 255 255; // #ffffff
+    --dt-text-secondary: 136 153 166; // #8899a6
 
-    --lt-primary: rgb(255, 255, 255);
-    --lt-secondary: rgb(240, 243, 247);
-    --lt-tertiary: rgb(215, 222, 228);
-    --lt-text-primary: rgb(13, 14, 17);
-    --lt-text-secondary: rgb(101, 119, 134);
+    --ct-accent: 0 132 255; // #0084ff
+
+    --lt-primary: 255 255 255; // #ffffff
+    --lt-secondary: 240 243 247; // #f0f3f7
+    --lt-tertiary: 215 222 228; // #d7dee4
+    --lt-text-primary: 13 14 17; // #0d0e11
+    --lt-text-secondary: 101 119 134; // #657786
 }
 
-.dark_mode{
+.dark_mode {
     --app-primary: var(--dt-primary);
     --app-secondary: var(--dt-secondary);
     --app-tertiary: var(--dt-tertiary);
     --app-text-primary: var(--dt-text-primary);
     --app-text-secondary: var(--dt-text-secondary);
-    --app-accent : var(var(--ct-accent))
+    --app-accent: var(--ct-accent);
 }
 
-.light_mode{
+.light_mode {
     --app-primary: var(--lt-primary);
     --app-secondary: var(--lt-secondary);
     --app-tertiary: var(--lt-tertiary);
     --app-text-primary: var(--lt-text-primary);
     --app-text-secondary: var(--lt-text-secondary);
-    --app-accent : var(var(--ct-accent))
+    --app-accent: var(--ct-accent)
 }
