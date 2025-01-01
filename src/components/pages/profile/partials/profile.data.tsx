@@ -1,16 +1,18 @@
-import { Button } from "@nextui-org/react"
+import { Avatar, Button } from "@nextui-org/react"
 import { PressEvent } from "@react-types/shared"
-import { Dispatch, FC, SetStateAction, useContext, useState } from "react"
+import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { LuLoader, LuUserMinus, LuUserPlus } from "react-icons/lu"
 import { protectedApi } from "~services/api/http"
 import { ProfileStateType } from "~types/components/profile.types"
 import { FollowStatus } from "~types/dto/follow.dto"
 import { IFollows } from "../profile.page"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { ChatContext } from "~/context/chatContext"
 import { useMutation } from "@tanstack/react-query"
-import { searchUserChat } from "~services/query/chat.queries"
+import { findOrCreateUserChat } from "~services/query/chat.queries"
+import { useAppSelector } from "~hooks/useReduxHooks"
+import { buildImageUrl } from "~utils/imageUrl"
 
 type Props = {
     profileDetails: ProfileStateType | null,
@@ -20,6 +22,8 @@ type Props = {
 
 const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) => {
     const navigate = useNavigate();
+    const { username } = useParams()
+    const userState = useAppSelector(state => state.user);
     const chatContext = useContext(ChatContext);
 
     const [hoveredTab, setHoveredTab] = useState<"followers" | "followings" | null>(null);
@@ -63,7 +67,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
     const followerId = profileDetails?.profile._id as string;
     const { mutate, isIdle, isPending, isSuccess, data, } = useMutation({
         mutationKey: ["fetchChatDetail"],
-        mutationFn: () => searchUserChat(followerId),
+        mutationFn: () => findOrCreateUserChat(followerId),
         retry: false,
         onMutate: () => setChatLoading(true),
         onSettled: () => setChatLoading(false),
@@ -89,42 +93,74 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
             {/* Profile header */}
             <div className="flex items-center space-x-4">
                 {/* Profile picture */}
-                <div className="size-32 rounded-full overflow-clip bg-gray-800">
-                    <img src={import.meta.env.VITE_MEDIA_STORAGE_URL + profileDetails?.profile.avatar as string} alt="" className="min-h-full" />
+                <div className="size-32 rounded-full overflow-clip bg-app-tertiary">
+                    {/* <img
+                        src={buildImageUrl(profileDetails?.profile.avatar as string)}
+                        alt=""
+                        className="min-h-full"
+                        /> */}
+                    <Avatar 
+                        src={buildImageUrl(profileDetails?.profile.avatar as string ?? userState.avatar)}
+                        name={profileDetails?.profile.displayname!}
+                        showFallback
+                        color="default"
+                        className="h-full w-full"
+                    />
                 </div>
 
                 {/* Username and buttons */}
                 <div className="flex-1 space-y-2">
-                    <h3 className="inline text-2xl">{profileDetails?.profile.username || "username"}</h3>
+                    <h3 className="inline text-2xl">{profileDetails?.profile.username ?? userState.username}</h3>
                     <div className="flex space-x-2">
-                        <Button
-                            variant="solid"
-                            size="sm"
-                            className={`text-sm px-6 text-white ${profileDetails?.outgoingFollow?.status ? "bg-app-secondary" : "bg-app-accent"}`}
-                            onPress={followHandler}
-                        >
-                            {
-                                profileDetails?.outgoingFollow?.status === FollowStatus.active ?
-                                    "Unfollow" :
-                                    profileDetails?.outgoingFollow?.status === FollowStatus.pending ?
-                                        "Requested" :
-                                        "Follow"
-                            }
-                        </Button>
-
-                        <Button
-                            variant="light"
-                            size="sm"
-                            className="text-sm text-app-t-primary px-4 border-2 border-app-tertiary min-w-24"
-                            onPress={() => mutate()}
-                        >
-                            {
-                                chatLoading ?
-                                    <LuLoader className="animate-spin" /> :
-                                    "Message"
-                            }
-                        </Button>
-
+                        {
+                            username?.replace("@", "") !== userState.username ?
+                                <>
+                                    <Button
+                                        variant="solid"
+                                        size="sm"
+                                        className={`text-sm px-6 text-white ${profileDetails?.outgoingFollow?.status ? "bg-app-secondary" : "bg-app-accent"}`}
+                                        onPress={followHandler}
+                                    >
+                                        {
+                                            profileDetails?.outgoingFollow?.status === FollowStatus.active ?
+                                                "Unfollow" :
+                                                profileDetails?.outgoingFollow?.status === FollowStatus.pending ?
+                                                    "Requested" :
+                                                    "Follow"
+                                        }
+                                    </Button>
+                                    <Button
+                                        variant="light"
+                                        size="sm"
+                                        className="text-sm text-app-t-primary px-4 border-2 border-app-tertiary min-w-24"
+                                        onPress={() => mutate()}
+                                    >
+                                        {
+                                            chatLoading ?
+                                                <LuLoader className="animate-spin" /> :
+                                                "Message"
+                                        }
+                                    </Button>
+                                </>
+                                :
+                                <>
+                                    <Button
+                                        variant="light"
+                                        size="sm"
+                                        className="text-sm text-app-t-primary px-4 border-2 border-app-tertiary min-w-24"
+                                        onPress={() => navigate("/settings/profile")}
+                                    >
+                                        Edit profile
+                                    </Button>
+                                    <Button
+                                        variant="light"
+                                        size="sm"
+                                        className="text-sm text-app-t-primary px-4 border-2 border-app-tertiary min-w-24"
+                                    >
+                                        share profile
+                                    </Button>
+                                </>
+                        }
                     </div>
                 </div>
             </div>

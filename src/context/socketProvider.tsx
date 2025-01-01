@@ -4,20 +4,16 @@ import { io, Socket } from "socket.io-client";
 import { useAppSelector } from "~hooks/useReduxHooks";
 import toast from "react-hot-toast";
 import { SocketEvents } from "~constants/socket.events";
-import { IncomingCallData } from "~types/context/socketContext.types";
-import { Button } from "@nextui-org/react";
-import { LuVideo, LuX } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
 
 export const SocketContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const stateUserId = useAppSelector(state => state.user._id);
     const [Socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
-    // const [sent, setSent] = useState<{ sent: boolean, date: Date }>();
+    // set on window focus retry
 
     useEffect(() => {
         if (!stateUserId) {
-            console.log("User Id not found");
+            console.log("User not logged in");
             return
         }
 

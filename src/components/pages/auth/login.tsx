@@ -112,7 +112,8 @@ export const Login = () => {
                     })}
                     className='mb-4'
                     classNames={{
-                        label:"text-app-t-primary"                  
+                        label:"text-app-t-primary",
+                        inputWrapper:'bg-app-primary'           
                     }}
                     label="Email / Username"
                     type='text'
@@ -126,11 +127,12 @@ export const Login = () => {
                     })}
                     
                     type={isVisible ? "text" : 'password'}
-
+                    
                     className='mb-2'
                     classNames={{
                         description: ["self-end"],
-                        label:["text-app-t-primary"]
+                        label:["text-app-t-primary"],
+                        inputWrapper:'bg-app-primary'           
                     }}
                     label="Password"
                     radius='md'

@@ -1,4 +1,5 @@
 import { msgContentType } from "./message.dto"
+import { IBasicUser } from "./user.dto"
 
 export type IChat = {
     _id: string,
@@ -8,5 +9,6 @@ export type IChat = {
         msg_type: msgContentType
     },
     participants: [string, string],
-    unread_messages: number
+    unread_messages: number,
+    profile: IBasicUser
 }

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { ChatContext } from "~/context/chatContext"
 import { SocketContext } from "~/context/socketContext"
 import { IChat } from "~types/dto/chat.dto"
+import { buildImageUrl } from "~utils/imageUrl"
 
 
 export const RecentChatList = () => {
@@ -13,7 +14,7 @@ export const RecentChatList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (activeChat){
+        if (activeChat) {
             navigate(`/messages/${activeChat?._id}`);
         }
 
@@ -52,17 +53,25 @@ export const RecentChatList = () => {
                 chats?.length ?
                     <ul>
                         {chats.map((chat) => (
+                            //chat.profile will not have _idsea
                             <li
                                 key={chat._id}
-                                className={`p-4 hover:bg-app-tertiary cursor-pointer`}
+                                className={`p-2 m-2 rounded-lg hover:bg-app-tertiary cursor-pointer ${activeChat?._id === chat._id ? "bg-app-tertiary" : ""}`}
                                 onClick={() => {
                                     setActiveChat(chat);
                                 }}
                             >
-                                <div className="flex items-center space-x-3">
-                                    <Avatar src={undefined} alt={"name"} />
+                                <div
+                                    className={`flex items-center space-x-3`}
+                                >
+                                    <Avatar
+                                        src={buildImageUrl(chat?.profile.avatar)}
+                                        name={chat?.profile.displayname}
+                                        showFallback
+                                        className="border-[0.5px] border-app-tertiary h-12 w-12"
+                                    />
                                     <div>
-                                        <p className="font-medium">{chat._id}</p>
+                                        <p className="font-medium">{chat.profile.username}</p>
                                         <p className="text-sm text-app-t-secondary truncate">{chat.last_message?.body}</p>
                                     </div>
                                 </div>

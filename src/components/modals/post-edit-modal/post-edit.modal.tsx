@@ -9,7 +9,7 @@ import { AxiosError } from "axios";
 import TagInput from "../post-create-modal/partials/tagInput";
 import { T_Post } from "~types/dto/post.dto";
 import { buildImageUrl } from "~utils/imageUrl";
-import { toastErrorTheme, toastSuccessTheme } from "~/config/toast.theme";
+import { toastErrorTheme, toastSuccessTheme } from "~config/toastTheme.config";
 import { protectedApi } from "~services/api/http";
 
 type Props = {

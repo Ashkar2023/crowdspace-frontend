@@ -49,7 +49,7 @@ const ProfilePosts: FC<Props> = ({ posts, setPosts }) => {
             setActivePost(posts[postIndex]);
             postViewModalDisclosure.onOpen();
         }
-    }, [])
+    }, [posts])
 
     useEffect(() => {
 

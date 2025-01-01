@@ -10,6 +10,10 @@ import { Security } from "~components/pages/settings/security";
 import ProfilePage from "~components/pages/profile/profile.page";
 import { MessagesPage } from "~components/pages/chat/messages.page";
 import { SocketEventsMounter } from "~components/socketEventsMounter";
+import { CallPage } from "~components/pages/call/call.page";
+import { HomePage } from "~components/pages/home/home.page";
+import ExplorePage from "~components/pages/explore/explore.page";
+import { SearchPage } from "~components/pages/search/search.page";
 
 
 export const privateRouter: RouteObject[] = [
@@ -22,10 +26,10 @@ export const privateRouter: RouteObject[] = [
             </ProtectedRoute>
         ),
         children: [
-            // {
-            //     index: true,
-            //     element: <Feed/>,
-            // },
+            {
+                index: true,
+                element: <HomePage/>,
+            },
             {
                 path: "profile/:username",
                 element: <ProfilePage />,
@@ -34,7 +38,21 @@ export const privateRouter: RouteObject[] = [
                 path: "messages/:chat_id?",
                 element: <MessagesPage />
             },
+            {
+                path:"explore",
+                element:(<ExplorePage/>)
+            },
+            {
+                path:"search",
+                element: <SearchPage/>
+            }
         ]
+    },
+    {
+        path: "/call/:chat_id",
+        element: (
+            <CallPage />
+        )
     },
     {
         path: "settings",

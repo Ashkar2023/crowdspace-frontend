@@ -1,7 +1,7 @@
 import { ScrollShadow, Switch } from '@nextui-org/react';
 import { FC } from 'react';
 import { LuAppWindow, LuBellRing } from 'react-icons/lu';
-import { NOTIFICATION_ITEMS } from '~constants/notification-config.constants';
+import { NOTIFICATION_ITEMS } from '~constants/notification';
 
 const Notifications: FC = () => {
     return (

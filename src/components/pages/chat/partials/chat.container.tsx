@@ -9,6 +9,7 @@ import { SocketEvents } from "~constants/socket.events"
 import { useAppSelector } from "~hooks/useReduxHooks"
 import { fetchMessages } from "~services/query/chat.queries"
 import { IMessage, msgContentType } from "~types/dto/message.dto"
+import { buildImageUrl } from "~utils/imageUrl"
 
 
 
@@ -67,24 +68,29 @@ export const ChatContainer = () => {
             {/* Action bar */}
             <div className="p-4 border-b border-app-tertiary flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                    <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="John Doe" />
+                    <Avatar
+                        src={buildImageUrl(activeChat?.profile.avatar)}
+                        name={activeChat?.profile.displayname}
+                        showFallback
+                        className="border border-app-tertiary w-11 h-11"
+                    />
                     <div>
-                        <h2 className="font-semibold">John Doe</h2>
-                        <p className="text-xs text-app-t-secondary">Online</p>
+                        <h2 className="font-semibold">{activeChat?.profile.username}</h2>
+                        <p className="text-xs text-app-t-secondary">Offline</p>
                     </div>
                 </div>
                 <div className="flex space-x-2">
                     {/* <Link to={`/call/${chatId}?receiver=${receiver}`} target="_blank"> */}
-                        <Button
-                            isIconOnly
-                            size="sm"
-                            variant="light"
-                            onClick={(e)=>{
-                                navigate(`/call/${chatId}?receiver=${receiver}`);
-                            }}
-                        >
-                            <LuVideo className="h-5 w-5 text-app-t-primary" />
-                        </Button>
+                    <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        onClick={(e) => {
+                            navigate(`/call/${chatId}?receiver=${receiver}`);
+                        }}
+                    >
+                        <LuVideo className="h-5 w-5 text-app-t-primary" />
+                    </Button>
                     {/* </Link> */}
                     <Button isIconOnly size="sm" variant="light" aria-label="More Options">
                         <LuMoreVertical className="h-5 w-5 text-app-t-primary" />

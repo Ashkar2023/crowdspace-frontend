@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
+    <!-- <link rel="dns-prefetch" href="https://google.com"> //change it to media storage URL -->
+    <!-- <link rel="dns-prefetch" href="https://google.com"> //change it to backend API -->
+    <link rel="preload" as="image" href="http://localhost:4100/defaults/1479.gif">
     <link rel="icon" type="image/svg+xml" href="crowdspace-logo-dark-theme.svg" media="(prefers-color-scheme:dark)" />
     <link rel="icon" type="image/svg+xml" href="crowdspace-logo-light-theme.svg" media="(prefers-color-scheme:light)" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crowdspace</title>
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="root"></div>
     <div id="modal-portal"></div>
     <script type="module" src="/src/index.tsx"></script>
-  </body>
+</body>
+
 </html>

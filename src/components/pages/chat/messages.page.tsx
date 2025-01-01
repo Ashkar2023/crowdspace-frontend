@@ -32,7 +32,7 @@ export const MessagesPage = () => {
         },
         retry: false,
         enabled() {
-            return !activeChat?._id && !!chat_id
+            return !activeChat?._id && !!chat_id // Fix issue No: 001 in book
         }
     })
 
@@ -62,6 +62,12 @@ export const MessagesPage = () => {
 
     }, [chat_id, navigate])
 
+    useEffect(()=>{
+        return ()=>{
+            setActiveChat(null);
+        }
+    },[])
+
     const placeholder = (loader: boolean) => (
         <div className="place-content-center grid">
             <div className="flex gap-2 bg-app-tertiary px-4 py-1 rounded-md border-[0.7px] border-gray-600">
@@ -69,7 +75,7 @@ export const MessagesPage = () => {
                     <>
                         <LuMessageCircle className="self-center" size={20} />
                         <h1 className="text-lg font-normal inline-block">
-                           Select a Chat
+                            Select a Chat
                         </h1>
                     </>
                     :
@@ -85,9 +91,7 @@ export const MessagesPage = () => {
 
             {
                 activeChat?._id ?
-                    //<Suspense fallback={placeholder(isLoading)}>
                     <ChatContainer />
-                    //</div></Suspense> 
                     :
                     placeholder(isLoading)
             }

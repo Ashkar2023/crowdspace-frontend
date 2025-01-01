@@ -42,7 +42,6 @@ const ProfilePage = () => {
                 });
 
                 setPosts(body.posts);
-                console.log(body)
 
                 /**
                  * CHANGE

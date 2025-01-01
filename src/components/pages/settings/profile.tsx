@@ -186,6 +186,8 @@ export const Profile = () => {
             <div className="flex items-center justify-between space-x-4 mb-6">
                 <Avatar size="lg"
                     src={userState.avatar}
+                    name={userState.displayname!}
+                    showFallback
                     classNames={{
                         base: ["h-20", "w-20"]
                     }}

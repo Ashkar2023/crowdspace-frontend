@@ -12,19 +12,33 @@ import { Toaster } from 'react-hot-toast';
 // import { AxiosError } from 'axios';
 import { useAppDispatch, useAppSelector } from '~hooks/useReduxHooks';
 import { ThemeProvider } from './context/themeProvider';
+import { SocketContextProvider } from './context/socketProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ChatContextProvider } from './context/chatProvider';
 
-export default function App(){
+export default function App() {
 
     return (
         <NextUIProvider>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
-                    <ThemeProvider>
-                        <GoogleOAuthProvider clientId={import.meta.env.VITE_OAUTH_CLIENT_ID}>
-                            <Toaster position='top-center' />
-                            <AppWrapper />
-                        </GoogleOAuthProvider>
-                    </ThemeProvider>
+                    <QueryClientProvider client={new QueryClient}>
+                        <ThemeProvider>
+                            {/* research and change this(GoogleAuthProvider) into the auth routes */}
+                            <GoogleOAuthProvider clientId={import.meta.env.VITE_OAUTH_CLIENT_ID}>
+                                <Toaster position='top-center' />
+
+                                <SocketContextProvider>
+                                    <ChatContextProvider>
+
+                                        <AppWrapper />
+
+                                    </ChatContextProvider>
+                                </SocketContextProvider>
+                            
+                            </GoogleOAuthProvider>
+                        </ThemeProvider>
+                    </QueryClientProvider>
                 </PersistGate>
             </Provider>
         </NextUIProvider>

@@ -3,25 +3,25 @@ import { FC, useState } from "react";
 import { LuCheck, LuMessageCircle, LuPenSquare, LuReply, LuXCircle } from "react-icons/lu";
 import { protectedApi } from "~services/api/http";
 import { IComment } from "~types/dto/comment.dto";
-import { IUser } from "~types/dto/user.dto";
+import { IBasicUser, IUser } from "~types/dto/user.dto";
 import { ICommentWithAuthor } from "./post-comments.view";
 import { useMutation } from "@tanstack/react-query";
 import { patchComment } from "~services/query/comment.queries";
 import toast from "react-hot-toast";
-import { toastSuccessTheme } from "../../../../config/toast.theme";
+import { toastSuccessTheme } from "~config/toastTheme.config";
 
 type Props = {
     post_id: string,
     setComments: React.Dispatch<React.SetStateAction<(IComment & {
-        author: IUser;
+        author: IBasicUser;
     })[]>>,
-    replyTo: ICommentWithAuthor | null,
-    setReplyTo: React.Dispatch<React.SetStateAction<ICommentWithAuthor | null>>,
+    replyFor: ICommentWithAuthor | null,
+    setReplyFor: React.Dispatch<React.SetStateAction<ICommentWithAuthor | null>>,
     editComment: ICommentWithAuthor | null,
     setEditComment: React.Dispatch<React.SetStateAction<ICommentWithAuthor | null>>
 }
 
-export const PostCommentInputPartial: FC<Props> = ({ post_id, setComments, replyTo, setReplyTo, editComment, setEditComment }) => {
+export const PostCommentInputPartial: FC<Props> = ({ post_id, setComments, replyFor, setReplyFor, editComment, setEditComment }) => {
     const [commentBody, setCommentBody] = useState<string>("");
 
     const { mutate } = useMutation({
@@ -55,13 +55,14 @@ export const PostCommentInputPartial: FC<Props> = ({ post_id, setComments, reply
             const { data } = await protectedApi.post(`/comments`, {
                 commentBody: commentBody,
                 post_id,
+                replyFor: replyFor?._id
             });
 
             if (data.success) {
                 setComments(prev => {
                     return [data.body.comment, ...prev]
                 })
-                setReplyTo(null);
+                setReplyFor(null);
                 setCommentBody("")
             }
         } catch (error) {
@@ -72,14 +73,14 @@ export const PostCommentInputPartial: FC<Props> = ({ post_id, setComments, reply
     return (
         <div className="flex relative h-[9%] px-2">
             {
-                replyTo &&
+                replyFor &&
                 <div className="absolute -top-10 w-4/5 flex rounded-xl bg-app-tertiary px-2">
                     <LuReply size={20} className="self-center me-2" />
                     <div className="flex-grow">
-                        <h4 className="inline">{replyTo.author.username || "username"}</h4>
-                        <p className="flex max-w-full overflow-clip text-sm text-app-t-secondary">{replyTo.commentBody.slice(0, 45)}</p>
+                        <h4 className="inline">{replyFor.author.username || "username"}</h4>
+                        <p className="flex max-w-full overflow-clip text-sm text-app-t-secondary">{replyFor.commentBody.slice(0, 45)}</p>
                     </div>
-                    <LuXCircle className="self-center cursor-pointer" color="red" onClick={() => setReplyTo(null)} />
+                    <LuXCircle className="self-center cursor-pointer" color="red" onClick={() => setReplyFor(null)} />
                 </div>
             }
             {

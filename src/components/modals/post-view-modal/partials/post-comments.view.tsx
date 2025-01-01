@@ -3,20 +3,21 @@ import { PostCommentInputPartial } from "./post-comment.input"
 import { T_Post } from "~types/dto/post.dto"
 import { protectedApi } from "~services/api/http"
 import { IComment } from "~types/dto/comment.dto"
-import { IUser } from "~types/dto/user.dto"
+import { IBasicUser, IUser } from "~types/dto/user.dto"
 import { Avatar, Button } from "@nextui-org/react"
 import { LuCheck, LuTrash } from "react-icons/lu"
 import { useAppSelector } from "~hooks/useReduxHooks"
 import { PressEvent } from "@react-types/shared"
 import toast from "react-hot-toast"
 import { formatDistance } from "date-fns"
+import { buildImageUrl } from "~utils/imageUrl"
 
 type Props = {
     activePost: T_Post | null
 }
 
 export type ICommentWithAuthor = IComment & {
-    author: IUser
+    author: IBasicUser
 }
 
 export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
@@ -24,7 +25,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
     const commentsWrapper = useRef<HTMLDivElement>(null);
 
     const [comments, setComments] = useState<(ICommentWithAuthor)[]>([])
-    const [replyTo, setReplyTo] = useState<ICommentWithAuthor | null>(null);
+    const [replyFor, setReplyFor] = useState<ICommentWithAuthor | null>(null);
     const [editComment, setEditComment] = useState<ICommentWithAuthor | null>(null);
 
     useEffect(() => {
@@ -51,9 +52,9 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
 
         if (clickedElement.id === "reply_button" && !isNaN(parsedIndex)) {
             setEditComment(null);
-            setReplyTo(comments[parsedIndex]);
-        } else if (clickedElement.id === "edit_button" && !isNaN(parsedIndex)){
-            setReplyTo(null);
+            setReplyFor(comments[parsedIndex]);
+        } else if (clickedElement.id === "edit_button" && !isNaN(parsedIndex)) {
+            setReplyFor(null);
             setEditComment(comments[parsedIndex]);
         }
 
@@ -88,7 +89,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                     }
                 })
                 setComments(filteredComments);
-                setReplyTo(null)
+                setReplyFor(null)
                 setEditComment(null);
             }
         } catch (error) {
@@ -109,20 +110,31 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                             className="p-4 border-b bg-transparent border-gray-700"
                         >
                             <div className="flex items-start gap-3">
-                                <Avatar src={comment.author?.avatar} />
+                                <Avatar
+                                    src={buildImageUrl(comment.author?.avatar)}
+                                    name={comment.author.displayname}
+                                    showFallback
+                                />
                                 <div className="flex-1 max-w-44">
-                                    <h4>{comment.author?.displayname || "username"}</h4>
-                                    <p className="mt-1 text-sm text-neutral-300">{comment.commentBody}</p>
+                                    <p className="mb-1 text-sm text-app-t-primary/65 font-light">
+                                        <span className="text-app-t-primary text-base font-semibold mr-2">
+                                            {comment.author?.username}
+                                        </span>
+                                        {comment.commentBody}
+                                    </p>
                                     <section className="font-light flex gap-2">
                                         <p className="text-xs text-app-t-secondary inline">{formatDistance(new Date(comment.createdAt), Date.now(), { addSuffix: true })}</p>
-                                        <button
-                                            className="text-xs text-app-t-secondary"
-                                            id="reply_button"
-                                            data-cindex={index.toString()}>
-                                            reply
-                                        </button>
                                         {
-                                            (loggedInUserId === comment.author as unknown) ?
+                                            !comment.replyFor &&
+                                            <button
+                                                className="text-xs text-app-t-secondary"
+                                                id="reply_button"
+                                                data-cindex={index.toString()}>
+                                                reply
+                                            </button>
+                                        }
+                                        {
+                                            (loggedInUserId === comment.author._id) ?
                                                 <button
                                                     className="text-xs text-app-t-secondary"
                                                     id="edit_button"
@@ -157,9 +169,9 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                 post_id={activePost?._id!}
                 editComment={editComment}
                 setComments={setComments}
-                replyTo={replyTo}
+                replyFor={replyFor}
                 setEditComment={setEditComment}
-                setReplyTo={setReplyTo}
+                setReplyFor={setReplyFor}
             />
         </div>
     )

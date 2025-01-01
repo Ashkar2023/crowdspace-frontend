@@ -1,4 +1,5 @@
 import { PostType, PostVisibility } from "~types/components/post-modal.types";
+import { IBasicUser } from "./user.dto";
 
 export enum MediaEnum {
     IMAGE = "image",
@@ -41,12 +42,15 @@ export type PostCreateFields = {
 
 export type T_Post = {
     _id: string,
+    author: IBasicUser, //last added
     archived: boolean,
     likesCount: number,
     commentsCount: number,
     shareCount: number,
     location?: GeoPoint,
     status: PostStatus,
-    viewsCount: number
+    viewsCount: number,
+    createdAt:string,
+    updatedAt:string
 
 } & PostCreateFields;

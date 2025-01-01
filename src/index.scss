@@ -5,20 +5,25 @@
 
 @use 'assets/styles/font';
 @use 'assets/styles/theme';
+@use 'assets/styles/animation';
 
-html{
+body {
     scroll-behavior: smooth;
 }
 
-input[type='number']{
+input[type='number'] {
     -webkit-appearance: textfield;
     -moz-appearance: textfield;
     appearance: textfield;
 
     &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button{
+    &::-webkit-outer-spin-button {
         -webkit-appearance: none;
         margin: 0;
-        
+
     }
+}
+
+::-webkit-scrollbar {
+    display: none;
 }

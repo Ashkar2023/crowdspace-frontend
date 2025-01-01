@@ -1,6 +1,6 @@
 import { Button } from "@nextui-org/react"
 import { PressEvent } from "@react-types/shared"
-import { FC, useState } from "react"
+import { act, FC, useEffect, useState } from "react"
 import { LuChevronLeft, LuChevronRight, LuHeart } from "react-icons/lu"
 import { protectedApi } from "~services/api/http"
 import { T_Post } from "~types/dto/post.dto"
@@ -10,16 +10,22 @@ type Props = {
 }
 export const PostMediaViewPartial: FC<Props> = ({ activePost }) => {
     const [index, setIndex] = useState<number>(0);
-
+    const [postsURLs, setPostURLs] = useState<URL[]>([]);
     /** 
      * REMOVE this is a temporary setup until the current user actions on the post are aggregated with the posts fetch
      * take aggregated "like" data of user on the post to show liked or not
     */
     const [liked, setLiked] = useState<boolean>(false);
 
-    const postsURLs = activePost?.media.map((media, index) => {
-        return new URL(media.media_url, "http://localhost:4100");
-    })
+    useEffect(() => {
+        const mappedUrls: URL[] = [];
+
+        activePost?.media.forEach((media, index) => {
+            const url = new URL(media.media_url, import.meta.env.VITE_MEDIA_STORAGE_URL);
+            mappedUrls.push(url);
+        })
+        setPostURLs(mappedUrls);
+    }, []);
 
     const likeHandler = async (e: PressEvent) => {
         try {
@@ -81,7 +87,10 @@ export const PostMediaViewPartial: FC<Props> = ({ activePost }) => {
                 <p className="content-center">{activePost?.caption}</p>
             </div>
 
-            <img src={postsURLs![index].href} alt="activePost" className="object-contain" />
+            {
+                postsURLs.length > 0 &&
+                <img src={postsURLs![index].href} alt="activePost" className="object-contain" />
+            }
         </div>
     )
 }

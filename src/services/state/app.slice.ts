@@ -18,6 +18,10 @@ const appSlice = createSlice({
     initialState,
     reducers: {
         setAppTheme: (state, action) => {
+            if(!["light","dark"].includes(action.payload)){
+                state.theme = "light";
+                return;
+            }
             state.theme = action.payload;
         },
     }

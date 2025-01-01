@@ -7,3 +7,11 @@ export const NOTIFICATION_ITEMS = Object.freeze([
     "posts",
     "liveStream"
 ]);
+
+export enum NotificationKind {
+    follow = "follow",
+    like = "like",
+    comment = "comment",
+    mention = "mention",
+    message="message"
+}

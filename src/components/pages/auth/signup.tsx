@@ -71,7 +71,7 @@ export const Signup = () => {
             <main className='w-max flex flex-col flex-grow mb-6'>
                 <Button startContent={<img src={googleIcon} className='h-8' />}
                     size='md'
-                    className='w-80 font-semibold'
+                    className='w-80 font-semibold bg-app-tertiary'
                     onPress={(e) => {
                         invokeGoogleAuth();
                     }}
@@ -86,7 +86,7 @@ export const Signup = () => {
                         <span className="w-full border-t"></span>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 font-medium">Or</span>
+                        <span className="bg-app-primary px-2 font-medium">Or</span>
                     </div>
                 </div>
 

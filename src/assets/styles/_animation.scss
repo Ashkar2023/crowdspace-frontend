@@ -1,0 +1,13 @@
+@keyframes delayed-appearance {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.animate-delayed-appearance {
+    animation: delayed-appearance 1000ms ease-in normal ;
+}

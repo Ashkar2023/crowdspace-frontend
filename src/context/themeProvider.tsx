@@ -17,21 +17,21 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     useEffect(() => {
-        bodyNode?.classList.remove("light_mode", "dark_mode");
+        bodyNode?.classList.remove("light_mode", "dark_mode", "light", "dark");
 
         if (selectedTheme === "dark") {
-            bodyNode?.classList.add("dark_mode");
+            bodyNode?.classList.add("dark_mode", "dark");
         } else {
-            bodyNode?.classList.add("light_mode");
+            bodyNode?.classList.add("light_mode", "light");
         }
 
     }, [selectedTheme]);
 
-    const [ screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+    const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
 
     const handleResize = useCallback((event: UIEvent) => {
         setScreenWidth(window.innerWidth);
-    },[])
+    }, [])
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
@@ -40,7 +40,7 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
             window.removeEventListener("resize", handleResize);
         }
 
-    },[]);
+    }, []);
 
     return (
         <ThemeContext.Provider value={{ theme: selectedTheme, toggleTheme, screenWidth }}>
