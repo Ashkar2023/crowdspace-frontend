@@ -1,9 +1,9 @@
-import { IUserState } from "./user.dto";
+import { IBasicUser, IUserState } from "./user.dto";
 
 export interface IComment {
     _id: string,
     post_id: string;
-    author: IUserState;
+    author: IBasicUser;
     commentBody: string;
     replyFor?: string;
     createdAt:string

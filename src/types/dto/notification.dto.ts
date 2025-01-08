@@ -10,5 +10,8 @@ export type INotification = {
      * the target Id of the notification
      * the actual comment/like or follow request.
      */
-    target: string
+    target: string,
+    createdAt: string,
+    updatedAt: string,
+    _id: string
 }

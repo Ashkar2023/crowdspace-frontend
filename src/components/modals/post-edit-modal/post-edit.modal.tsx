@@ -143,7 +143,7 @@ const PostEditModal: FC<Props> = ({ isOpen, onClose, post, setPosts }) => {
                         {post?.media.map((m, i) => {
                             return <img
                                 className="h-24 max-w-28 rounded-xl object-cover"
-                                src={buildImageUrl(m.media_url)}
+                                src={buildImageUrl(m.media_url).href}
                                 key={i}
                                 alt={`File ${i + 1}`}
                             />

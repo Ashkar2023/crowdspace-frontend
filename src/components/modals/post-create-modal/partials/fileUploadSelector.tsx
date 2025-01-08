@@ -92,6 +92,8 @@ const FileUploadSelector: FC<Props> = ({ postDataState, updatePostDataState }) =
                     ))
                 }
             </div>
+
+            
         </div>
     )
 }

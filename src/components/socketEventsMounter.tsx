@@ -24,7 +24,7 @@ export const SocketEventsMounter = () => {
         toast((t) => (
             <div className="text-center mobile:min-w-60">
                 <Avatar
-                    src={buildImageUrl(userBasic.avatar)}
+                    src={buildImageUrl(userBasic.avatar).href}
                     name={userBasic.displayname}
                     className="mx-auto size-20 w-20 h-20 m-4 rounded-full place-self-center"
                     showFallback
@@ -68,15 +68,14 @@ export const SocketEventsMounter = () => {
         ) return;
 
         toast((t) => (
-            <div className="text-center mobile:min-w-60 flex items-center gap-1">
-                <img
-                    src={buildImageUrl(actor.avatar!)}
+            <div className="mobile:min-w-60 flex gap-2">
+                <Avatar
+                    src={buildImageUrl(actor.avatar!).href}
                     className="size-8 rounded-full bg-app-tertiary"
-                    onError={({ currentTarget }) => {
-                        currentTarget.src = buildImageUrl();
-                    }}
+                    showFallback
+                    name={actor.displayname}
                 />
-                <p className="font-extralight">
+                <p className="font-extralight text-sm">
                     {NotificationPhrases[notification.type as keyof typeof NotificationPhrases](actor.username)}
                 </p>
             </div>
@@ -99,5 +98,5 @@ export const SocketEventsMounter = () => {
         }
     }, [socketInstance, notify])
 
-    return <></>
+    return null
 }

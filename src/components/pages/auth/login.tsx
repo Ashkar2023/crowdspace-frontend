@@ -15,7 +15,7 @@ export const Login = () => {
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [isPwdVisible, setIsPwdVisible] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -112,27 +112,27 @@ export const Login = () => {
                     })}
                     className='mb-4'
                     classNames={{
-                        label:"text-app-t-primary",
-                        inputWrapper:'bg-app-primary'           
+                        label: "text-app-t-primary",
+                        inputWrapper: 'bg-app-primary'
                     }}
                     label="Email / Username"
                     type='text'
                     size='sm'
                     radius='md'
                     variant='bordered'
-                    />
+                />
                 <Input
                     {...register("password", {
                         required: true
                     })}
-                    
-                    type={isVisible ? "text" : 'password'}
-                    
+
+                    type={isPwdVisible ? "text" : 'password'}
+
                     className='mb-2'
                     classNames={{
                         description: ["self-end"],
-                        label:["text-app-t-primary"],
-                        inputWrapper:'bg-app-primary'           
+                        label: ["text-app-t-primary"],
+                        inputWrapper: 'bg-app-primary'
                     }}
                     label="Password"
                     radius='md'
@@ -146,18 +146,18 @@ export const Login = () => {
                             handleSubmit(onSubmit)();
                         }
                     }}
-                    endContent={isVisible ?
+                    endContent={isPwdVisible ?
                         (
                             <LuEyeOff className='self-center animate-appearance-in cursor-pointer' color='silver' size={18}
                                 onClick={() => {
-                                    setIsVisible(false)
+                                    setIsPwdVisible(false)
                                 }}
                             />
                         ) :
                         (
                             <LuEye className='self-center animate-appearance-in cursor-pointer' color='silver' size={18}
                                 onClick={() => {
-                                    setIsVisible(true)
+                                    setIsPwdVisible(true)
                                 }}
                             />
                         )

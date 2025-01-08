@@ -8,5 +8,4 @@
   },
   "include": ["vite.config.ts"],
   "exclude": ["dist"],
-
 }

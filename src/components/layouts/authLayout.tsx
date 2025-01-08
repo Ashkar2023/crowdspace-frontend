@@ -3,7 +3,6 @@ import CrowdspaceLightIcon from "~assets/crowdspace-logo-light-theme.svg"
 import CrowdspaceDarkIcon from "~assets/crowdspace-logo-dark-theme.svg"
 import { FC, useContext } from "react"
 import { ThemeContext } from "~/context/themeContext"
-import { cn } from "@nextui-org/react"
 
 export const AuthLayout: FC = () => {
     const theme = useContext(ThemeContext)?.theme;

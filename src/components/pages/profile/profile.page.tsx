@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProfileData from "./partials/profile.data";
 import ProfilePosts from "./partials/profile.posts";
 import { Suspense, useEffect, useState } from "react";
@@ -9,6 +9,8 @@ import { LuLoader } from "react-icons/lu";
 import { ProfileStateType } from "~types/components/profile.types";
 import { IUser } from "~types/dto/user.dto";
 import { IFollow } from "~types/dto/follow.dto";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 export interface IFollows {
     followers: IFollow[];
@@ -30,6 +32,7 @@ const ProfilePage = () => {
     const [profileDetails, setProfileDetails] = useState<ProfileStateType | null>(null); // GIVE Type for state here
     const [posts, setPosts] = useState<T_Post[]>([]);
     const [follows, setFollows] = useState<IFollows>(initialFollows);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -45,8 +48,8 @@ const ProfilePage = () => {
 
                 /**
                  * CHANGE
-                 * the backend only returns posts,(excluding follows) for current user
-                 * 
+                 * The backend only returns posts,(excluding follows) for logged In user
+                 * Issue 002
                 */
 
                 // comeup with ideas to cache or fetch follows
@@ -64,7 +67,15 @@ const ProfilePage = () => {
                 });
 
             } catch (error) {
+                // FIX Issue 002
+                if(!(error instanceof AxiosError)) return;
+
                 console.log("From ProfilePage", error)
+                toast.error((error as AxiosError).message)
+                
+                if(error.status === 500){
+                    navigate("/")
+                }
             }
         })();
 

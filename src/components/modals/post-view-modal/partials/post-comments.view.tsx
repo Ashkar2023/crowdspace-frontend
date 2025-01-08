@@ -16,9 +16,7 @@ type Props = {
     activePost: T_Post | null
 }
 
-export type ICommentWithAuthor = IComment & {
-    author: IBasicUser
-}
+export type ICommentWithAuthor = IComment;
 
 export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
     const loggedInUserId = useAppSelector((state) => state.user._id);
@@ -111,7 +109,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                         >
                             <div className="flex items-start gap-3">
                                 <Avatar
-                                    src={buildImageUrl(comment.author?.avatar)}
+                                    src={buildImageUrl(comment.author?.avatar).href}
                                     name={comment.author.displayname}
                                     showFallback
                                 />
@@ -147,8 +145,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                                     </section>
                                 </div>
                                 {
-                                    /* CHANGE the unknown later as author will be populated. so use will be comment.author._id */
-                                    (loggedInUserId === comment.author as unknown) ?
+                                    (loggedInUserId === comment.author._id) ?
                                         (<Button
                                             isIconOnly
                                             className="bg-transparent comment-delete-button"

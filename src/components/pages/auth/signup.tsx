@@ -1,17 +1,21 @@
 import googleIcon from "~assets/google.svg";
-import CrowdspaceIcon from "~assets/crowdspace-logo-light-theme.svg";
+import CrowdspaceLightIcon from "~assets/crowdspace-logo-light-theme.svg";
+import CrowdspaceDarkIcon from "~assets/crowdspace-logo-dark-theme.svg";
 
 import { Button } from '@nextui-org/react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { setUser } from '~services/state/user.slice';
 import { LuLoader } from 'react-icons/lu';
 import { userApiPublic } from '~services/api/user.api';
 import { useAppDispatch } from "~hooks/useReduxHooks";
+import { ThemeContext } from "~/context/themeContext";
+import { ThemContext } from "~types/context/themeContext.types";
 
 export const Signup = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const appTheme = useContext(ThemeContext)?.theme ;
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const navigateToLogin = () => {
@@ -60,7 +64,7 @@ export const Signup = () => {
             <header className='flex md:self-start md:mt-0 md:mb-10 mt-20 mb-20'>
                 <img
                     className="md:h-[70px] h-full pr-3 self-center md:hidden"
-                    src={CrowdspaceIcon} alt="Crowdspace logo"
+                    src={appTheme === "dark"? CrowdspaceDarkIcon : CrowdspaceLightIcon} alt="Crowdspace logo"
                 />
                 <div>
                     <h2 className='md:text-6xl text-4xl font-bold antialiased'>Crowdspace.</h2>

@@ -16,9 +16,9 @@ const serverStateObj: IUser = {
     cover: undefined,
     avatar: undefined,
     _id: undefined,
-    followersCount:0,
-    followingsCount:0,
-    postsCount:0
+    followersCount: 0,
+    followingsCount: 0,
+    postsCount: 0
 };
 
 const userSlice = createSlice({
@@ -57,7 +57,7 @@ const userSlice = createSlice({
             state.followersCount = 0;
             state.followingsCount = 0;
             state.postsCount = 0;
-            
+
         },
         updateUserProfile: (state, action) => {
             const { gender, bio, links } = action.payload;
@@ -68,6 +68,16 @@ const userSlice = createSlice({
         },
         setStoreUsername: (state, action) => {
             state.username = action.payload.username;
+        },
+        updateFollowingsCount: (state, { payload }) => {
+            switch (payload.action) {
+                case "followed": {
+                    state.followersCount = ++state.followingsCount;
+                }
+                case "unfollowed": {
+                    state.followersCount = --state.followingsCount;
+                }
+            }
         }
     }
 })
@@ -76,7 +86,8 @@ export const {
     setUser,
     clearUser,
     updateUserProfile,
-    setStoreUsername
+    setStoreUsername,
+    updateFollowingsCount
 } = userSlice.actions;
 
 export default userSlice.reducer;

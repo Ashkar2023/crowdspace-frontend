@@ -1,4 +1,5 @@
 import { Avatar, Button, Textarea } from "@nextui-org/react"
+import { PressEvent } from "@react-types/shared"
 import { useQuery } from "@tanstack/react-query"
 import { useContext, useEffect, useRef, useState } from "react"
 import { LuLoader, LuMoreVertical, LuSendHorizonal, LuVideo } from "react-icons/lu"
@@ -62,6 +63,16 @@ export const ChatContainer = () => {
         }
     }, [Socket])
 
+    const handleSendMessage = () => {
+
+        Socket?.emit(SocketEvents.send_msg, {
+            body: messagebody,
+            chat_id: chatId,
+            content_type: msgContentType.text,
+        } as IMessage)
+
+        setMessageBody("")
+    }
     return (
         <div className="flex-1 flex flex-col h-screen">
 
@@ -69,14 +80,14 @@ export const ChatContainer = () => {
             <div className="p-4 border-b border-app-tertiary flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                     <Avatar
-                        src={buildImageUrl(activeChat?.profile.avatar)}
+                        src={buildImageUrl(activeChat?.profile.avatar).href}
                         name={activeChat?.profile.displayname}
                         showFallback
                         className="border border-app-tertiary w-11 h-11"
                     />
                     <div>
                         <h2 className="font-semibold">{activeChat?.profile.username}</h2>
-                        <p className="text-xs text-app-t-secondary">Offline</p>
+                        {/* <p className="text-xs text-app-t-secondary">Offline</p> */}
                     </div>
                 </div>
                 <div className="flex space-x-2">
@@ -117,6 +128,7 @@ export const ChatContainer = () => {
                         </div>
                     </div>
                 ))}
+
                 <div
                     ref={messagesDivRef}
                     className={chatMessages.length === 0 ? "h-full flex justify-center items-center text-sm" : "h-0 overflow-clip"}
@@ -124,7 +136,7 @@ export const ChatContainer = () => {
                     {
                         /*  An issue where this message gets shown*/
                         isFetching ?
-                            <LuLoader size={23} className="animate-spin animate-delayed-appearance" color="gray" />
+                            <LuLoader size={23} className="animate-pulse animate-delayed-appearance" color="gray" />
                             :
                             <span
                                 className="text-center font-light animate-appearance-in duration-500"
@@ -146,21 +158,20 @@ export const ChatContainer = () => {
                         value={messagebody}
                         minRows={1}
                         maxRows={4}
-                    // onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                        onKeyDown={(e) => { // prevent from new lines being created /* FIX bugs */
+                            e.key === "Enter" ? e.preventDefault() : null;
+                        }}
+                        onKeyUp={(e) => {
+                            if (e.key === "Enter") {
+                                handleSendMessage();
+                            }
+                        }}
                     />
                     <Button
                         isIconOnly
                         color="primary"
                         aria-label="Send"
-                        onPress={(e) => {
-                            Socket?.emit(SocketEvents.send_msg, {
-                                body: messagebody,
-                                chat_id: chatId,
-                                content_type: msgContentType.text,
-                            } as IMessage);
-
-                            setMessageBody("");
-                        }}
+                        onPress={handleSendMessage}
                     >
                         <LuSendHorizonal />
                     </Button>

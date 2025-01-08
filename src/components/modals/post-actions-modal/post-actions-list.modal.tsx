@@ -1,6 +1,7 @@
 import { Modal, ModalContent, ModalBody, Button } from '@nextui-org/react'
 import { UseDisclosureReturn } from '@nextui-org/use-disclosure'
 import { PressEvent } from '@react-types/shared'
+import { AxiosError } from 'axios'
 import { Dispatch, FC, SetStateAction } from 'react'
 import toast from 'react-hot-toast'
 import { LuFlag, LuPenSquare, LuTrash } from 'react-icons/lu'
@@ -41,8 +42,9 @@ export const PostActionsModal: FC<Props> = ({ disclosure, activeTargetId: post_i
             data.success && toast.success(data.message);
 
         } catch (error) {
-            if (error instanceof Error)
-                console.log(error.message)
+            if (error instanceof AxiosError){
+                !error.response!.data.success && toast.error(error.response!.data.message);
+            }
         }
     }
 

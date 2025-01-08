@@ -1,4 +1,4 @@
-import { Avatar, Button } from "@nextui-org/react"
+import { Avatar, Button, useDisclosure } from "@nextui-org/react"
 import { PressEvent } from "@react-types/shared"
 import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from "react"
 import toast from "react-hot-toast"
@@ -13,6 +13,10 @@ import { useMutation } from "@tanstack/react-query"
 import { findOrCreateUserChat } from "~services/query/chat.queries"
 import { useAppSelector } from "~hooks/useReduxHooks"
 import { buildImageUrl } from "~utils/imageUrl"
+import { IUser } from "~types/dto/user.dto"
+import FollowListModal from "~components/modals/follows-list-modal/follow-list.modal"
+import { useDispatch } from "react-redux"
+import { updateFollowingsCount } from "~services/state/user.slice"
 
 type Props = {
     profileDetails: ProfileStateType | null,
@@ -23,10 +27,23 @@ type Props = {
 const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) => {
     const navigate = useNavigate();
     const { username } = useParams()
+    const dispatch = useDispatch();
     const userState = useAppSelector(state => state.user);
     const chatContext = useContext(ChatContext);
 
-    const [hoveredTab, setHoveredTab] = useState<"followers" | "followings" | null>(null);
+    const profileData: ProfileStateType = profileDetails ?
+        {
+            ...profileDetails
+        } :
+        {
+            incomingFollow: null,
+            outgoingFollow: null,
+            profile: {
+                ...userState
+            }
+        }
+
+    const [openTab, setOpenTab] = useState<"followers" | "followings" | null>(null);
     const [chatLoading, setChatLoading] = useState<boolean>(false);
 
     const followersList = follows.followers || [];
@@ -36,12 +53,11 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
     const followHandler = async (e: PressEvent) => {
         try {
             /* handle current user profile */
-            const { data, status } = profileDetails?.outgoingFollow?.status ?
-                await protectedApi.delete(`/users/${profileDetails?.profile._id}/follow`) :
-                await protectedApi.post(`/users/${profileDetails?.profile._id}/follow`, {
+            const { data, status } = profileData?.outgoingFollow?.status ?
+                await protectedApi.delete(`/users/${profileData?.profile._id}/follow`) :
+                await protectedApi.post(`/users/${profileData?.profile._id}/follow`, {
                     privateAccount: false // CHANGE, for now only
                 })
-
 
             data.success && toast.success(data.message, {
                 duration: 1400,
@@ -53,18 +69,22 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                     border: "1px solid var(--app-tertiary)"
                 }
             }) && setProfileDetails({
-                ...profileDetails!,
+                ...profileData!,
                 outgoingFollow: {
                     ...data.body
                 }
             });
+            
+            // data.success && dispatch(updateFollowingsCount({
+            //     action: profileData.outgoingFollow ? "followed" : "unfollowed" //weak logic
+            // }))
         } catch (error) {
             if (error instanceof Error)
                 console.log(error.message)
         }
     }
 
-    const followerId = profileDetails?.profile._id as string;
+    const followerId = profileData?.profile._id as string;
     const { mutate, isIdle, isPending, isSuccess, data, } = useMutation({
         mutationKey: ["fetchChatDetail"],
         mutationFn: () => findOrCreateUserChat(followerId),
@@ -86,22 +106,19 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
         },
     })
 
-
+    const followListDisclosure = useDisclosure({
+        defaultOpen: false
+    })
 
     return (
-        <div className="max-w-4xl p-4 space-y-4">
+        <div className="max-w-4xl min-h-96 p-4 space-y-4">
             {/* Profile header */}
             <div className="flex items-center space-x-4">
                 {/* Profile picture */}
                 <div className="size-32 rounded-full overflow-clip bg-app-tertiary">
-                    {/* <img
-                        src={buildImageUrl(profileDetails?.profile.avatar as string)}
-                        alt=""
-                        className="min-h-full"
-                        /> */}
-                    <Avatar 
-                        src={buildImageUrl(profileDetails?.profile.avatar as string ?? userState.avatar)}
-                        name={profileDetails?.profile.displayname!}
+                    <Avatar
+                        src={buildImageUrl(profileData?.profile.avatar as string ?? userState.avatar).href}
+                        name={profileData?.profile.displayname!}
                         showFallback
                         color="default"
                         className="h-full w-full"
@@ -110,7 +127,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
 
                 {/* Username and buttons */}
                 <div className="flex-1 space-y-2">
-                    <h3 className="inline text-2xl">{profileDetails?.profile.username ?? userState.username}</h3>
+                    <h3 className="text-2xl font-medium">{profileData?.profile.username ?? userState.username}</h3>
                     <div className="flex space-x-2">
                         {
                             username?.replace("@", "") !== userState.username ?
@@ -118,13 +135,13 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                                     <Button
                                         variant="solid"
                                         size="sm"
-                                        className={`text-sm px-6 text-white ${profileDetails?.outgoingFollow?.status ? "bg-app-secondary" : "bg-app-accent"}`}
+                                        className={`text-sm px-6 text-white ${profileData?.outgoingFollow?.status ? "bg-app-secondary" : "bg-app-accent"}`}
                                         onPress={followHandler}
                                     >
                                         {
-                                            profileDetails?.outgoingFollow?.status === FollowStatus.active ?
+                                            profileData?.outgoingFollow?.status === FollowStatus.active ?
                                                 "Unfollow" :
-                                                profileDetails?.outgoingFollow?.status === FollowStatus.pending ?
+                                                profileData?.outgoingFollow?.status === FollowStatus.pending ?
                                                     "Requested" :
                                                     "Follow"
                                         }
@@ -152,92 +169,68 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                                     >
                                         Edit profile
                                     </Button>
-                                    <Button
+                                    {/* <Button
                                         variant="light"
                                         size="sm"
                                         className="text-sm text-app-t-primary px-4 border-2 border-app-tertiary min-w-24"
                                     >
                                         share profile
-                                    </Button>
+                                    </Button> */}
                                 </>
                         }
                     </div>
                 </div>
             </div>
 
-            {/* Follower/Following counts */}
-            {/* <div className="flex justify-around">
-                {['postsCount', 'followersCount', 'followingsCount'].map((item) => (
-                    <div key={item} className="text-center">
-                        <div className="">{profileDetails?.profile[item as keyof IUser]}</div>
-                        <div className="bg-gray-800 rounded max-w-18 px-10 mb-1">{item}</div>
-                    </div>
-                ))}
-            </div> */}
-
-            <div className="flex justify-around">
-                <div
-                    className="text-center cursor-pointer relative"
-                    onMouseEnter={() => setHoveredTab("followers")}
-                    onMouseLeave={() => setHoveredTab(null)}
-                >
-                    <div>{profileDetails?.profile.followersCount || 0}</div>
-                    <div className="bg-gray-800 rounded max-w-18 px-10 mb-1">Followers</div>
-
-                    {hoveredTab === "followers" && (
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 bg-gray-900 text-white rounded-md shadow-lg w-60 max-h-64 overflow-y-auto z-50">
-                            <div className="p-4">
-                                <h4 className="font-semibold text-lg">Followers</h4>
-                                {followersList.map((follower) => (
-                                    <div key={follower._id} className="py-2 border-b border-gray-700">
-                                        {follower._id}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <div
-                    className="text-center cursor-pointer relative"
-                    onMouseEnter={() => setHoveredTab("followings")}
-                    onMouseLeave={() => setHoveredTab(null)}
-                >
-                    <div>{profileDetails?.profile.followingsCount || 0}</div>
-                    <div className="bg-gray-800 rounded max-w-18 px-10 mb-1">Followings</div>
-
-                    {hoveredTab === "followings" && (
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 bg-gray-900 text-white rounded-md shadow-lg w-60 max-h-64 overflow-y-auto z-50">
-                            <div className="p-4">
-                                <h4 className="font-semibold text-lg">Followings</h4>
-                                {followingsList.map((following) => (
-                                    <div key={following._id} className="py-2 border-b border-gray-700">
-                                        {following._id}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-
 
             {/* Bio */}
-            <div className="space-y-2">
-                <p className="">{profileDetails?.profile.bio}</p>
-                <div className="h-4 bg-gray-800 rounded w-3/6"></div>
-                <div className="h-4 bg-gray-800 rounded w-4/6"></div>
+            <div className="">
+                <p className="text-app-t-secondary">{profileData?.profile.bio}</p>
             </div>
 
-            {/* Story highlights */}
-            <div className="flex space-x-4 overflow-x-auto py-2">
-                {[...Array(5)].map((_, index) => (
-                    <div key={index} className="flex-shrink-0">
-                        <div className="w-16 h-16 rounded-full bg-gray-800"></div>
-                        <div className="h-3 bg-gray-800 rounded w-12 mx-auto mt-1"></div>
-                    </div>
-                ))}
+            {/* Add links */}
+
+            {/* Follower/Following counts */}
+            <div className="flex justify-around">
+                {[
+                    ['postsCount', "Post"],
+                    ['followersCount', "Followers"],
+                    ['followingsCount', "Followings"]].map(([item, title]) => {
+                        if (item === "postsCount") {
+                            return (
+                                <div key={item} className="text-center">
+                                    <b className="">{profileData?.profile.postsCount}</b><br />
+                                    <p className="max-w-18 px-10 mb-1">
+                                        {
+                                            title
+                                        }
+                                    </p>
+                                </div>
+                            )
+                        } else {
+                            return (
+                                <div key={item} className="text-center">
+                                    <b className="">{profileData?.profile[item as keyof IUser]}</b>
+                                    <br />
+                                    <button
+                                        className="max-w-18 px-10 mb-1 "
+                                        onClick={() => { followListDisclosure.onOpenChange() }}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            )
+                        }
+
+                    })}
             </div>
-        </div >
+
+            <FollowListModal
+                disclosure={followListDisclosure}
+            // users={}
+            />
+
+        </div>
     )
 }
 

@@ -6,7 +6,8 @@ import { buildImageUrl } from "~utils/imageUrl";
 const ExplorePage: FC = () => {
     const { data, error, isFetching } = useQuery({
         queryKey: ['feed'],
-        queryFn: fetchFeed
+        queryFn: fetchFeed,
+        retry:3,
     });
 
     if (isFetching) return <div>Loading...</div>;
@@ -20,7 +21,7 @@ const ExplorePage: FC = () => {
                 <div key={post._id} className="relative aspect-square overflow-clip rounded-lg border-1 border-app-tertiary">
                     {post.media.length > 0 && (
                         <img
-                            src={buildImageUrl(post.media[0].media_url)}
+                            src={buildImageUrl(post.media[0].media_url).href}
                             alt="Post media"
                             className="w-full h-full object-cover"
                         />

@@ -25,7 +25,7 @@ export type onCloseRef = {
 const initialPostDataState: PostMetadata = {
     caption: "",
     mentions: [],
-    postType: PostType.TEXT,
+    postType: PostType.MEDIA,
     tags: [],
     visibility: PostVisibility.EVERYONE, /* CREATE the select option for visibility */
     location: undefined,

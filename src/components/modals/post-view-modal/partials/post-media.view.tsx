@@ -4,6 +4,7 @@ import { act, FC, useEffect, useState } from "react"
 import { LuChevronLeft, LuChevronRight, LuHeart } from "react-icons/lu"
 import { protectedApi } from "~services/api/http"
 import { T_Post } from "~types/dto/post.dto"
+import { buildImageUrl } from "~utils/imageUrl"
 
 type Props = {
     activePost: T_Post | null
@@ -21,7 +22,7 @@ export const PostMediaViewPartial: FC<Props> = ({ activePost }) => {
         const mappedUrls: URL[] = [];
 
         activePost?.media.forEach((media, index) => {
-            const url = new URL(media.media_url, import.meta.env.VITE_MEDIA_STORAGE_URL);
+            const url = buildImageUrl(media.media_url);
             mappedUrls.push(url);
         })
         setPostURLs(mappedUrls);

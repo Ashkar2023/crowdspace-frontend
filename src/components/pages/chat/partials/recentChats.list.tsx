@@ -4,13 +4,14 @@ import { LuPlus, LuSearch } from "react-icons/lu"
 import { useNavigate } from "react-router-dom"
 import { ChatContext } from "~/context/chatContext"
 import { SocketContext } from "~/context/socketContext"
+import { SocketEvents } from "~constants/socket.events"
 import { IChat } from "~types/dto/chat.dto"
 import { buildImageUrl } from "~utils/imageUrl"
 
 
 export const RecentChatList = () => {
     const { Socket, socketConnected } = useContext(SocketContext);
-    const { chats, setActiveChat, activeChat } = useContext(ChatContext)
+    const { chats, setChats, setActiveChat, activeChat } = useContext(ChatContext)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,6 +20,19 @@ export const RecentChatList = () => {
         }
 
     }, [activeChat])
+
+    const mergeNewChats = ({ chatDoc }: { chatDoc: IChat }) => {
+        let udpdatedChats = chats ? [...chats, chatDoc] : [chatDoc];
+        setChats(udpdatedChats);
+    }
+
+    useEffect(() => {
+        Socket?.on(SocketEvents.new_chat, mergeNewChats);
+
+        return () => {
+            Socket?.off(SocketEvents.new_chat, mergeNewChats);
+        }
+    }, [Socket])
 
     return (
         <div className="h-full border-r border-app-tertiary ">
@@ -36,7 +50,7 @@ export const RecentChatList = () => {
                             rounded-lg`}>
                             </div>
                         </Tooltip>
-                        <Button
+                        {/* <Button
                             variant="solid"
                             size="sm"
                             radius="md"
@@ -44,7 +58,7 @@ export const RecentChatList = () => {
                             isIconOnly
                         >
                             <LuPlus className="text-base " />
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
 
@@ -65,7 +79,7 @@ export const RecentChatList = () => {
                                     className={`flex items-center space-x-3`}
                                 >
                                     <Avatar
-                                        src={buildImageUrl(chat?.profile.avatar)}
+                                        src={buildImageUrl(chat?.profile.avatar).href}
                                         name={chat?.profile.displayname}
                                         showFallback
                                         className="border-[0.5px] border-app-tertiary h-12 w-12"

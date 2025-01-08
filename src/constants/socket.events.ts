@@ -1,9 +1,13 @@
 export enum SocketEvents {
+    new_chat = "new:chat",
+    
     send_msg = "message:send",
     recv_msg = "message:recieve",
     client_error = "client:error",
 
     call_create = "call:create",
+    call_end = "call:end",
+    call_ended = "call:ended",
     call_incoming = "call:incoming",
 
     call_user_join_lobby = "call:user:join:lobby",
