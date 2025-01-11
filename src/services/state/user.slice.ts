@@ -66,6 +66,9 @@ const userSlice = createSlice({
             state.links = links;
             state.bio = bio;
         },
+        updateAvatar: (state, action: { payload: string }) => {
+            state.avatar = action.payload;
+        },
         setStoreUsername: (state, action) => {
             state.username = action.payload.username;
         },
@@ -87,7 +90,8 @@ export const {
     clearUser,
     updateUserProfile,
     setStoreUsername,
-    updateFollowingsCount
+    updateFollowingsCount,
+    updateAvatar
 } = userSlice.actions;
 
 export default userSlice.reducer;

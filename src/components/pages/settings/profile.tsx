@@ -1,6 +1,6 @@
 
-import { Avatar, Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { Avatar, Button, Input, Select, SelectItem, Textarea, useDisclosure } from "@nextui-org/react";
+import { useCallback, useContext, useEffect, useReducer, useState } from "react";
 import { LuBan, LuCheckCircle, LuLoader, LuPencilLine, LuSave, LuX, LuXCircle } from "react-icons/lu";
 import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "~hooks/useReduxHooks";
@@ -8,8 +8,13 @@ import { Gender, ProfileReducerAction, ProfileReducerState } from "~types/compon
 import { CheckStatus } from "~constants/api.constants";
 import { AxiosError } from "axios";
 import { userApiProtected, userApiPublic } from "~services/api/user.api";
-import { setStoreUsername, updateUserProfile } from "~services/state/user.slice";
+import { setStoreUsername, updateAvatar, updateUserProfile } from "~services/state/user.slice";
 import { debounce } from "~utils/debounce";
+import { buildImageUrl } from "~utils/imageUrl";
+import { ProfileImageUploadModal } from "~components/modals/avatar-upload-modal/avatar-upload.modal";
+import { SocketContext } from "~/context/socketContext";
+import { toastSuccessTheme } from "~config/toastTheme.config";
+import { SocketEvents } from "~constants/socket.events";
 
 function settingsReducer(state: ProfileReducerState, action: ProfileReducerAction): ProfileReducerState {
     switch (action.type) {
@@ -63,12 +68,17 @@ export const Profile = () => {
     const userState = useAppSelector((state) => state.user);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [usernameDisabled, setUsernameDisabled] = useState(true);
+    const { Socket } = useContext(SocketContext);
 
     const [usernameAvailable, setUsernameAvailable] = useState<CheckStatus>(CheckStatus.IDLE);
     const [username, setUsername] = useState<string>(userState.username as string);
 
     const [selectedGender, setSelectedGender] = useState<Gender>(undefined);
     const [linkInvalid, setLinkInvalid] = useState(false);
+
+    const profileImageModalDisclosure = useDisclosure({
+        defaultOpen: false,
+    })
 
     // Reducer
     const [settingsState, settingDispatch] = useReducer(settingsReducer, {
@@ -122,7 +132,7 @@ export const Profile = () => {
                     setUsernameAvailable(CheckStatus.FOUND);
                 } else if (error.response?.status === 400) {
                     setUsernameAvailable(CheckStatus.IDLE);
-                    toast.error("Username format error",{duration:1000})
+                    toast.error("Username format error", { duration: 1000 })
                 }
             }
         }
@@ -181,11 +191,28 @@ export const Profile = () => {
         }
     }
 
+
+    const listenUpdateAvatar = (data: { avatar: string }) => {
+        toast.success("avatar updated", {
+            style: toastSuccessTheme
+        });
+
+        dispatch(updateAvatar(data.avatar));
+    }
+
+    useEffect(() => {
+        Socket?.on(SocketEvents.avatar_updated, listenUpdateAvatar)
+
+        return () => {
+            Socket?.off(SocketEvents.avatar_updated, listenUpdateAvatar)
+        }
+    }, [Socket])
+
     return (
         <div className="w-full px-20 max-h-screen pt-10" spellCheck={false}>
             <div className="flex items-center justify-between space-x-4 mb-6">
                 <Avatar size="lg"
-                    src={userState.avatar}
+                    src={buildImageUrl(userState.avatar).href}
                     name={userState.displayname!}
                     showFallback
                     classNames={{
@@ -198,10 +225,17 @@ export const Profile = () => {
                     variant="ghost"
                     className=""
                     radius="sm"
+                    onClick={() => {
+                        profileImageModalDisclosure.onOpen()
+                    }}
                 >
                     Change Photo
                 </Button>
             </div>
+
+            <ProfileImageUploadModal
+                disclosure={profileImageModalDisclosure}
+            />
 
             <div className="space-y-6">
                 <div className="flex gap-4">

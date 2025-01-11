@@ -1,16 +1,20 @@
 import { useNavigate, useParams } from "react-router-dom";
 import ProfileData from "./partials/profile.data";
 import ProfilePosts from "./partials/profile.posts";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { protectedApi } from "~services/api/http";
-import { useAppSelector } from "~hooks/useReduxHooks";
+import { useAppDispatch, useAppSelector } from "~hooks/useReduxHooks";
 import { T_Post } from "~types/dto/post.dto";
 import { LuLoader } from "react-icons/lu";
 import { ProfileStateType } from "~types/components/profile.types";
-import { IUser } from "~types/dto/user.dto";
+import { IBasicUser, IUser } from "~types/dto/user.dto";
 import { IFollow } from "~types/dto/follow.dto";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { SocketContext } from "~/context/socketContext";
+import { SocketEvents } from "~constants/socket.events";
+import { toastSuccessTheme } from "~config/toastTheme.config";
+import { updateAvatar } from "~services/state/user.slice";
 
 export interface IFollows {
     followers: IFollow[];
@@ -38,7 +42,7 @@ const ProfilePage = () => {
     useEffect(() => {
         (async () => {
             try {
-                const { data: { body } } = await protectedApi.get(`/profile/${username}`, { //contains both posts and user details
+                const { data: { body } } = await protectedApi.get(`/profile/${encodeURIComponent(username!)}`, { //contains both posts and user details
                     headers: {
                         "X-logged-in-username": loggedInUsername //do i need this here
                     }
@@ -68,12 +72,12 @@ const ProfilePage = () => {
 
             } catch (error) {
                 // FIX Issue 002
-                if(!(error instanceof AxiosError)) return;
+                if (!(error instanceof AxiosError)) return;
 
                 console.log("From ProfilePage", error)
                 toast.error((error as AxiosError).message)
-                
-                if(error.status === 500){
+
+                if (error.status === 500) {
                     navigate("/")
                 }
             }

@@ -46,8 +46,16 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
         }
     })
 
+    const isStringArray = (arr: unknown): arr is string[] => {
+        return Array.isArray(arr) && arr.every(item => typeof item === "string");
+    }
+
+    const isFileArray = (arr: unknown): arr is File[] => {
+        return Array.isArray(arr) && arr.every(item => item instanceof File);
+    }
+
     const updatePostDataState: PostDataStateUpdateHandler = (key, value, type?: "remove" | "push", index?: number) => {
-        if (["tags", "mentions"].includes(key) && Array.isArray(value)) {
+        if (["tags", "mentions"].includes(key) && isStringArray(value)) {
             setPostDataState(prev => {
                 const updatedArray = Array.from(prev[key] as string[]);
                 switch (type) {
@@ -121,13 +129,12 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
         try {
             const postData = new FormData();
 
-            // Setting the formdata
             Object.entries(postDataState).forEach(([key, value], index) => {
-                if (key === "files" && value instanceof FileList) {
-                    Array.from(value).forEach((file, index) => {
+                if (key === "files" && isFileArray(value)) {
+                    (value).forEach((file, index) => {
                         postData.append("media", file);
                     })
-                } else if (Array.isArray(value)) {
+                } else if (Array.isArray(value) && isStringArray(value)) {
                     value.forEach((v, index) => {
                         postData.append(key, v);
                     })
@@ -166,10 +173,10 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
 
             backdrop="blur"
             classNames={{
-                /* Hack-fix for rendering artifact white-line corners in dark mode */
+                base: ["bg-app-secondary", "!mt-10"],
+                /*👆 Hack-fix for rendering artifact white-line corners in dark mode */
                 /* "base" is same as ModalContent */
-                base: ["bg-app-secondary"],
-                // wrapper: ["animate-slideDown"],
+                wrapper: ["overflow-x-visible"],
             }}
             placement="top"
             size="lg"
@@ -182,7 +189,7 @@ const PostModal: ForwardRefRenderFunction<onCloseRef, CustomProps> = ({ isOpen, 
         >
             <ModalContent className="shadow-none">
                 {(onClose) => (
-                    <ModalBody className="text-app-t-primary">
+                    <ModalBody className="text-app-t-primary ">
                         <ModalHeader className="p-1 w-full">
                             <h3 className="text-lg w-full text-center">Create Post</h3>
                         </ModalHeader>

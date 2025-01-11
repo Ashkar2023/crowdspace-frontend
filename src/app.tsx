@@ -35,7 +35,7 @@ export default function App() {
 
                                     </ChatContextProvider>
                                 </SocketContextProvider>
-                            
+
                             </GoogleOAuthProvider>
                         </ThemeProvider>
                     </QueryClientProvider>
@@ -50,21 +50,12 @@ function AppWrapper() {
     const dispatch = useAppDispatch();
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
 
-    useEffect(() => { //change this to the App component
+    useEffect(() => {
         if (isLoggedIn) {
-            // (async function () { // THIS is not needed as it calls whenever the page refreshes, should only run on the initial page window load
-            //     try {
-            //         const response = await userApiProtected.get("/auth/token-refresh");
-            //         //Logic should check is token is valid
-            //     } catch (error) {
-            //         if (error instanceof AxiosError) {
-            //             console.log("From App.jsx", error.message)
-            //             if (error.response?.data.error === "invalid_refresh") {
-            //                 dispatch(clearUser());
-            //             }
-            //         }
-            //     }
-            // })()
+            /* 
+            fetch the data on initial load and cache to not fetch again on refetches
+            use persisted query cache
+              */
         }
 
     }, [])

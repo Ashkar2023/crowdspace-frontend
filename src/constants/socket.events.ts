@@ -32,4 +32,6 @@ export enum SocketEvents {
     call_leave = "call:leave",
     
     post_upload_success= "post:upload:success",
+
+    avatar_updated = "avatar:updated",
 }

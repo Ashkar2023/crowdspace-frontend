@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalBody, ModalHeader, Tabs, Tab, Avatar } from '@nextui-org/react';
 import { UseDisclosureReturn } from '@nextui-org/use-disclosure';
 import { TRANSITION_EASINGS } from "@nextui-org/framer-utils";
@@ -22,7 +22,7 @@ const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure }) => {
     const stateUserId = useAppSelector((state) => state.user._id);
     const [activeTab, setActiveTab] = useState<activeTab>("followers");
     const [followers, setFollowers] = useState<(IFollow & { follower_info: IBasicUser })[]>([])
-    const [followees, setFollowees] = useState<(IFollow & { followee_info: IBasicUser })[]>([])
+    const [followings, setFollowings] = useState<(IFollow & { followee_info: IBasicUser })[]>([])
 
     const { data, isFetching, fetchNextPage } = useInfiniteQuery({
         queryKey: [stateUserId, activeTab],
@@ -30,7 +30,19 @@ const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure }) => {
         initialPageParam: 1,
         getNextPageParam: (recentData) => recentData.nextPageParam,
     })
-    console.log(data)
+
+    useEffect(() => {
+        if (data?.pages) {
+            let arr: any = [];
+            data.pages.map(notf => {
+                arr = [...notf.body];
+            })
+            console.log(arr);
+            setFollowers(prev => {
+                return [prev, ...arr]
+            })
+        }
+    }, [data])
 
     return (
         <Modal
@@ -95,23 +107,23 @@ const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure }) => {
                         </ModalHeader>
                         <ModalBody className='px-3 py-0 mb-4 gap-1 overflow-y-scroll border-t-1 border-app-tertiary'>
                             {
-                                data?.pages.map((notf, index) => {
-                                    console.log("page", notf)
+                                followers.map((f, index) => {
                                     return (
                                         <div
                                             className='flex w-full px-3 py-3 hover:bg-app-secondary cursor-pointer'
-                                            key={notf.body._id}
+                                            key={f._id}
                                         // onClick={()=>{
                                         //     navigate()
                                         // }}
                                         >
 
                                             <Avatar
-                                                src={buildImageUrl("hh").href}
+                                                src={buildImageUrl(f.follower_info.avatar).href}
                                                 name={"notf"}
                                                 showFallback
                                                 className='w-11 h-11 border border-app-tertiary rounded-full bg-app-tertiary'
                                             />
+                                            <p className='text-app-t-primary'>{f.follower_info.username}</p>
                                         </div>
                                     )
                                 })

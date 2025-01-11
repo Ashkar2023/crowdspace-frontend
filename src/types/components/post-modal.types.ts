@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from "react"
-
 export enum PostWizardStages {
     SELECT_TYPE,
     SELECT_FILES,
@@ -28,7 +26,7 @@ export type PostMetadata = {
     tags: string[],
     visibility: PostVisibility,
     mentions: string[],
-    files: FileList | null,
+    files: File[] | null,
     location?: GeoPoint,
     thumbnail?: string
 }
@@ -43,5 +41,3 @@ export type PostDataStateProps = {
     postDataState: PostMetadata;
     updatePostDataState: PostDataStateUpdateHandler;
 }
-
-
