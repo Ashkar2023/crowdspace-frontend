@@ -138,10 +138,10 @@ const Navbar: FC<Props> = ({
                                 name={"@" + userState.username}
                                 description={userState.displayname}
                                 avatarProps={{
-                                    src: buildImageUrl(userState.avatar as string),
+                                    src: buildImageUrl(userState.avatar as string).href,
                                     showFallback: true,
                                     className: "border border-app-tertiary",
-                                    name:userState.displayname!
+                                    name: userState.displayname!
                                 }}
                             >
                             </User>
@@ -239,21 +239,30 @@ const Navbar: FC<Props> = ({
                                     onPress={() => setUpdatesOpen(false)}
                                 />
                             </div>
-                            <div className='divide-y-1 divide-app-tertiary'>
+                            <div
+                                className='divide-y-1 divide-app-tertiary'
+                            >
                                 {
                                     isSuccess && data?.body.count! > 0 ?
                                         data?.body.notifications.map((notf, index) => {
                                             return (
-                                                <div className='flex w-full px-2 py-3'>
+                                                <div
+                                                    className='flex w-full px-3 py-3 hover:bg-app-secondary cursor-pointer'
+                                                    // onClick={()=>{
+                                                    //     navigate()
+                                                    // }}
+                                                    key={index}
+                                                >
 
-                                                    <img
-                                                        src={buildImageUrl(notf.actor.avatar)}
-                                                        alt={notf.actor.displayname}
-                                                        className='size-12 rounded-full bg-app-tertiary'
+                                                    <Avatar
+                                                        src={buildImageUrl(notf.actor.avatar).href}
+                                                        name={notf.actor.displayname}
+                                                        showFallback
+                                                        className='w-11 h-11 border border-app-tertiary rounded-full bg-app-tertiary'
                                                     />
 
-                                                    <p className="font-extralight my-auto ms-2 h-full">
-                                                        {NotificationPhrases[notf.type.toLowerCase() as keyof typeof NotificationKind](notf.actor.username)}
+                                                    <p className="font-extralight text-sm my-auto ms-2 h-full">
+                                                        {NotificationPhrases[notf.type as keyof typeof NotificationKind](notf.actor.username)}
                                                     </p>
                                                 </div>
                                             )
@@ -267,7 +276,7 @@ const Navbar: FC<Props> = ({
                                     isFetching &&
                                     Array.from({ length: 6 }).map((_, i) => {
                                         return (
-                                            <div className='flex w-full px-2 py-3'>
+                                            <div className='flex w-full px-3 py-3'>
                                                 <Skeleton className='size-12 rounded-full' />
                                                 <div className="flex flex-grow my-auto ms-3">
                                                     <Skeleton className=' h-4 w-3/4 rounded-lg' />
