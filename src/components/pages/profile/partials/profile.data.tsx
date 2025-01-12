@@ -31,6 +31,10 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
     const userState = useAppSelector(state => state.user);
     const chatContext = useContext(ChatContext);
 
+    /** 
+     * conditionally accumulated profile data
+     * for the difference in getting the data from logged in user or other user
+     */
     const profileData: ProfileStateType = profileDetails ?
         {
             ...profileDetails
@@ -45,10 +49,6 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
 
     const [openTab, setOpenTab] = useState<"followers" | "followings" | null>(null);
     const [chatLoading, setChatLoading] = useState<boolean>(false);
-
-    const followersList = follows.followers || [];
-    const followingsList = follows.followings || [];
-
 
     const followHandler = async (e: PressEvent) => {
         try {
@@ -227,7 +227,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
 
             <FollowListModal
                 disclosure={followListDisclosure}
-            // users={}
+                user_id={profileData.profile._id!}
             />
 
         </div>

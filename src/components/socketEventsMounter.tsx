@@ -67,6 +67,14 @@ export const SocketEventsMounter = () => {
             notification.type === NotificationKind.message
         ) return;
 
+        /* 
+            CHANGE
+            my idea was to update the store state followers count here by dispatching event
+            But then i thought that i should fetch the user profile for the logged in user also, so there wont be a need of managing store state
+            But for optimization i can chose to use useQuery and its cache, -
+            and invalidate the cached by setting the cache to "stale", when an inbound activity like follow / unfollow happens
+         */
+
         toast((t) => (
             <div className="mobile:min-w-60 flex gap-2">
                 <Avatar

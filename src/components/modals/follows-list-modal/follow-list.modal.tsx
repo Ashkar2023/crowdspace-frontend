@@ -2,52 +2,76 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalBody, ModalHeader, Tabs, Tab, Avatar } from '@nextui-org/react';
 import { UseDisclosureReturn } from '@nextui-org/use-disclosure';
 import { TRANSITION_EASINGS } from "@nextui-org/framer-utils";
-import { IFollow } from '~types/dto/follow.dto';
+import { IFollow, IFollowee, IFollower } from '~types/dto/follow.dto';
 import { IBasicUser } from '~types/dto/user.dto';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchFollowers } from '~services/query/follows.query';
+import { QueryClient, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchFollowers, fetchFollowings } from '~services/query/follows.query';
 import { useAppSelector } from '~hooks/useReduxHooks';
 import { LuLoader } from 'react-icons/lu';
 import { buildImageUrl } from '~utils/imageUrl';
+import { IFollows } from '~components/pages/profile/profile.page';
 
 interface FollowListModalProps {
     disclosure: UseDisclosureReturn;
-    // users: IBasicUser[];
-    // initialTab: string;
+    user_id: string
 }
 
 export type activeTab = "followers" | "followings"
 
-const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure }) => {
-    const stateUserId = useAppSelector((state) => state.user._id);
+const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure, user_id }) => {
     const [activeTab, setActiveTab] = useState<activeTab>("followers");
-    const [followers, setFollowers] = useState<(IFollow & { follower_info: IBasicUser })[]>([])
-    const [followings, setFollowings] = useState<(IFollow & { followee_info: IBasicUser })[]>([])
+    const queryClient = useQueryClient();
 
-    const { data, isFetching, fetchNextPage } = useInfiniteQuery({
-        queryKey: [stateUserId, activeTab],
-        queryFn: ({ pageParam = 0 }) => fetchFollowers(pageParam, activeTab, stateUserId!),
+    // useEffect(() => {
+    //     queryClient.resetQueries({ queryKey: [user_id, activeTab] });
+    //     setActiveTab("followings");
+    // }, [user_id, queryClient]);
+
+    const followingsQuery = useInfiniteQuery({
+        queryKey: [user_id, 'followings'],
+        queryFn: ({ pageParam = 0 }) => fetchFollowings(pageParam, activeTab, user_id),
         initialPageParam: 1,
         getNextPageParam: (recentData) => recentData.nextPageParam,
-    })
+        enabled: activeTab === 'followings',
+    });
 
-    useEffect(() => {
-        if (data?.pages) {
-            let arr: any = [];
-            data.pages.map(notf => {
-                arr = [...notf.body];
-            })
-            console.log(arr);
-            setFollowers(prev => {
-                return [prev, ...arr]
-            })
-        }
-    }, [data])
+    const followersQuery = useInfiniteQuery({
+        queryKey: [user_id, 'followers'],
+        queryFn: ({ pageParam = 0 }) => fetchFollowers(pageParam, activeTab, user_id),
+        initialPageParam: 1,
+        getNextPageParam: (recentData) => recentData.nextPageParam,
+        enabled: activeTab === 'followers',
+    });
+
+    const activeQuery = activeTab === "followers" ? followersQuery : followingsQuery;
+
+    // memoize result
+    const currentList = activeQuery.data?.pages.reduce<(IFollowee | IFollower)[]>((acc, curr) => {
+        return acc.concat(curr.body)
+    }, []);
+
+    const renderUserInfo = (user: IFollowee | IFollower) => {
+        const userInfo = "followee_info" in user ? user.followee_info : user.follower_info;
+
+        return (
+            <div
+                className='flex w-full px-3 py-3 hover:bg-app-secondary cursor-pointer text-app-t-primary'
+                key={user._id}
+            >
+                <Avatar
+                    src={buildImageUrl(userInfo.avatar).href}
+                    name={"notf"}
+                    showFallback
+                    className='w-11 h-11 border border-app-tertiary rounded-full bg-app-tertiary'
+                />
+                <p className='text-app-t-primary'>{userInfo.username}</p>
+            </div>
+        )
+    }
 
     return (
         <Modal
             isOpen={disclosure.isOpen}
-            onOpenChange={disclosure.onOpenChange}
             onClose={disclosure.onClose}
             hideCloseButton={true}
             isDismissable={true}
@@ -107,34 +131,15 @@ const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure }) => {
                         </ModalHeader>
                         <ModalBody className='px-3 py-0 mb-4 gap-1 overflow-y-scroll border-t-1 border-app-tertiary'>
                             {
-                                followers.map((f, index) => {
-                                    return (
-                                        <div
-                                            className='flex w-full px-3 py-3 hover:bg-app-secondary cursor-pointer'
-                                            key={f._id}
-                                        // onClick={()=>{
-                                        //     navigate()
-                                        // }}
-                                        >
-
-                                            <Avatar
-                                                src={buildImageUrl(f.follower_info.avatar).href}
-                                                name={"notf"}
-                                                showFallback
-                                                className='w-11 h-11 border border-app-tertiary rounded-full bg-app-tertiary'
-                                            />
-                                            <p className='text-app-t-primary'>{f.follower_info.username}</p>
-                                        </div>
-                                    )
-                                })
+                                currentList?.length && currentList.map((user, index) => renderUserInfo(user) )
                             }
                             {
-                                isFetching &&
+                                activeQuery.isFetching &&
                                 <div className='place-items-center'>
                                     <LuLoader className='animate-spin' color='gray' />
                                 </div>
                             }
-                            <button className='bg-white' onClick={() => fetchNextPage()}>get</button>
+                            <button className='bg-white' onClick={() => activeQuery.fetchNextPage()}>get</button>
                         </ModalBody>
                     </>
                 )}

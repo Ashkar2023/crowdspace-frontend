@@ -38,7 +38,7 @@ const Feed: FC = () => {
         const clickedTarget = event.target as HTMLElement;
         const postCard = clickedTarget.closest(".post_card");
         const postIndex = parseInt(postCard?.getAttribute("data-index")!);
-
+        
         // // post actions 
         // if (clickedTarget.classList.contains("post-actions")) {
         //     setActivePost(posts[postIndex]);
@@ -50,9 +50,12 @@ const Feed: FC = () => {
             setActivePost(posts[postIndex]);
             postViewModalDisclosure.onOpen();
         }
-
-        /* add routing for click on avatar & usename */
-        // if(clickedTarget.classList.contains("user-profile")) 
+        
+        /* routing for click on avatar & usename */
+        if (clickedTarget.classList.contains("post-user-avatar") || clickedTarget.classList.contains("post-username")) {
+            const postIndex = (clickedTarget.closest(".post") as HTMLElement).dataset.postIndex;
+            navigate(`/profile/@${posts[+postIndex!].author.username}`);
+        }
     }, [posts])
 
     return (
@@ -62,20 +65,24 @@ const Feed: FC = () => {
                 disclosure={postViewModalDisclosure}
             />
 
-            <div className="w-full" onClick={(e) => handleClick(e)}>
+            <div className="posts-container w-full" onClick={(e) => handleClick(e)}>
                 {data?.body.posts.map((post, index) => (
-                    <div key={post._id} className="bg-app-primary p-4 shadow-md border-t-[0.5px] border-app-secondary">
+                    <div
+                        key={post._id}
+                        data-post-index={index}
+                        className="post bg-app-primary p-4 shadow-md border-t-[0.5px] border-app-secondary"
+                    >
 
                         {/* USER info */}
-                        <div className="flex space-x-3 user-profile" data-username={post.author.username}>
+                        <div className="flex space-x-3 post-user-data" data-username={post.author.username}>
                             <Avatar
                                 src={buildImageUrl(post.author.avatar).href}
                                 name={post.author.displayname}
                                 showFallback
-                                className="border-[0.5px] border-app-tertiary avatar"
+                                className="post-user-avatar border-[0.5px] border-app-tertiary  cursor-pointer"
                             />
                             <div>
-                                <h4 className="font-medium text-sm username">{post.author.username}</h4>
+                                <h4 className="post-username font-medium text-sm username cursor-pointer">{post.author.username}</h4>
                                 <p className="text-xs text-app-t-secondary">
                                     {formatDistance(new Date(post.createdAt), Date.now(), { addSuffix: true })}
                                 </p>
