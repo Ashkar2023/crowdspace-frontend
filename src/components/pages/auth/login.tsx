@@ -59,7 +59,7 @@ export const Login = () => {
             if (error instanceof AxiosError) {
                 const response = error.response;
 
-                if (response?.status === 404 || response?.status === 400) {
+                if ([400, 403, 404].includes(response?.status!)) {
                     setInfo(response?.data.message);
 
                     timeout = setTimeout(() => {

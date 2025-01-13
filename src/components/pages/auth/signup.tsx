@@ -2,7 +2,7 @@ import googleIcon from "~assets/google.svg";
 import CrowdspaceLightIcon from "~assets/crowdspace-logo-light-theme.svg";
 import CrowdspaceDarkIcon from "~assets/crowdspace-logo-dark-theme.svg";
 
-import { Button } from '@nextui-org/react';
+import { Button, Chip } from '@nextui-org/react';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -12,12 +12,25 @@ import { userApiPublic } from '~services/api/user.api';
 import { useAppDispatch } from "~hooks/useReduxHooks";
 import { ThemeContext } from "~/context/themeContext";
 import { ThemContext } from "~types/context/themeContext.types";
+import { AxiosError } from "axios";
 
 export const Signup = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const appTheme = useContext(ThemeContext)?.theme ;
+    const appTheme = useContext(ThemeContext)?.theme;
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [info, setInfo] = useState("");
+
+    let timeout: ReturnType<typeof setTimeout>;
+
+    useEffect(() => {
+
+        return () => {
+            clearTimeout(timeout)
+        }
+    })
+
     const navigateToLogin = () => {
         navigate("/auth/login");
     };
@@ -42,7 +55,19 @@ export const Signup = () => {
                 }
 
             } catch (error) {
-                console.log(error)
+                if (error instanceof AxiosError) {
+                    const response = error.response;
+
+                    if ([400, 403, 404].includes(response?.status!)) {
+                        setInfo(response?.data.message);
+                        setIsSubmitting(false);
+
+                        timeout = setTimeout(() => {
+                            setInfo("");
+                        }, 5000)
+
+                    }
+                }
             }
         },
         onError: (token) => {
@@ -64,7 +89,7 @@ export const Signup = () => {
             <header className='flex md:self-start md:mt-0 md:mb-10 mt-20 mb-20'>
                 <img
                     className="md:h-[70px] h-full pr-3 self-center md:hidden"
-                    src={appTheme === "dark"? CrowdspaceDarkIcon : CrowdspaceLightIcon} alt="Crowdspace logo"
+                    src={appTheme === "dark" ? CrowdspaceDarkIcon : CrowdspaceLightIcon} alt="Crowdspace logo"
                 />
                 <div>
                     <h2 className='md:text-6xl text-4xl font-bold antialiased'>Crowdspace.</h2>
@@ -73,6 +98,17 @@ export const Signup = () => {
             </header>
 
             <main className='w-max flex flex-col flex-grow mb-6'>
+                {
+                    info &&
+                    <Chip className='self-center my-2 animate-appearance-in'
+                        color='danger'
+                        radius="sm"
+                        size='sm'
+                        variant='flat'
+                    >
+                        {info}
+                    </Chip>
+                }
                 <Button startContent={<img src={googleIcon} className='h-8' />}
                     size='md'
                     className='w-80 font-semibold bg-app-tertiary'
