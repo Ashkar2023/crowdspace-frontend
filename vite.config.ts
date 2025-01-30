@@ -5,12 +5,15 @@ import path from "node:path";
 
 export default defineConfig({
     plugins: [react_swc()],
-    css:{
-        preprocessorOptions:{
-            scss:{
-                api:"modern-compiler"
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: "modern-compiler"
             }
         }
+    },
+    server: {
+        host: "0.0.0.0"
     },
     build: {
         outDir: "dist",
