@@ -25,7 +25,7 @@ export const SocketContextProvider: FC<{ children: ReactNode }> = ({ children })
             reconnectionAttempts: 20,
             randomizationFactor: 0.6,
             reconnectionDelay: 3000,
-            transports: ["websocket"],
+            transports: ["polling", "websocket"],
         })
 
         socketInstance.on("connect", () => {
@@ -45,8 +45,8 @@ export const SocketContextProvider: FC<{ children: ReactNode }> = ({ children })
             if (stateUserId) {
                 const socketDisconnected = !!Socket?.disconnect().connected;
                 setIsConnected(socketDisconnected);
-    
-                if(!socketDisconnected){
+
+                if (!socketDisconnected) {
                     console.log("listeners removed");
                     Socket?.removeAllListeners();
                 }
