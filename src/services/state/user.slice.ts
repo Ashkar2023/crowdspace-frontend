@@ -1,16 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ILoginState, IUserState, IUser } from "~types/dto/user.dto";
+import { ILoginState, IUserState, IUser, IConfiguration } from "~types/dto/user.dto";
 
 const clientStateObj: ILoginState = {
     isLoggedIn: false
 }
+
+/* FIX this default state */
+const configuration: IConfiguration = {
+    privateAccount: false,
+    suggestionInProfile: true,
+    PushNotifications: null,
+    inAppNotifications: null
+};
 
 const serverStateObj: IUser = {
     username: null,
     displayname: null,
     isVerified: false,
     gender: undefined,
-    configuration: null,
+    configuration: configuration,
     bio: undefined,
     links: [],
     cover: undefined,
@@ -81,6 +89,13 @@ const userSlice = createSlice({
                     state.followersCount = --state.followingsCount;
                 }
             }
+        },
+        updatePrivacyState: (state, { payload }) => {
+            // @ts-ignore FIX
+            state.configuration = {
+                ...state.configuration,
+                privateAccount: payload.state,
+            };
         }
     }
 })
@@ -91,7 +106,8 @@ export const {
     updateUserProfile,
     setStoreUsername,
     updateFollowingsCount,
-    updateAvatar
+    updateAvatar,
+    updatePrivacyState
 } = userSlice.actions;
 
 export default userSlice.reducer;

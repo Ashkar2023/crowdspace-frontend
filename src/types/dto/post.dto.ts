@@ -45,6 +45,7 @@ export type T_Post = {
     author: IBasicUser, //last added
     archived: boolean,
     likesCount: number,
+    liked:boolean,
     commentsCount: number,
     shareCount: number,
     location?: GeoPoint,
