@@ -9,7 +9,7 @@ import { useAppSelector } from "~hooks/useReduxHooks";
 import { IncomingCallData } from "~types/context/socketContext.types";
 import { INotification } from "~types/dto/notification.dto";
 import { buildImageUrl } from "~utils/imageUrl";
-import { NotificationPhrases } from "~constants/notification.phrases";
+import { type INotificationPhrases, NotificationPhrases } from "~constants/notification.phrases";
 import { NotificationKind } from "~constants/notification";
 import { toastSuccessTheme } from "~config/toastTheme.config";
 
@@ -84,7 +84,7 @@ export const SocketEventsMounter = () => {
                     name={actor.displayname}
                 />
                 <p className="font-extralight text-sm">
-                    {NotificationPhrases[notification.type as keyof typeof NotificationPhrases](actor.username)}
+                    {NotificationPhrases[notification.type as keyof INotificationPhrases](actor.username)}
                 </p>
             </div>
         ), {
