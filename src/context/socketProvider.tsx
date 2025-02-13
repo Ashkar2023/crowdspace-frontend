@@ -25,6 +25,7 @@ export const SocketContextProvider: FC<{ children: ReactNode }> = ({ children })
             reconnectionAttempts: 20,
             randomizationFactor: 0.6,
             reconnectionDelay: 3000,
+            withCredentials:true,
             transports: ["polling", "websocket"],
         })
 

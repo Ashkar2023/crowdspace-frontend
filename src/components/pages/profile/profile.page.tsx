@@ -1,20 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import ProfileData from "./partials/profile.data";
 import ProfilePosts from "./partials/profile.posts";
-import { Suspense, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { protectedApi } from "~services/api/http";
-import { useAppDispatch, useAppSelector } from "~hooks/useReduxHooks";
+import { useAppSelector } from "~hooks/useReduxHooks";
 import { T_Post } from "~types/dto/post.dto";
-import { LuLoader } from "react-icons/lu";
 import { ProfileStateType } from "~types/components/profile.types";
-import { IBasicUser, IUser } from "~types/dto/user.dto";
 import { IFollow } from "~types/dto/follow.dto";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
-import { SocketContext } from "~/context/socketContext";
-import { SocketEvents } from "~constants/socket.events";
-import { toastSuccessTheme } from "~config/toastTheme.config";
-import { updateAvatar } from "~services/state/user.slice";
 
 export interface IFollows {
     followers: IFollow[];

@@ -1,30 +1,37 @@
-import { FC, MouseEvent, useCallback, useEffect, useState } from "react";
+import { FC, MouseEvent, RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { Avatar, Image, useDisclosure } from "@nextui-org/react";
 import { LuHeart, LuMessageCircle, LuShare } from "react-icons/lu";
 import { formatDistance } from "date-fns";
 import { useAppSelector } from "~hooks/useReduxHooks";
 import { T_Post } from "~types/dto/post.dto";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import fetchFeed from "~services/query/feed.queries";
 import { buildImageUrl, getFallbackImage } from "~utils/imageUrl";
 import { PostViewModal } from "~components/modals/post-view-modal/post-view.modal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const Feed: FC = () => {
     const userState = useAppSelector((state) => state.user);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    // const postContainerRef = useRef<HTMLDivElement>(null);
+    const { postContainerRef } = useOutletContext<{ postContainerRef: RefObject<HTMLDivElement> }>()
 
     const [posts, setPosts] = useState<T_Post[]>([]);
     const [activePost, setActivePost] = useState<T_Post | null>(null)
 
-    const { data, error, isFetching } = useQuery({
+    const { data, error, isFetching, fetchNextPage } = useInfiniteQuery({
         queryKey: ['feed'],
-        queryFn: fetchFeed,
+        queryFn: ({ pageParam }) => fetchFeed(pageParam),
+        getNextPageParam(lastPage, allPages) {
+            return lastPage.nextPageParam
+        },
+        initialPageParam: 1
     });
 
     useEffect(() => {
-        if (data?.body.posts) {
-            setPosts(data?.body.posts)
+        console.log(data)
+        if (data?.pages) {
+            setPosts(data?.pages.reduce<T_Post[]>((acc, cur) => acc.concat(cur.body.posts), []))
         }
     }, [data])
 
@@ -38,7 +45,7 @@ const Feed: FC = () => {
         const clickedTarget = event.target as HTMLElement;
         const postCard = clickedTarget.closest(".post_card");
         const postIndex = parseInt(postCard?.getAttribute("data-index")!);
-        
+
         // // post actions 
         // if (clickedTarget.classList.contains("post-actions")) {
         //     setActivePost(posts[postIndex]);
@@ -50,13 +57,32 @@ const Feed: FC = () => {
             setActivePost(posts[postIndex]);
             postViewModalDisclosure.onOpen();
         }
-        
+
         /* routing for click on avatar & usename */
         if (clickedTarget.classList.contains("post-user-avatar") || clickedTarget.classList.contains("post-username")) {
             const postIndex = (clickedTarget.closest(".post") as HTMLElement).dataset.postIndex;
             navigate(`/profile/@${posts[+postIndex!].author.username}`);
         }
     }, [posts])
+
+    // SHOULD remove this logic and fix the UI and rewrite appropriately
+    const captureScrollEndHandler = (ev: Event) => {
+        const el = ev.target as HTMLDivElement;
+        ev.stopPropagation()
+
+        fetchNextPage()
+    }
+
+    useEffect(() => {
+        console.log("p", postContainerRef.current)
+        // postContainerRef.current?.addEventListener("scrollend", captureScrollEndHandler, { capture: true })
+        window.addEventListener("scrollend", captureScrollEndHandler, { capture: true })
+
+        return () => {
+            // postContainerRef.current?.removeEventListener("scrollend", captureScrollEndHandler, { capture: true })
+            window.removeEventListener("scrollend", captureScrollEndHandler, { capture: true })
+        }
+    }, [])
 
     return (
         <>
@@ -65,8 +91,12 @@ const Feed: FC = () => {
                 disclosure={postViewModalDisclosure}
             />
 
-            <div className="posts-container w-full" onClick={(e) => handleClick(e)}>
-                {data?.body.posts.map((post, index) => (
+            <div
+                className="posts-container w-full"
+                onClick={(e) => handleClick(e)}
+                ref={postContainerRef}
+            >
+                {posts.map((post, index) => (
                     <div
                         key={post._id}
                         data-post-index={index}
@@ -109,7 +139,11 @@ const Feed: FC = () => {
                         <div className="flex items-center justify-between pl-12">
                             <div className="px-2 space-y-2 space-x-3 text-app-t-secondary">
                                 <button className="">
-                                    <LuHeart size={20} className="" />
+                                    <LuHeart size={20}
+                                        className=""
+                                        fill={post.liked ? "red" : "transparent"}
+                                        color={post.liked ? "red" : ""}
+                                    />
                                 </button>
                                 <button className="">
                                     <LuMessageCircle size={20} className="" />

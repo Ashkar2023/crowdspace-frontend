@@ -29,7 +29,7 @@ const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure, user_id }
 
     const followingsQuery = useInfiniteQuery({
         queryKey: [user_id, 'followings'],
-        queryFn: ({ pageParam = 0 }) => fetchFollowings(pageParam, activeTab, user_id),
+        queryFn: ({ pageParam }) => fetchFollowings(pageParam, activeTab, user_id),
         initialPageParam: 1,
         getNextPageParam: (recentData) => recentData.nextPageParam,
         enabled: activeTab === 'followings',
@@ -72,11 +72,15 @@ const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure, user_id }
     return (
         <Modal
             isOpen={disclosure.isOpen}
+            /* FIX onClose bug */
             onClose={disclosure.onClose}
-            hideCloseButton={true}
+            // hideCloseButton={true}
             isDismissable={true}
             backdrop="opaque"
-            className="bg-app-secondary h-[420px] "
+            className="bg-app-secondary h-[420px]"
+            classNames={{
+                closeButton:['rounded-xl']
+            }}
             size='xs'
             motionProps={{
                 variants: {

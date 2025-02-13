@@ -9,6 +9,30 @@ export interface IBasicUser {
     _id: string | undefined
 }
 
+// FIX null
+export type IConfiguration = {
+    privateAccount: boolean,
+    suggestionInProfile: boolean,
+    PushNotifications: {
+        likes: boolean,
+        comments: boolean,
+        follows: boolean,
+        messages: boolean,
+        stories: boolean,
+        posts: boolean,
+        liveStream: boolean
+    } | null,
+    inAppNotifications: {
+        likes: boolean,
+        comments: boolean,
+        follows: boolean,
+        messages: boolean,
+        stories: boolean,
+        posts: boolean,
+        liveStream: boolean
+    } | null
+}
+
 export interface IUser {
     username: string | null,
     displayname: string | null,
@@ -16,7 +40,7 @@ export interface IUser {
     _id: string | undefined
     isVerified: boolean,
     gender: "M" | "F" | undefined,
-    configuration: null,
+    configuration: null | IConfiguration,
     bio: string | undefined,
     followersCount: number,
     followingsCount: number,
