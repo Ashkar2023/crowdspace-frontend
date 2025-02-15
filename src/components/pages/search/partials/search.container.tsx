@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
 import { LuSearch } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
-import { searchQueryFetch } from "~services/query/search.query";
+import { searchQueryFetch } from "~services/query/search.queries";
 import { IBasicUser } from "~types/dto/user.dto";
 import { debounce } from "~utils/debounce";
 import { buildImageUrl } from "~utils/imageUrl";
