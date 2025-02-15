@@ -72,7 +72,7 @@ export const CreateAccount = () => {
             return
         }
 
-        if (values.password !== Cpassword) {
+        if (values.password !== Cpassword.trim()) {
             setError("root.cpassword", { type: "pswdEqualError", message: "password doesn't match" });
             return
         }
