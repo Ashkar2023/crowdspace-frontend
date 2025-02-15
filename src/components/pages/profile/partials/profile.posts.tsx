@@ -6,6 +6,7 @@ import PostEditModal from "~components/modals/post-edit-modal/post-edit.modal"
 import { PostViewModal } from "~components/modals/post-view-modal/post-view.modal"
 import { T_Post } from "~types/dto/post.dto"
 import { ReportTargets } from "~types/dto/report.dto"
+import { buildImageUrl } from "~utils/imageUrl"
 
 type Props = {
     posts: T_Post[], // Give valid type
@@ -84,7 +85,7 @@ const ProfilePosts: FC<Props> = ({ posts, setPosts }) => {
             <div className="flex flex-wrap gap-4 mx-auto mb-8" ref={postsWrapperRef}>
                 {posts &&
                     posts.map((post, index) => {
-                        const imgUrl = new URL(post.media[0].media_url, "http://localhost:4100")
+                        const imgUrl = buildImageUrl(post.media[0].media_url);
 
                         return (
                             <div
