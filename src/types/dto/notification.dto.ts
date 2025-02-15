@@ -1,17 +1,26 @@
 import { NotificationKind } from "~constants/notification"
 import { IBasicUser } from "./user.dto"
+import { FollowStatus } from "./follow.dto"
+
+export enum followRequestStatus {
+    pending = "pending",
+    accepted = "accepted",
+    declined = "declined"
+}
 
 export type INotification = {
-    type: NotificationKind,
     actor: IBasicUser,
     is_read: boolean,
     recipient_id: string,
     /**
      * the target Id of the notification
      * the actual comment/like or follow request.
-     */
+    */
     target: string,
     createdAt: string,
     updatedAt: string,
     _id: string
-}
+} & (
+        | { type: NotificationKind.followRequest, status: followRequestStatus }
+        | { type: Exclude<NotificationKind, NotificationKind.followRequest> }
+    )
