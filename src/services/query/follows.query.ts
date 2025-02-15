@@ -1,26 +1,39 @@
+import { AxiosResponse } from 'axios';
 import { activeTab } from '~components/modals/follows-list-modal/follow-list.modal';
 import { protectedApi } from '~services/api/http';
-import { IFollowee, IFollower } from '~types/dto/follow.dto';
+import { IFollow, IFollowee, IFollower } from '~types/dto/follow.dto';
+import { INotification } from '~types/dto/notification.dto';
 
-interface ApiResponse<T> {
+interface ApiResponse<T>{
     body: T
     message: string;
     success: boolean;
+}
+
+interface PaginatedApiResponse<T> extends ApiResponse<T> {
     nextPageParam: number | null
 }
 
-export const fetchFollowers = async (pageParam: number = 0, activeTab: activeTab, userId: string): Promise<ApiResponse<IFollower[]>> => {
+export const fetchFollowers = async (pageParam: number = 0, activeTab: activeTab, userId: string): Promise<PaginatedApiResponse<IFollower[]>> => {
     const response = await protectedApi
-        .get<ApiResponse<IFollower[]>>(`/users/${userId}/${activeTab}`, {
+        .get<PaginatedApiResponse<IFollower[]>>(`/users/${userId}/${activeTab}`, {
             params: { page: pageParam }
         });
     return { ...response.data, nextPageParam: ++pageParam };
 };
 
-export const fetchFollowings = async (pageParam: number = 0, activeTab: activeTab, userId: string): Promise<ApiResponse<IFollowee[]>> => {
+export const fetchFollowings = async (pageParam: number = 0, activeTab: activeTab, userId: string): Promise<PaginatedApiResponse<IFollowee[]>> => {
     const response = await protectedApi
-        .get<ApiResponse<IFollowee[]>>(`/users/${userId}/${activeTab}`, {
+        .get<PaginatedApiResponse<IFollowee[]>>(`/users/${userId}/${activeTab}`, {
             params: { page: pageParam }
         });
-    return { ...response.data, nextPageParam: response.data.body.length < pageParam ? null : ++pageParam };
+    return { ...response.data, nextPageParam: ++pageParam };
 };
+
+export const acceptFollowRequest = async (followNotf : INotification) : Promise<ApiResponse<IFollow>> => {
+    const response = await protectedApi.patch(`/users/${followNotf.target}/accept`, {
+        followerId: followNotf.actor._id, 
+    })
+
+    return response.data
+}

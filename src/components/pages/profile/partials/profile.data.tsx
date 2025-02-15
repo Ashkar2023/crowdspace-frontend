@@ -54,10 +54,9 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
         try {
             /* handle current user profile */
             const { data, status } = profileData?.outgoingFollow?.status ?
+                /* Hanlde remove follow request */
                 await protectedApi.delete(`/users/${profileData?.profile._id}/follow`) :
-                await protectedApi.post(`/users/${profileData?.profile._id}/follow`, {
-                    privateAccount: false // CHANGE, for now only
-                })
+                await protectedApi.post(`/users/${profileData?.profile._id}/follow`)
 
             data.success && toast.success(data.message, {
                 duration: 1400,
@@ -68,13 +67,15 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                     color: "var(--app-text-primary)",
                     border: "1px solid var(--app-tertiary)"
                 }
-            }) && setProfileDetails({
+            }) 
+            
+            data.success && setProfileDetails({
                 ...profileData!,
                 outgoingFollow: {
                     ...data.body
                 }
             });
-            
+
             // data.success && dispatch(updateFollowingsCount({
             //     action: profileData.outgoingFollow ? "followed" : "unfollowed" //weak logic
             // }))
@@ -192,10 +193,12 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
 
             {/* Follower/Following counts */}
             <div className="flex justify-around">
-                {[
-                    ['postsCount', "Post"],
-                    ['followersCount', "Followers"],
-                    ['followingsCount', "Followings"]].map(([item, title]) => {
+                {
+                    [
+                        ['postsCount', "Post"],
+                        ['followersCount', "Followers"],
+                        ['followingsCount', "Followings"]
+                    ].map(([item, title]) => {
                         if (item === "postsCount") {
                             return (
                                 <div key={item} className="text-center">
@@ -210,7 +213,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                         } else {
                             return (
                                 <div key={item} className="text-center">
-                                    <b className="">{profileData?.profile[item as keyof IUser]}</b>
+                                    <b className="">{profileData?.profile[item as keyof IUser] as string}</b>
                                     <br />
                                     <button
                                         className="max-w-18 px-10 mb-1 "
