@@ -12,6 +12,7 @@ import { LuX } from "react-icons/lu"
 export const HomeLayout: FC = () => {
     const setModalStateRef = useRef<onCloseRef>(null);
     const { pathname } = useLocation();
+    const postContainerRef = useRef<HTMLDivElement>(null);
 
     const [updates, setUpdates] = useState<boolean>(false);
 
@@ -22,6 +23,26 @@ export const HomeLayout: FC = () => {
     useEffect(() => {
         setUpdates(false)
     }, [pathname])
+
+    // SHOULD remove this logic and fix the UI and rewrite appropriately
+    const scrollHandler = (ev: Event) => {
+        const el = ev.target as HTMLDivElement;
+        console.table({
+            scrollTop: el.scrollTop,
+            scrollHeight: el.scrollHeight,
+            clientH: el.clientHeight,
+        })
+    }
+
+    // SHOULD remove this logic and fix the UI and rewrite appropriately
+    useEffect(() => {
+        console.log("post ref", postContainerRef.current)
+        postContainerRef.current?.addEventListener("scrollend", scrollHandler, { capture: true })
+
+        return () => {
+            postContainerRef.current?.removeEventListener("scrollend", scrollHandler, { capture: true })
+        }
+    }, [])
 
     return (
         <div className="md:grid md:grid-cols-[3fr_9fr] min-h-screen bg-app-primary text-app-t-primary relative">
@@ -70,8 +91,12 @@ export const HomeLayout: FC = () => {
                     </motion.div>
                 }
             </AnimatePresence> */}
-            <div className="flex flex-col max-h-dvh overflow-y-scroll border-l border-app-tertiary">
-                <Outlet />
+            <div
+                className="flex flex-col max-h-dvh overflow-y-scroll border-l border-app-tertiary"
+                ref={postContainerRef}
+            >
+                {/* <div className="flex flex-col max-h-dvh border-l border-app-tertiary"> */}
+                <Outlet context={{ postContainerRef }} />
             </div>
             <PostModal isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose} ref={setModalStateRef} />
         </div>

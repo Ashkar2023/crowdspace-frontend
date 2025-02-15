@@ -1,5 +1,5 @@
 import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Skeleton, Switch, User } from '@nextui-org/react';
-import { Dispatch, FC, MouseEvent, useContext, useState } from 'react';
+import { Dispatch, FC, useContext, useState } from 'react';
 import { LuBell, LuCompass, LuHome, LuLogOut, LuMessageCircle, LuPackage, LuPackageOpen, LuPen, LuSearch, LuSettings2, LuSun, LuUserSquare2, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
 import { clearUser } from '~services/state/user.slice';
@@ -16,8 +16,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import fetchNotifications from '~services/query/notification.queries';
 import { buildImageUrl } from '~utils/imageUrl';
-import { NotificationPhrases } from '~constants/notification.phrases';
-import { NotificationKind } from '~constants/notification';
+import { isFollowRequestNotification, NotificationPhrases } from '~constants/notification.phrases';
+import { PressEvent } from '@react-types/shared';
 
 const navItems: NavItem[] = [
     { href: '/', label: "Home", icon: LuHome, mobileNav: true },
@@ -52,7 +52,7 @@ const Navbar: FC<Props> = ({
 
     const [isMoreOpen, setMoreOpen] = useState<boolean>(false);
 
-    const handleLogout = async (e: MouseEvent) => {
+    const handleLogout = async (e: PressEvent) => {
         try {
             await userApiProtected.get("/auth/logout");
             dispatch(clearUser());
@@ -149,6 +149,7 @@ const Navbar: FC<Props> = ({
                         <DropdownMenu>
                             <DropdownSection showDivider>
                                 <DropdownItem
+                                    key="theme"
                                     className='cursor-default data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'
                                     closeOnSelect={false}
                                     endContent={
@@ -172,7 +173,9 @@ const Navbar: FC<Props> = ({
                             <DropdownSection showDivider>
                                 <DropdownItem
                                     // SHOULDN'T DO href on this. It will refresh the application
-                                    onClick={() => { navigate("/settings") }}
+                                    // try passing useHref from react-router-dom to nextUI provider
+                                    key="theme"
+                                    onPress={() => { navigate("/settings") }}
                                     startContent={<LuSettings2 size={18} />}
                                     textValue='Settings'
                                     className='data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'
@@ -180,7 +183,8 @@ const Navbar: FC<Props> = ({
                                     Settings
                                 </DropdownItem>
                                 <DropdownItem
-                                    onClick={() => { navigate(`/profile/@${userState.username}`) }}
+                                    key="profile"
+                                    onPress={() => { navigate(`/profile/@${userState.username}`) }}
                                     startContent={<LuUserSquare2 size={18} />}
                                     textValue='Profile'
                                     className='data-[hover=true]:bg-app-secondary data-[hover=true]:text-t-app-primary'
@@ -193,7 +197,7 @@ const Navbar: FC<Props> = ({
                                     key="logout"
                                     color='danger'
                                     startContent={<LuLogOut />}
-                                    onClick={handleLogout}
+                                    onPress={handleLogout}
                                 >Logout
                                 </DropdownItem>
                             </DropdownSection>
@@ -244,7 +248,7 @@ const Navbar: FC<Props> = ({
                             >
                                 {
                                     isSuccess && data?.body.count! > 0 ?
-                                        data?.body.notifications.map((notf, index) => {
+                                        data?.body.notifications.map((notification, index) => {
                                             return (
                                                 <div
                                                     className='flex w-full px-3 py-3 hover:bg-app-secondary cursor-pointer'
@@ -255,15 +259,19 @@ const Navbar: FC<Props> = ({
                                                 >
 
                                                     <Avatar
-                                                        src={buildImageUrl(notf.actor.avatar).href}
-                                                        name={notf.actor.displayname}
+                                                        src={buildImageUrl(notification.actor.avatar).href}
+                                                        name={notification.actor.displayname}
                                                         showFallback
                                                         className='w-11 h-11 border border-app-tertiary rounded-full bg-app-tertiary'
                                                     />
 
-                                                    <p className="font-extralight text-sm my-auto ms-2 h-full">
-                                                        {NotificationPhrases[notf.type as keyof typeof NotificationKind](notf.actor.username)}
-                                                    </p>
+                                                    <div className="font-extralight flex-grow text-sm my-auto ms-2 h-full">
+                                                        {
+                                                            isFollowRequestNotification(notification.type) ?
+                                                                NotificationPhrases[notification.type](notification) :
+                                                                NotificationPhrases[notification.type](notification.actor.username)
+                                                        }
+                                                    </div>
                                                 </div>
                                             )
                                         })

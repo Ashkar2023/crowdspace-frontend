@@ -47,7 +47,7 @@ export const ChatContainer = () => {
     }, [data]);
 
     const handleIncomingMessages = (message: IMessage) => {
-        setChatMessages(prev => [...prev, message]);
+        setChatMessages(prev => { return [...prev, message] });
         // FIX cache hit
     }
 
