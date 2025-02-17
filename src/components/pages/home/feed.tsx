@@ -128,7 +128,7 @@ const Feed: FC = () => {
                                 data-index={index}
                                 loading="eager"
                                 classNames={{
-                                    wrapper: ["min-h-80", "min-w-fit", "ml-12", "mt-4", "bg-center", "bg-slate-300 bg-blend-multiply", "bg-no-repeat"],
+                                    wrapper: ["min-h-80", "min-w-fit", "ml-12", "mt-4", "bg-center", "bg-slate-300", "bg-blend-multiply", "bg-no-repeat"],
                                     img: ["max-w-fit", "max-h-80", "object-contain", "bg-black", "z-0"]
                                 }}
                                 fallbackSrc={getFallbackImage("post").href}

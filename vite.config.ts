@@ -12,6 +12,7 @@ export default defineConfig({
             }
         }
     },
+    mode:"dev",
     server: {
         host: "0.0.0.0"
     },
