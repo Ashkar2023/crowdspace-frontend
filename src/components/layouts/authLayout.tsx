@@ -3,6 +3,8 @@ import CrowdspaceLightIcon from "~assets/crowdspace-logo-light-theme.svg"
 import CrowdspaceDarkIcon from "~assets/crowdspace-logo-dark-theme.svg"
 import { FC, useContext } from "react"
 import { ThemeContext } from "~/context/themeContext"
+import { Link } from "@nextui-org/react"
+import { LuGithub } from "react-icons/lu"
 if (import.meta.env.MODE === "dev") {
     import("~/dev.css");
 }
@@ -29,6 +31,7 @@ export const AuthLayout: FC = () => {
                                 </div>
                             </div>
                             <div className="bg-gray-700 h-full px-4 flex items-center">
+                                <LuGithub className="m-1"/>
                                 <a
                                     href="https://github.com/Ashkar2023/crowdspace"
                                     target="_blank"
