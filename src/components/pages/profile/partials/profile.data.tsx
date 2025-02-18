@@ -16,36 +16,17 @@ import { buildImageUrl } from "~utils/imageUrl"
 import { IUser } from "~types/dto/user.dto"
 import FollowListModal from "~components/modals/follows-list-modal/follow-list.modal"
 import { useDispatch } from "react-redux"
-import { updateFollowingsCount } from "~services/state/user.slice"
 
 type Props = {
-    profileDetails: ProfileStateType | null,
+    profileData: ProfileStateType | null,
     setProfileDetails: Dispatch<SetStateAction<ProfileStateType | null>>
-    follows: IFollows
 }
 
-const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) => {
+const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
     const navigate = useNavigate();
     const { username } = useParams()
-    const dispatch = useDispatch();
-    const userState = useAppSelector(state => state.user);
+    const stateUsername = useAppSelector(state => state.user.username);
     const chatContext = useContext(ChatContext);
-
-    /** 
-     * conditionally accumulated profile data
-     * for the difference in getting the data from logged in user or other user
-     */
-    const profileData: ProfileStateType = profileDetails ?
-        {
-            ...profileDetails
-        } :
-        {
-            incomingFollow: null,
-            outgoingFollow: null,
-            profile: {
-                ...userState
-            }
-        }
 
     const [openTab, setOpenTab] = useState<"followers" | "followings" | null>(null);
     const [chatLoading, setChatLoading] = useState<boolean>(false);
@@ -67,8 +48,8 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                     color: "var(--app-text-primary)",
                     border: "1px solid var(--app-tertiary)"
                 }
-            }) 
-            
+            })
+
             data.success && setProfileDetails({
                 ...profileData!,
                 outgoingFollow: {
@@ -76,9 +57,6 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                 }
             });
 
-            // data.success && dispatch(updateFollowingsCount({
-            //     action: profileData.outgoingFollow ? "followed" : "unfollowed" //weak logic
-            // }))
         } catch (error) {
             if (error instanceof Error)
                 console.log(error.message)
@@ -86,7 +64,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
     }
 
     const followerId = profileData?.profile._id as string;
-    const { mutate, isIdle, isPending, isSuccess, data, } = useMutation({
+    const { mutate: fetchChatData, isIdle, isPending, isSuccess, data, } = useMutation({
         mutationKey: ["fetchChatDetail"],
         mutationFn: () => findOrCreateUserChat(followerId),
         retry: false,
@@ -112,26 +90,29 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
     })
 
     return (
-        <div className="max-w-4xl min-h-96 p-4 space-y-4">
+        <div className="max-w-4xl p-4 space-y-4">
             {/* Profile header */}
             <div className="flex items-center space-x-4">
                 {/* Profile picture */}
-                <div className="size-32 rounded-full overflow-clip bg-app-tertiary">
-                    <Avatar
-                        src={buildImageUrl(profileData?.profile.avatar as string ?? userState.avatar).href}
-                        name={profileData?.profile.displayname!}
-                        showFallback
-                        color="default"
-                        className="h-full w-full"
-                    />
+                <div className="size-32 aspect-square rounded-full overflow-clip bg-app-tertiary">
+                    {
+                        profileData?.profile?.avatar &&
+                        <Avatar
+                            src={buildImageUrl(profileData?.profile?.avatar).href}
+                            name={profileData?.profile.displayname!}
+                            showFallback
+                            color="default"
+                            className="h-full w-full"
+                        />
+                    }
                 </div>
 
                 {/* Username and buttons */}
                 <div className="flex-1 space-y-2">
-                    <h3 className="text-2xl font-medium">{profileData?.profile.username ?? userState.username}</h3>
+                    <h3 className="text-2xl font-medium">{profileData?.profile.username ?? "Crowdspace User"}</h3>
                     <div className="flex space-x-2">
                         {
-                            username?.replace("@", "") !== userState.username ?
+                            username?.replace("@", "") !== stateUsername ?
                                 <>
                                     <Button
                                         variant="solid"
@@ -151,7 +132,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                                         variant="light"
                                         size="sm"
                                         className="text-sm text-app-t-primary px-4 border-2 border-app-tertiary min-w-24"
-                                        onPress={() => mutate()}
+                                        onPress={() => fetchChatData()}
                                     >
                                         {
                                             chatLoading ?
@@ -204,9 +185,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
                                 <div key={item} className="text-center">
                                     <b className="">{profileData?.profile.postsCount}</b><br />
                                     <p className="max-w-18 px-10 mb-1">
-                                        {
-                                            title
-                                        }
+                                        {title}
                                     </p>
                                 </div>
                             )
@@ -230,7 +209,7 @@ const ProfileData: FC<Props> = ({ profileDetails, setProfileDetails, follows }) 
 
             <FollowListModal
                 disclosure={followListDisclosure}
-                user_id={profileData.profile._id!}
+                user_id={profileData?.profile?._id!}
             />
 
         </div>

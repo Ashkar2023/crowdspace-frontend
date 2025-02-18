@@ -9,6 +9,7 @@ import { ProfileStateType } from "~types/components/profile.types";
 import { IFollow } from "~types/dto/follow.dto";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { LuLock } from "react-icons/lu";
 
 export interface IFollows {
     followers: IFollow[];
@@ -27,9 +28,8 @@ const initialFollows: IFollows = {
 const ProfilePage = () => {
     const { username } = useParams();
     const loggedInUsername = useAppSelector(state => state.user.username);
-    const [profileDetails, setProfileDetails] = useState<ProfileStateType | null>(null); // GIVE Type for state here
+    const [profileDetails, setProfileDetails] = useState<ProfileStateType | null>(null);
     const [posts, setPosts] = useState<T_Post[]>([]);
-    const [follows, setFollows] = useState<IFollows>(initialFollows);
     const navigate = useNavigate();
 
 
@@ -38,34 +38,21 @@ const ProfilePage = () => {
             try {
                 const { data: { body } } = await protectedApi.get(`/profile/${encodeURIComponent(username!)}`, { //contains both posts and user details
                     headers: {
-                        "X-logged-in-username": loggedInUsername //do i need this here
+                        "X-logged-in-username": loggedInUsername
                     }
-                });
-
+                }); //contains both posts and user details
                 setPosts(body.posts);
 
-                /**
-                 * CHANGE
-                 * The backend only returns posts,(excluding follows) for logged In user
-                 * Issue 002
-                */
-
-                // comeup with ideas to cache or fetch follows
-                const { data } = await protectedApi.get(`/user/${body.profile._id}/follows`);
-
-                setFollows(data.body);
                 setProfileDetails({
                     profile: {
                         ...body.profile,
-                        followersCount: data.body.followersCount,
-                        followingsCount: data.body.followingsCount
                     },
                     incomingFollow: body.incomingFollow,
                     outgoingFollow: body.outgoingFollow,
+                    accessGranted: body.accessGranted
                 });
 
             } catch (error) {
-                // FIX Issue 002
                 if (!(error instanceof AxiosError)) return;
 
                 console.log("From ProfilePage", error)
@@ -86,12 +73,25 @@ const ProfilePage = () => {
         <div className="mobile:mx-12">
             {/* <Suspense fallback={<LuLoader className="animate-spin" />}> */}
             <ProfileData
-                profileDetails={profileDetails}
+                profileData={profileDetails}
                 setProfileDetails={setProfileDetails}
-                follows={follows}
             />
             {/* </Suspense> */}
-            <ProfilePosts posts={posts} setPosts={setPosts} />
+            {
+                profileDetails?.accessGranted ?
+                    (
+                        <ProfilePosts posts={posts} setPosts={setPosts} />
+                    ) :
+                    (
+                        <div className="flex flex-col items-center justify-center mt-10 p-6 border border-app-tertiary text-app-t-primary">
+                            <LuLock size={30} />
+                            <h2 className="text-xl font-semibold">This Account is Private</h2>
+                            <p className="text-sm text-gray-400 mt-2">
+                                Follow this user to see their posts.
+                            </p>
+                        </div>
+                    )
+            }
         </div>
     )
 }

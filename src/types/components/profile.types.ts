@@ -4,5 +4,6 @@ import { IUser } from "~types/dto/user.dto";
 export type ProfileStateType = {
     profile:IUser,
     outgoingFollow: IFollow | null,
-    incomingFollow: IFollow | null
+    incomingFollow: IFollow | null,
+    accessGranted:boolean
 };
