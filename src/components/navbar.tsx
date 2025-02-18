@@ -1,5 +1,5 @@
 import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Skeleton, Switch, User } from '@nextui-org/react';
-import { Dispatch, FC, useContext, useState } from 'react';
+import { Dispatch, FC, useContext, useEffect, useState } from 'react';
 import { LuBell, LuCompass, LuHome, LuLogOut, LuMessageCircle, LuPackage, LuPackageOpen, LuPen, LuSearch, LuSettings2, LuSun, LuUserSquare2, LuX } from 'react-icons/lu';
 import { Link, useNavigate } from 'react-router-dom';
 import { clearUser } from '~services/state/user.slice';
@@ -18,6 +18,8 @@ import fetchNotifications from '~services/query/notification.queries';
 import { buildImageUrl } from '~utils/imageUrl';
 import { isFollowRequestNotification, NotificationPhrases } from '~constants/notification.phrases';
 import { PressEvent } from '@react-types/shared';
+import { INotification } from '~types/dto/notification.dto';
+import { useNotifications } from '~/context/notificationContext';
 
 const navItems: NavItem[] = [
     { href: '/', label: "Home", icon: LuHome, mobileNav: true },
@@ -45,6 +47,7 @@ const Navbar: FC<Props> = ({
     const themeContext = useContext(ThemeContext);
     const { Socket, socketConnected } = useContext(SocketContext);
     const navigate = useNavigate();
+    const { notifications, setNotifications, notificationsCount, setNotificationsCount } = useNotifications();
 
     const selectedTheme = useAppSelector(state => state.app.theme);
     const userState = useAppSelector(state => state.user);
@@ -67,7 +70,16 @@ const Navbar: FC<Props> = ({
     const { data, error, isFetching, isSuccess } = useQuery({
         queryKey: ["notifications"],
         queryFn: fetchNotifications,
+        select(data) {
+            return data.body;
+        },
+        retry: false
     })
+
+    useEffect(() => {
+        setNotifications(data?.notifications!);
+        setNotificationsCount(data?.count!);
+    }, [data, isSuccess])
 
     return (
         <>
@@ -247,8 +259,8 @@ const Navbar: FC<Props> = ({
                                 className='divide-y-1 divide-app-tertiary'
                             >
                                 {
-                                    isSuccess && data?.body.count! > 0 ?
-                                        data?.body.notifications.map((notification, index) => {
+                                    isSuccess && notificationsCount > 0 ?
+                                        notifications.map((notification, index) => {
                                             return (
                                                 <div
                                                     className='flex w-full px-3 py-3 hover:bg-app-secondary cursor-pointer'

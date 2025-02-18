@@ -15,5 +15,5 @@ export enum NotificationKind {
     mention = "mention",
     message="message",
     followRequest = "follow_request",
-    // followAccept = "follow_accept",
+    followRequestAccepted = "follow_request_accepted"
 }

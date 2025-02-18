@@ -1,6 +1,7 @@
 import { NotificationKind } from "./notification";
 import { followRequestStatus, INotification } from "~types/dto/notification.dto";
 import FollowRequestButton from "~components/ui/followRequest.button";
+import type { Dispatch, SetStateAction } from "react";
 
 const usernameClass: string = "hover:underline decoration-1 underline-offset-2 decoration-dotted";
 
@@ -47,16 +48,16 @@ export const NotificationPhrases: INotificationPhrases = {
         </b>
         <br />sent you a message</>,
 
-    follow_request: (followNotf: INotification) => {
+    follow_request: (followNotf) => {
 
-        if(followNotf.type !== NotificationKind.followRequest){
+        if (followNotf.type !== NotificationKind.followRequest) {
             throw new Error("follow request type does not match");
         }
 
         const statusMap: Record<followRequestStatus, string> = {
-            [followRequestStatus.accepted]: "requested accepted",
+            [followRequestStatus.accepted]: "request accepted",
             [followRequestStatus.declined]: "request declined",
-            [followRequestStatus.pending]: "requested to follow you",
+            [followRequestStatus.pending]: "requested to follow",
         }
 
         return (
@@ -72,10 +73,14 @@ export const NotificationPhrases: INotificationPhrases = {
                     </p>
                 </div>
                 <FollowRequestButton followNotf={followNotf} />
-                {/* //FIX by status! --> status calling the follow request on the type with condition in socketEventsMounter  */}
             </div>
         )
+    },
 
-    }
+    follow_request_accepted: (actorUsername) => <>
+        <b className={usernameClass}>
+            {actorUsername}
+        </b>
+        <br />accpeted your follow request</>,
 
 };

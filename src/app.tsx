@@ -15,6 +15,8 @@ import { ThemeProvider } from './context/themeProvider';
 import { SocketContextProvider } from './context/socketProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ChatContextProvider } from './context/chatProvider';
+import { NotificationsContext } from './context/notificationContext';
+import { NotificationsProvider } from './context/notificationProvider';
 
 export default function App() {
 
@@ -26,15 +28,18 @@ export default function App() {
                         <ThemeProvider>
                             {/* research and change this(GoogleAuthProvider) into the auth routes */}
                             <GoogleOAuthProvider clientId={import.meta.env.VITE_OAUTH_CLIENT_ID}>
-                                <Toaster position='top-center' />
 
-                                <SocketContextProvider>
-                                    <ChatContextProvider>
+                                <NotificationsProvider>
+                                    <Toaster position='top-center' />
+                                    
+                                    <SocketContextProvider>
+                                        <ChatContextProvider>
 
-                                        <AppWrapper />
+                                            <AppWrapper />
 
-                                    </ChatContextProvider>
-                                </SocketContextProvider>
+                                        </ChatContextProvider>
+                                    </SocketContextProvider>
+                                </NotificationsProvider>
 
                             </GoogleOAuthProvider>
                         </ThemeProvider>
