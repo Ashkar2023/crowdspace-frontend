@@ -207,10 +207,13 @@ const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
                     })}
             </div>
 
-            <FollowListModal
-                disclosure={followListDisclosure}
-                user_id={profileData?.profile?._id!}
-            />
+            {
+                profileData &&
+                <FollowListModal
+                    disclosure={followListDisclosure}
+                    user_id={profileData?.profile?._id!}
+                />
+            }
 
         </div>
     )

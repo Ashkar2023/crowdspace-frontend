@@ -5,7 +5,7 @@ export const toastSuccessTheme = {
 }
 
 export const toastErrorTheme = {
-    background: "var(--app-secondary)",
+    background: "rgb(var(--app-secondary))",
     color: "red",
     border: "1px solid red"
 }
