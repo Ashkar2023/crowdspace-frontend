@@ -43,7 +43,9 @@ const FollowRequestButton: React.FC<FollowRequestNotificationProps> = ({ followN
         onError(error, variables, context) {
             console.log(error);
             console.log(context);
-            toast.error(error.message, {
+            // FIX with type
+            // @ts-ignore
+            toast.error(error.response.data.message, {
                 style: toastErrorTheme
             });
         },

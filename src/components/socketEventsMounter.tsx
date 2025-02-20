@@ -17,7 +17,7 @@ import { useNotifications } from "~/context/notificationContext";
 export const SocketEventsMounter = () => {
     const stateUserId = useAppSelector(state => state.user._id);
     const { Socket: socketInstance } = useContext(SocketContext);
-    const { setNotifications } = useNotifications();
+    const { setNotifications, setNotificationsCount } = useNotifications();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -72,6 +72,8 @@ export const SocketEventsMounter = () => {
         setNotifications(prev=>{
             return [notification, ...prev];
         })
+
+        setNotificationsCount(prev=> ++prev);
 
         /* 
             CHANGE
