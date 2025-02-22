@@ -63,7 +63,7 @@ const ProfilePosts: FC<Props> = ({ posts, setPosts }) => {
 
     return (
         <>
-            <PostViewModal disclosure={postViewModalDisclosure} activePost={activePost} /> {/* Set active post to context */}
+            <PostViewModal disclosure={postViewModalDisclosure} activePost={activePost} setActivePost={setActivePost} /> {/* FIX think about activePost convertion context */}
 
             {
                 < PostEditModal

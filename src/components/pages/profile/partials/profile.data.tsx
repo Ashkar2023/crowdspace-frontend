@@ -1,6 +1,6 @@
 import { Avatar, Button, useDisclosure } from "@nextui-org/react"
 import { PressEvent } from "@react-types/shared"
-import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from "react"
+import { Dispatch, FC, SetStateAction, useContext, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { LuLoader, LuUserMinus, LuUserPlus } from "react-icons/lu"
 import { protectedApi } from "~services/api/http"
@@ -28,7 +28,7 @@ const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
     const stateUsername = useAppSelector(state => state.user.username);
     const chatContext = useContext(ChatContext);
 
-    const [openTab, setOpenTab] = useState<"followers" | "followings" | null>(null);
+    // const [openTab, setOpenTab] = useState<"followers" | "followings" | null>(null);
     const [chatLoading, setChatLoading] = useState<boolean>(false);
 
     const followHandler = async (e: PressEvent) => {
@@ -109,7 +109,7 @@ const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
 
                 {/* Username and buttons */}
                 <div className="flex-1 space-y-2">
-                    <h3 className="text-2xl font-medium">{profileData?.profile.username ?? "Crowdspace User"}</h3>
+                    <h3 className="text-2xl font-medium ">{profileData?.profile.username ?? "Crowdspace User"}</h3>
                     <div className="flex space-x-2">
                         {
                             username?.replace("@", "") !== stateUsername ?
@@ -167,10 +167,24 @@ const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
 
             {/* Bio */}
             <div className="">
+                <p className="text-app-t-primary/75">{profileData?.profile.displayname}</p>
                 <p className="text-app-t-secondary">{profileData?.profile.bio}</p>
             </div>
 
             {/* Add links */}
+            <div className="">
+                {profileData?.accessGranted && profileData?.profile.links?.map((link, index) => (
+                    <a
+                        key={index}
+                        href={"https://"+link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-app-accent/75 block text-sm"
+                    >
+                        {link}
+                    </a>
+                ))}
+            </div>
 
             {/* Follower/Following counts */}
             <div className="flex justify-around">
@@ -183,7 +197,7 @@ const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
                         if (item === "postsCount") {
                             return (
                                 <div key={item} className="text-center">
-                                    <b className="">{profileData?.profile.postsCount}</b><br />
+                                    <b className="">{profileData?.profile.postsCount ?? 0}</b><br />
                                     <p className="max-w-18 px-10 mb-1">
                                         {title}
                                     </p>
@@ -192,7 +206,7 @@ const ProfileData: FC<Props> = ({ profileData, setProfileDetails }) => {
                         } else {
                             return (
                                 <div key={item} className="text-center">
-                                    <b className="">{profileData?.profile[item as keyof IUser] as string}</b>
+                                    <b className="">{profileData?.profile[item as keyof IUser] as string ?? 0}</b>
                                     <br />
                                     <button
                                         className="max-w-18 px-10 mb-1 "

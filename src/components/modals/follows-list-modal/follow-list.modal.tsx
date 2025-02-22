@@ -16,6 +16,7 @@ interface FollowListModalProps {
 export type activeTab = "followers" | "followings"
 
 const FollowListModal: React.FC<FollowListModalProps> = ({ disclosure, user_id }) => {
+    // FIX initial click tab selection
     const [activeTab, setActiveTab] = useState<activeTab>("followers");
     const containerRef = useRef<HTMLDivElement>(null);
     const queryClient = useQueryClient();

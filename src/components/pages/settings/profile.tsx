@@ -342,7 +342,7 @@ export const Profile = () => {
                         type="url"
                         variant="faded"
                         isClearable={true}
-                        description="click Enter to add link"
+                        description="Hit Enter to add link"
                         classNames={{
                             description: ["text-gray-700", "self-end", "pe-2"],
                             helperWrapper: ["pb-0.5"],
