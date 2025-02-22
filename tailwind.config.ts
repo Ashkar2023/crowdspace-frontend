@@ -18,7 +18,8 @@ export default {
                 "app-tertiary": "rgb(var(--app-tertiary) / <alpha-value>)",
                 "app-t-primary": "rgb(var(--app-text-primary) / <alpha-value>)",
                 "app-t-secondary": "rgb(var(--app-text-secondary) / <alpha-value>)",
-                "app-accent": "rgb(var(--app-accent) / <alpha-value>)" // this works fine
+                "app-accent": "rgb(var(--app-accent) / <alpha-value>)",
+                "app-error": "rgb(var(--app-error) / <alpha-value>)",
             },
             keyframes: {
                 slideDown: {

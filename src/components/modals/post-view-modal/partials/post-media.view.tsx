@@ -1,6 +1,7 @@
 import { Button } from "@nextui-org/react"
 import { PressEvent } from "@react-types/shared"
-import { act, FC, useEffect, useState } from "react"
+import { AxiosError } from "axios"
+import { act, Dispatch, FC, useEffect, useState } from "react"
 import { LuChevronLeft, LuChevronRight, LuHeart } from "react-icons/lu"
 import { protectedApi } from "~services/api/http"
 import { T_Post } from "~types/dto/post.dto"
@@ -8,15 +9,12 @@ import { buildImageUrl } from "~utils/imageUrl"
 
 type Props = {
     activePost: T_Post | null
+    setActivePost: Dispatch<React.SetStateAction<T_Post | null>>
 }
-export const PostMediaViewPartial: FC<Props> = ({ activePost }) => {
+export const PostMediaViewPartial: FC<Props> = ({ activePost, setActivePost }) => {
     const [index, setIndex] = useState<number>(0);
     const [postsURLs, setPostURLs] = useState<URL[]>([]);
-    /** 
-     * REMOVE this is a temporary setup until the current user actions on the post are aggregated with the posts fetch
-     * take aggregated "like" data of user on the post to show liked or not
-    */
-    const [liked, setLiked] = useState<boolean>(false);
+    const [liked, setLiked] = useState<boolean>(activePost?.liked!);
 
     useEffect(() => {
         const mappedUrls: URL[] = [];
@@ -29,20 +27,32 @@ export const PostMediaViewPartial: FC<Props> = ({ activePost }) => {
     }, []);
 
     const likeHandler = async (e: PressEvent) => {
+        let like = liked;
         try {
             const { data: { body }, status } = liked ?
                 await protectedApi.delete(`/posts/${activePost?._id}/like`) : //if success return 204 NO CONTENT - means no body
                 await protectedApi.post(`/posts/${activePost?._id}/like`);
 
             if (body?.action === "liked" && status === 201) {
-                setLiked(true)
-            } else if (status === 204 || status === 409) {
-                setLiked(false)
+                like = true
+            } else if (status === 204) {
+                like = false
             }
+
         } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message)
+            if (error instanceof AxiosError) {
+                if(error.status === 409){
+                    console.log(error.message)
+                    like = false;
+                }
             }
+        }finally{
+            setLiked(like)
+            setActivePost(prev => prev ? ({
+                ...prev,
+                liked: like,
+                likesCount: like ? ++prev.likesCount : --prev.likesCount
+            }) : prev)
         }
     }
 

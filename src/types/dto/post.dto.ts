@@ -53,5 +53,6 @@ export type T_Post = {
     viewsCount: number,
     createdAt:string,
     updatedAt:string
+    url: string,
 
 } & PostCreateFields;

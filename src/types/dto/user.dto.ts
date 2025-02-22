@@ -11,7 +11,6 @@ export interface IBasicUser {
 
 // FIX null
 export type IConfiguration = {
-    privateAccount: boolean,
     suggestionInProfile: boolean,
     PushNotifications: {
         likes: boolean,
@@ -34,6 +33,7 @@ export type IConfiguration = {
 }
 
 export interface IUser {
+    privateAccount: boolean,
     username: string | null,
     displayname: string | null,
     avatar: string | undefined,

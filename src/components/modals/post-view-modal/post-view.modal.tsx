@@ -2,16 +2,16 @@ import { Modal, ModalBody, ModalContent } from "@nextui-org/react"
 import type { UseDisclosureReturn } from "@nextui-org/use-disclosure"
 import { PostMediaViewPartial } from "./partials/post-media.view"
 import { PostCommentsViewPartial } from "./partials/post-comments.view"
-import { FC } from "react"
+import { Dispatch, FC } from "react"
 import { T_Post } from "~types/dto/post.dto"
 
 type Props = {
     disclosure: UseDisclosureReturn,
-    activePost: T_Post | null
+    activePost: T_Post | null,
+    setActivePost: Dispatch<React.SetStateAction<T_Post | null>>
 }
 
-export const PostViewModal: FC<Props> = ({ disclosure, activePost }) => {
-
+export const PostViewModal: FC<Props> = ({ disclosure, activePost, setActivePost }) => {
 
     return (
         <Modal
@@ -35,9 +35,9 @@ export const PostViewModal: FC<Props> = ({ disclosure, activePost }) => {
                     <div
                         className="grid grid-cols-[3fr_2fr] h-full max-w-full gap-0 p-0"
                     >
-                        <PostMediaViewPartial activePost={activePost} />
+                        <PostMediaViewPartial activePost={activePost} setActivePost={setActivePost} />
 
-                        <PostCommentsViewPartial activePost={activePost} />
+                        <PostCommentsViewPartial activePost={activePost} setActivePost={setActivePost}/>
 
                     </div>
 

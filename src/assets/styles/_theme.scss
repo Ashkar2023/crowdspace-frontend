@@ -1,11 +1,12 @@
 :root {
     --dt-primary: 21 22 23; // #151617
     --dt-secondary: 29 31 32; // #1d1f20
-    --dt-tertiary: 39 41 43; // #27292b
+    --dt-tertiary: 39 41 43; // #27292b    
     --dt-text-primary: 255 255 255; // #ffffff
     --dt-text-secondary: 136 153 166; // #8899a6
 
     --ct-accent: 0 132 255; // #0084ff
+    --ct-error: 201, 56, 49; // #c93831
 
     --lt-primary: 255 255 255; // #ffffff
     --lt-secondary: 240 243 247; // #f0f3f7
@@ -21,6 +22,7 @@
     --app-text-primary: var(--dt-text-primary);
     --app-text-secondary: var(--dt-text-secondary);
     --app-accent: var(--ct-accent);
+    --app-error: var(--ct-error);
 }
 
 .light_mode {
@@ -29,5 +31,6 @@
     --app-tertiary: var(--lt-tertiary);
     --app-text-primary: var(--lt-text-primary);
     --app-text-secondary: var(--lt-text-secondary);
-    --app-accent: var(--ct-accent)
+    --app-accent: var(--ct-accent);
+    --app-error: var(--ct-error);
 }

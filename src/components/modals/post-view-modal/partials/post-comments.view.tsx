@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react"
+import { Dispatch, FC, useCallback, useEffect, useRef, useState } from "react"
 import { PostCommentInputPartial } from "./post-comment.input"
 import { T_Post } from "~types/dto/post.dto"
 import { protectedApi } from "~services/api/http"
@@ -14,6 +14,7 @@ import { buildImageUrl } from "~utils/imageUrl"
 
 type Props = {
     activePost: T_Post | null
+    setActivePost: Dispatch<React.SetStateAction<T_Post | null>>
 }
 
 export type ICommentWithAuthor = IComment;
@@ -43,7 +44,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
         }
     }, [])
 
-    const replyAndEditClickListener = useCallback((e: MouseEvent) => {
+    const replyOrEditClickListener = useCallback((e: MouseEvent) => {
         const clickedElement = e.target as HTMLElement;
         const dataset_index = clickedElement.dataset.cindex;
         const parsedIndex = parseInt(dataset_index as string, 10);
@@ -59,12 +60,12 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
     }, [comments]);
 
     useEffect(() => {
-        commentsWrapper.current?.addEventListener("click", replyAndEditClickListener);
+        commentsWrapper.current?.addEventListener("click", replyOrEditClickListener);
 
         return () => {
-            commentsWrapper.current?.removeEventListener("click", replyAndEditClickListener);
+            commentsWrapper.current?.removeEventListener("click", replyOrEditClickListener);
         }
-    }, [replyAndEditClickListener])
+    }, [replyOrEditClickListener])
 
     const deleteCommentHandler = async (commentId: string) => {
         try {
@@ -116,7 +117,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
                                 <div className="flex-1 max-w-44">
                                     <p className="mb-1 text-sm text-app-t-primary/65 font-light">
                                         <span className="text-app-t-primary text-base font-semibold mr-2">
-                                            {comment.author?.username}
+                                            {comment.author?.username ?? "crowdspace_user"}
                                         </span>
                                         {comment.commentBody}
                                     </p>
