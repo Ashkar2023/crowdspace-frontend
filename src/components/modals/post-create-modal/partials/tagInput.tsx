@@ -1,5 +1,5 @@
 import { ScrollShadow, Input, Chip } from "@nextui-org/react";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { PostDataStateProps } from "~types/components/post-modal.types";
 
 type Props = PostDataStateProps;
@@ -30,10 +30,12 @@ const TagInput: FC<Props> = ({ postDataState, updatePostDataState }) => {
                 classNames={{
                     label: ["text-app-t-primary"],
                     input: ["!text-app-t-secondary"],
+                    description: ["font-semibold"]
                 }}
                 value={tagInput}
                 onKeyDown={handleAddTag}
                 onChange={handleInputChange}
+                description='Hit enter to add tag'
             />
             <ScrollShadow
                 className='max-h-16 w-full my-2 overflow-y-scroll scrollbar-hide'
