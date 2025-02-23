@@ -6,7 +6,7 @@ import PostEditModal from "~components/modals/post-edit-modal/post-edit.modal"
 import { PostViewModal } from "~components/modals/post-view-modal/post-view.modal"
 import { T_Post } from "~types/dto/post.dto"
 import { ReportTargets } from "~types/dto/report.dto"
-import { buildImageUrl } from "~utils/imageUrl"
+import { buildImageUrl } from "~utils/url.builder"
 
 type Props = {
     posts: T_Post[], // Give valid type

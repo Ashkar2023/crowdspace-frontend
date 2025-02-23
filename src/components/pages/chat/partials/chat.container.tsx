@@ -10,7 +10,7 @@ import { SocketEvents } from "~constants/socket.events"
 import { useAppSelector } from "~hooks/useReduxHooks"
 import { fetchMessages } from "~services/query/chat.queries"
 import { IMessage, msgContentType } from "~types/dto/message.dto"
-import { buildImageUrl } from "~utils/imageUrl"
+import { buildImageUrl } from "~utils/url.builder"
 
 
 

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { searchQueryFetch } from "~services/query/search.queries";
 import { IBasicUser } from "~types/dto/user.dto";
 import { debounce } from "~utils/debounce";
-import { buildImageUrl } from "~utils/imageUrl";
+import { buildImageUrl } from "~utils/url.builder";
 
 export const SearchContainer = () => {
     const naviate = useNavigate();

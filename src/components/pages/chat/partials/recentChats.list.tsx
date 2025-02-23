@@ -6,7 +6,7 @@ import { ChatContext } from "~/context/chatContext"
 import { SocketContext } from "~/context/socketContext"
 import { SocketEvents } from "~constants/socket.events"
 import { IChat } from "~types/dto/chat.dto"
-import { buildImageUrl } from "~utils/imageUrl"
+import { buildImageUrl } from "~utils/url.builder"
 
 
 export const RecentChatList = () => {

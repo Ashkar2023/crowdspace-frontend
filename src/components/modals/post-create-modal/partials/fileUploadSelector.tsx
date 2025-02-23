@@ -5,7 +5,7 @@ import "react-advanced-cropper/dist/style.css";
 import toast from "react-hot-toast";
 import { PostDataStateProps } from "~types/components/post-modal.types";
 import { debounce } from "~utils/debounce";
-import { getFallbackImage } from "~utils/imageUrl";
+import { getFallbackImage } from "~utils/url.builder";
 
 type Props = PostDataStateProps;
 

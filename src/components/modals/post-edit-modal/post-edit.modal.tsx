@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import TagInput from "../post-create-modal/partials/tagInput";
 import { T_Post } from "~types/dto/post.dto";
-import { buildImageUrl } from "~utils/imageUrl";
+import { buildImageUrl } from "~utils/url.builder";
 import { toastErrorTheme, toastSuccessTheme } from "~config/toastTheme.config";
 import { protectedApi } from "~services/api/http";
 

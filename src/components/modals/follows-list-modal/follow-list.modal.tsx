@@ -5,7 +5,7 @@ import { IFollowee, IFollower } from '~types/dto/follow.dto';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchFollowers, fetchFollowings } from '~services/query/follows.query';
 import { LuLoader } from 'react-icons/lu';
-import { buildImageUrl } from '~utils/imageUrl';
+import { buildImageUrl } from '~utils/url.builder';
 import { useIntersection } from '~hooks/useIntersection';
 
 interface FollowListModalProps {

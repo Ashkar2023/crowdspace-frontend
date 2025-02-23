@@ -6,7 +6,7 @@ import { useAppSelector } from "~hooks/useReduxHooks";
 import { T_Post } from "~types/dto/post.dto";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import fetchFeed from "~services/query/feed.queries";
-import { buildImageUrl, getFallbackImage } from "~utils/imageUrl";
+import { buildImageUrl, buildPostUrl, getFallbackImage } from "~utils/url.builder";
 import { PostViewModal } from "~components/modals/post-view-modal/post-view.modal";
 import { useNavigate } from "react-router-dom";
 import { useIntersection } from "~hooks/useIntersection";

@@ -15,7 +15,7 @@ import { SocketContext } from '~/context/socketContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import fetchNotifications from '~services/query/notification.queries';
-import { buildImageUrl } from '~utils/imageUrl';
+import { buildImageUrl } from '~utils/url.builder';
 import { isFollowRequestNotification, NotificationPhrases } from '~constants/notification.phrases';
 import { PressEvent } from '@react-types/shared';
 import { INotification } from '~types/dto/notification.dto';

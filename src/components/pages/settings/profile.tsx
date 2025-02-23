@@ -10,7 +10,7 @@ import { AxiosError } from "axios";
 import { userApiProtected, userApiPublic } from "~services/api/user.api";
 import { setStoreUsername, updateAvatar, updateUserProfile } from "~services/state/user.slice";
 import { debounce } from "~utils/debounce";
-import { buildImageUrl } from "~utils/imageUrl";
+import { buildImageUrl } from "~utils/url.builder";
 import { ProfileImageUploadModal } from "~components/modals/avatar-upload-modal/avatar-upload.modal";
 import { SocketContext } from "~/context/socketContext";
 import { toastSuccessTheme } from "~config/toastTheme.config";

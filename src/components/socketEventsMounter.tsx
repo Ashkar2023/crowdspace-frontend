@@ -8,7 +8,7 @@ import { SocketEvents } from "~constants/socket.events";
 import { useAppSelector } from "~hooks/useReduxHooks";
 import { IncomingCallData } from "~types/context/socketContext.types";
 import { INotification } from "~types/dto/notification.dto";
-import { buildImageUrl } from "~utils/imageUrl";
+import { buildImageUrl } from "~utils/url.builder";
 import { isFollowRequestNotification, NotificationPhrases } from "~constants/notification.phrases";
 import { NotificationKind } from "~constants/notification";
 import { toastSuccessTheme } from "~config/toastTheme.config";
