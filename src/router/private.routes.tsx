@@ -14,6 +14,7 @@ import { CallPage } from "~components/pages/call/call.page";
 import { HomePage } from "~components/pages/home/home.page";
 import ExplorePage from "~components/pages/explore/explore.page";
 import { SearchPage } from "~components/pages/search/search.page";
+import PostPage from "~components/pages/post/post.page";
 
 
 export const privateRouter: RouteObject[] = [
@@ -33,6 +34,10 @@ export const privateRouter: RouteObject[] = [
             {
                 path: "profile/:username",
                 element: <ProfilePage />,
+            },
+            {
+                path: "/post/:post_url",
+                element : <PostPage/>
             },
             {
                 path: "messages/:chat_id?",

@@ -10,16 +10,17 @@ import { useAppSelector } from "~hooks/useReduxHooks"
 import { PressEvent } from "@react-types/shared"
 import toast from "react-hot-toast"
 import { formatDistance } from "date-fns"
-import { buildImageUrl } from "~utils/imageUrl"
+import { buildImageUrl } from "~utils/url.builder"
 
 type Props = {
     activePost: T_Post | null
+    rounded?: boolean
     setActivePost: Dispatch<React.SetStateAction<T_Post | null>>
 }
 
 export type ICommentWithAuthor = IComment;
 
-export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
+export const PostCommentsViewPartial: FC<Props> = ({ activePost, setActivePost, rounded = false }) => {
     const loggedInUserId = useAppSelector((state) => state.user._id);
     const commentsWrapper = useRef<HTMLDivElement>(null);
 
@@ -43,6 +44,8 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
             setComments([]);
         }
     }, [])
+
+    // ADD comments count udpate
 
     const replyOrEditClickListener = useCallback((e: MouseEvent) => {
         const clickedElement = e.target as HTMLElement;
@@ -97,7 +100,7 @@ export const PostCommentsViewPartial: FC<Props> = ({ activePost }) => {
     };
 
     return (
-        <div className="flex flex-col border-s border-app-tertiary h-full">
+        <div className={`flex flex-col border-s border-app-tertiary h-full ${rounded ? "rounded-r-lg" : ""} overflow-clip`}>
             <div
                 className="bg-gradient-to-b from-app-tertiary to-app-secondary h-[610px] overflow-y-scroll"
                 ref={commentsWrapper}

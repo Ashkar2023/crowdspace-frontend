@@ -5,13 +5,14 @@ import { act, Dispatch, FC, useEffect, useState } from "react"
 import { LuChevronLeft, LuChevronRight, LuHeart } from "react-icons/lu"
 import { protectedApi } from "~services/api/http"
 import { T_Post } from "~types/dto/post.dto"
-import { buildImageUrl } from "~utils/imageUrl"
+import { buildImageUrl } from "~utils/url.builder"
 
 type Props = {
     activePost: T_Post | null
+    rounded?: boolean
     setActivePost: Dispatch<React.SetStateAction<T_Post | null>>
 }
-export const PostMediaViewPartial: FC<Props> = ({ activePost, setActivePost }) => {
+export const PostMediaViewPartial: FC<Props> = ({ activePost, setActivePost, rounded = false }) => {
     const [index, setIndex] = useState<number>(0);
     const [postsURLs, setPostURLs] = useState<URL[]>([]);
     const [liked, setLiked] = useState<boolean>(activePost?.liked!);
@@ -41,12 +42,12 @@ export const PostMediaViewPartial: FC<Props> = ({ activePost, setActivePost }) =
 
         } catch (error) {
             if (error instanceof AxiosError) {
-                if(error.status === 409){
+                if (error.status === 409) {
                     console.log(error.message)
                     like = false;
                 }
             }
-        }finally{
+        } finally {
             setLiked(like)
             setActivePost(prev => prev ? ({
                 ...prev,
@@ -57,7 +58,7 @@ export const PostMediaViewPartial: FC<Props> = ({ activePost, setActivePost }) =
     }
 
     return (
-        <div className='flex relative group align-middle bg-black max-h-[650px]'>
+        <div className={`flex relative group align-middle bg-black max-h-[650px] ${rounded ? "rounded-l-lg" : ""}`}>
             {
                 postsURLs?.length! > 1 &&
                 <div className="absolute hidden justify-between group-hover:flex w-full h-20 top-1/2 -translate-y-1/2 px-4">
