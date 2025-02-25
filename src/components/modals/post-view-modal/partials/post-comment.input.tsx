@@ -71,7 +71,7 @@ export const PostCommentInputPartial: FC<Props> = ({ post_id, setComments, reply
     };
 
     return (
-        <div className="flex relative h-[9%] px-2">
+        <div className="flex relative h-[9%] px-2 bg-app-tertiary rounded-r-xl">
             {
                 replyFor &&
                 <div className="absolute -top-10 w-4/5 flex rounded-xl bg-app-tertiary px-2">

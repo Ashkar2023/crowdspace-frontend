@@ -11,3 +11,10 @@ export const passwordSchema = z.object({
     message: "Passwords don't match",
     path: ["confirmPassword"]
 });
+
+export const resetPasswordSchema = z.object({
+    password: z.string()
+        .min(8, "min 8 characters")
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$/, "must include A-Z, a-z, 0-9 and !@#$%^&*")
+        .trim(),
+})

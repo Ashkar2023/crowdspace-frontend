@@ -162,7 +162,7 @@ export const Login = () => {
                             />
                         )
                     }
-                    description={<Link to="/forgot-pwd">forgot password?</Link>}
+                    description={<Link to="/auth/forgot-password">forgot password?</Link>}
                 />
 
                 <Button

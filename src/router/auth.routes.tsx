@@ -5,16 +5,18 @@ import { Login } from "~components/pages/auth/login";
 import { OtpVerify } from "~components/pages/auth/otpVerify";
 import { Signup } from "~components/pages/auth/signup";
 import { OpenRoute } from "./guards/openRoute";
+import { ForgotPassword } from "~components/pages/auth/forgotPassword";
+import { ResetPassword } from "~components/pages/auth/resetPassword";
 
 
 
-export const authRouter : RouteObject[] = [
+export const authRouter: RouteObject[] = [
     {
         path: "/auth",
         element: (
             <OpenRoute>
                 <AuthLayout>
-                    
+
                 </AuthLayout>
             </OpenRoute>
         ),
@@ -38,6 +40,14 @@ export const authRouter : RouteObject[] = [
             {
                 path: "verify",
                 element: <OtpVerify />
+            },
+            {
+                path: "forgot-password",
+                element: <ForgotPassword />
+            },
+            {
+                path: "reset-password",
+                element: <ResetPassword />
             }
         ]
     },
