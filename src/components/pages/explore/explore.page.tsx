@@ -1,7 +1,8 @@
 import { FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import fetchFeed from "~services/query/feed.queries";
-import { buildImageUrl } from "~utils/imageUrl";
+import { buildImageUrl } from "~utils/url.builder";
+import { useIntersection } from "~hooks/useIntersection";
 
 const ExplorePage: FC = () => {
     const { data, error, isFetching } = useQuery({
