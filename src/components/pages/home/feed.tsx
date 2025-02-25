@@ -179,7 +179,7 @@ const Feed: FC = () => {
                                 className="post_card"
                                 data-index={index}
                                 classNames={{
-                                    wrapper: ["rounded-2xl", "min-w-fit", "ml-12", "mt-4", "bg-center", "bg-slate-300"],
+                                    wrapper: ["rounded-2xl", "min-w-fit", "ml-12", "mt-4", "bg-center", "bg-slate-300", "z-0"],
                                     img: ["max-w-fit", "max-h-80", "object-contain", "bg-black"],
                                 }}
                                 fallbackSrc={getFallbackImage("post").href}
