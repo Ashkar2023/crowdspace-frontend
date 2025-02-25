@@ -86,7 +86,7 @@ export const SocketEventsMounter = () => {
         toast((t) => (
             <div className="mobile:min-w-60 flex gap-2">
                 <Avatar
-                    src={buildImageUrl(notification.actor.avatar!).href}
+                    src={buildImageUrl(notification.actor.avatar!).href ?? "/avtr/post.jpg"}
                     className="size-8 rounded-full bg-app-tertiary"
                     showFallback
                     name={notification.actor.displayname}
