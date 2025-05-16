@@ -23,7 +23,7 @@ export const authRouter: RouteObject[] = [
         children: [
             {
                 index: true,
-                element: <Navigate to="signup" replace />
+                element: <Navigate to="login" replace />
             },
             {
                 path: "signup",

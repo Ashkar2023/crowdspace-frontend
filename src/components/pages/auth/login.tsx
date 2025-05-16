@@ -1,6 +1,6 @@
 import { Button, Chip, Input } from '@nextui-org/react';
 import { FieldValues, useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { useEffect, useRef, useState } from 'react';
 import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
@@ -12,8 +12,10 @@ import { setUser } from '~services/state/user.slice';
 
 export const Login = () => {
     const dispatch = useAppDispatch();
+    const [searchParams] = useSearchParams();
+    const hasTestInQuery = searchParams.get("mode");
     const navigate = useNavigate();
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors }, getValues, setValue } = useForm();
 
     const [isPwdVisible, setIsPwdVisible] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -23,6 +25,28 @@ export const Login = () => {
     const [info, setInfo] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
+    useEffect(() => { // for test accounts
+        setTimeout(()=>{
+            if (hasTestInQuery && hasTestInQuery.toLocaleLowerCase() === "hr") {
+                setValue("credential", "test@mail.com", {
+                    shouldDirty: false,
+                    shouldTouch: false,
+                    shouldValidate: false
+                })
+                setValue("password", "Test@12345", {
+                    shouldDirty: false,
+                    shouldTouch: false,
+                    shouldValidate: false
+                })
+    
+                console.log(getValues())
+                setTimeout(async () => {
+                    await handleSubmit(onSubmit)();
+                    console.log("hsdfsfsdf")
+                }, 1000)
+            }
+        },1000)
+    }, [])
 
     let timeout: ReturnType<typeof setTimeout>;
 
